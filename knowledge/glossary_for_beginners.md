@@ -22,6 +22,7 @@
 * **`.gitattributes`** — per-path rules for Git: which files are text (and which line ending they get on checkout) and which are binary. Ours: everything LF, except `.cmd`/`.ps1` (CRLF); images and audio binary.
 * **EditorConfig (`.editorconfig`)** — a tiny file every editor understands: indent size, charset, line endings, final newline. Keeps formatting out of code review.
 * **Licence (MIT)** — a short permissive licence: anyone may use, copy and modify the code as long as the copyright notice stays. Ours covers the code only; art and audio are not in the repo.
+* **Monorepo** — several projects (engine, backend, frontend, infra, tools…) in one repository with one history, so one PR can change the engine, the API and the docs together. Git tracks files, not folders: an empty folder does not exist to Git, so each folder in the skeleton holds a `README.md` that says what lives there, what must not, and how to run it.
 
 ## Java & build
 * **JDK** — the Java toolkit (compiler + runtime). **LTS** = long-term-support version (21, 25).

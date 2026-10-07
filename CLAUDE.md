@@ -9,7 +9,7 @@ AWS serverless plus React, one small reviewable step at a time. It is also a rec
 public repo and the ≈ $0/month cost matter as much as the game.
 
 **State:** planning is complete; the build runs through 77 steps in `PLAN.md`. There is no code, no `pom.xml`
-and no `package.json` until the steps that create them are merged. `project_goal.md` is the original brief and
+and no `package.json` until the steps that create them are merged. `docs/project_goal.md` is the original brief and
 is superseded by `PLAN.md` + `knowledge/`.
 
 ## Start every session the same way
