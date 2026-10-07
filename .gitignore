@@ -1,0 +1,37 @@
+# Reference copy of a commercial game — never commit (deleted in Step 77)
+Super Auto Pets/
+
+# Java / Maven build output
+target/
+*.class
+
+# Node / Vite
+node_modules/
+dist/
+coverage/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# AWS SAM build output
+.aws-sam/
+
+# Editors, local tool state, OS noise
+.idea/
+*.iml
+.vscode/
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
+
+# Logs and local secrets (never in a public repo)
+*.log
+.env
+.env.*
+
+# Asset pipeline: art and audio never enter git (ADR-13) — they come from a private S3 bucket
+frontend/public/assets/
+tools/assets/build/
+tools/assets/raw/

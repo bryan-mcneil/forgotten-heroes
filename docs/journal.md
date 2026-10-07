@@ -10,3 +10,11 @@ of version differences between local and production environments, especially whe
 AWS. Also be aware that tools can find a JDK through different paths: `java` on the PATH and
 `JAVA_HOME` can point to different things and cause confusion when debugging. If local Java were 26 and
 Lambda ran 25, everything would work locally and break on Lambda, and we would wonder why.
+
+## 2026-10-07 — Step 02, Create the repository
+
+Turned the folder into a Git repository on `main`, with the `Super Auto Pets/` reference copy ignored
+before the first `git add`, and pushed it to GitHub as `bryan-mcneil/forgotten-heroes`. What I learned:
+always add ignore rules before the first commit; a file that is committed and untracked later is in the
+history forever. `.gitattributes` can force LF for every file, which keeps the files consistent across
+machines, but some Windows-only files such as `.cmd` and `.ps1` need CRLF, so know which files those are.
