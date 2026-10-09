@@ -1,0 +1,28 @@
+name: Step
+description: One step of PLAN.md. The create-issues script makes the 77 planned ones; use this form only for a split step (for example 14-b).
+title: "Step NN — "
+labels: ["type:step"]
+body:
+  - type: input
+    id: step
+    attributes:
+      label: Step number
+      description: Two digits as in PLAN.md; a split step adds a letter (14-b).
+      placeholder: "14-b"
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: One or two sentences. What exists once this step is merged?
+    validations:
+      required: true
+  - type: textarea
+    id: verify
+    attributes:
+      label: Verify commands
+      description: The commands that must pass locally and in CI before the PR is merged.
+      render: bash
+    validations:
+      required: true

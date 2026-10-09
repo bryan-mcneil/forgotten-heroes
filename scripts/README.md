@@ -4,8 +4,10 @@
 
 - `check-env.sh` (Step 01): prints the toolchain table — Java, Node, Docker, AWS CLI, SAM, ffmpeg,
   Python + Pillow, gh.
-- Coming later, one per step that needs it: `create-labels.sh` and `create-issues.sh` (Step 04),
-  `sim.sh` (Step 22), `create-local-table.sh` (Step 28), `deploy-backend.sh` (Step 34),
+- `create-labels.sh`, `create-milestones.sh`, `create-issues.sh` (Step 04): set GitHub up from the plan —
+  labels, one milestone per phase, one issue per `PLAN.md` row on the "Forgotten Heroes" board. All three
+  are idempotent (re-running changes nothing); `create-issues.sh --dry-run` prints what it would do.
+- Coming later, one per step that needs it: `sim.sh` (Step 22), `create-local-table.sh` (Step 28), `deploy-backend.sh` (Step 34),
   `deploy-frontend.sh` (Step 61), `unkill.sh` (Step 67), `teardown.sh` and `export-table.sh` (Step 68),
   `release.sh` (Step 69).
 
