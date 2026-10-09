@@ -27,3 +27,11 @@ README that says what lives there, what must not, and how to run it; the brief m
 in the engine, and the tools pipeline handles the assets, which live in a private S3 bucket. A new hero's
 JSON goes in `engine/src/main/resources/content/`; its sprite frames are never committed, the pipeline
 builds them into the gitignored `frontend/public/assets/`.
+
+## 2026-10-08 — Step 04, Project management on GitHub
+
+Put the whole plan on GitHub: labels, one milestone per phase, issue and PR templates, the "Forgotten
+Heroes" board, and 77 issues made by a script from `PLAN.md`. Did the first label, milestone and issue by
+hand with `gh`, then ran the scripts. A short dash typed by hand instead of the long dash in the plan made one
+duplicate issue and one duplicate milestone; the script matches titles letter for letter. What I learned: a
+little about GitHub issues and tracking their status on the project board, and some `gh` terminal commands.
