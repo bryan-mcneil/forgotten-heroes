@@ -51,7 +51,7 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 ## Phase 0 — Foundations
 - [x] **01** Toolchain: verify Corretto 25, AWS CLI, SAM CLI, ffmpeg, VS Code extensions (installed 7 Oct 2026); `scripts/check-env.sh`, `docs/setup.md` — est 1h
 - [x] **02** Create the public GitHub repo `forgotten-heroes`; root files (README, LICENSE, .gitignore, .editorconfig, .gitattributes); gitignore the `Super Auto Pets/` reference copy — est 1h
-- [ ] **03** Monorepo skeleton: `engine/ backend/ sim/ frontend/ infra/ tools/ studio/ docs/ knowledge/ plan/` with READMEs — est 1h
+- [x] **03** Monorepo skeleton: `engine/ backend/ sim/ frontend/ infra/ tools/ studio/ docs/ knowledge/ plan/` with READMEs — est 1h
 - [ ] **04** Project management: labels, milestones, issue/PR templates, Project board, script that creates all 77 issues — est 1.5h
 - [ ] **05** CI skeleton (`ci.yml` with docs lint), Dependabot, branch protection on `main` — est 1h
 - [ ] **06** AWS account hardening: root MFA, Identity Center CLI user, `aws configure sso`, budgets template ($5/$20), cost tag — est 1.5h
