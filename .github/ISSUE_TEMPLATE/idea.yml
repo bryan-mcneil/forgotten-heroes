@@ -1,0 +1,28 @@
+name: Idea
+description: Something for later. Ideas wait in the Backlog and are promoted only at a phase review.
+title: "Idea: "
+labels: ["type:idea"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it is worth it
+      description: What gets better for the player, for a recruiter reading the repo, or for you learning?
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Earliest phase it could fit
+      options:
+        - Phase 1 — Game Engine
+        - Phase 2 — Backend
+        - Phase 3 — Frontend
+        - Phase 4 — Studio
+        - Phase 5 — Infra & CI/CD
+        - Phase 6 — Balance & Launch
+        - After v1.0

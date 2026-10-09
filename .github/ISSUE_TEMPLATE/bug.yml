@@ -1,0 +1,37 @@
+name: Bug
+description: The game behaves differently from the rulebook (GDD) or from what you expected.
+title: "Bug: "
+labels: ["type:bug"]
+body:
+  - type: input
+    id: seed
+    attributes:
+      label: Seed
+      description: The run seed (run-over screen, or the /dev tools). With it the engine replays the exact same run.
+      placeholder: "1234567890"
+  - type: input
+    id: turn
+    attributes:
+      label: Turn
+      placeholder: "3"
+  - type: textarea
+    id: actions
+    attributes:
+      label: Actions
+      description: What you did, in order (buy Squire, freeze slot 2, roll, end turn ...).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What the rulebook says should happen (quote the GDD section if you can).
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: What happened instead. Paste the error, the event log or a screenshot.
+    validations:
+      required: true

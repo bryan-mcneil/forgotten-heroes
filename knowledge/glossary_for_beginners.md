@@ -23,6 +23,14 @@
 * **EditorConfig (`.editorconfig`)** — a tiny file every editor understands: indent size, charset, line endings, final newline. Keeps formatting out of code review.
 * **Licence (MIT)** — a short permissive licence: anyone may use, copy and modify the code as long as the copyright notice stays. Ours covers the code only; art and audio are not in the repo.
 * **Monorepo** — several projects (engine, backend, frontend, infra, tools…) in one repository with one history, so one PR can change the engine, the API and the docs together. Git tracks files, not folders: an empty folder does not exist to Git, so each folder in the skeleton holds a `README.md` that says what lives there, what must not, and how to run it.
+* **Issue** — one unit of work on GitHub: a number (`#12`), a title, a body, labels, a milestone, open or closed. Ours: one issue per step, titled `Step NN — Title`; the PR says `Closes #12` and merging it closes the issue.
+* **Label** — a coloured tag on an issue or PR, for filtering: `phase:0`, `area:engine`, `type:step`. The colour is a 6-digit hex code (`0E8A16`).
+* **Milestone** — a named bucket of issues with a progress bar. One per phase: `Phase 0 — Foundations`.
+* **Project (board)** — GitHub's kanban: cards (issues) in columns. The "column" is really a field called *Status* whose options we rename to Backlog → Next → In progress → In review → Done; a built-in rule moves a closed issue to Done.
+* **Issue form / PR template** — a YAML file in `.github/ISSUE_TEMPLATE/` turns *New issue* into a small form with required fields (`step.yml`, `bug.yml`, `idea.yml`); `pull_request_template.md` pre-fills every PR body.
+* **`gh api`** — a raw call to GitHub's HTTP API from the terminal: `gh api repos/:owner/:repo/milestones` (`:owner/:repo` is filled from the current repo, `-f key=value` sends a field, `--jq` filters the JSON reply). Every other `gh` command is one of these calls with a friendlier name.
+* **Scope (OAuth)** — one permission on a login token: `repo`, `read:org`, `project`. `gh auth refresh -s project` asks GitHub to add one; a missing scope fails with "missing required scopes".
+* **Dry run** — a `--dry-run` flag that prints what a script *would* do and changes nothing. Cheap insurance before 77 API calls; see also *Idempotent* under Operations.
 
 ## Java & build
 * **JDK** — the Java toolkit (compiler + runtime). **LTS** = long-term-support version (21, 25).

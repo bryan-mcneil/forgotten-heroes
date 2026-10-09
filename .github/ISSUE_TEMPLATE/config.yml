@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: The plan
+    url: https://github.com/bryan-mcneil/forgotten-heroes/blob/main/PLAN.md
+    about: Every step, its phase and its status. Look here before opening a new issue.

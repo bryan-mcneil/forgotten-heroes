@@ -189,18 +189,19 @@ Add a root `docs/README.md` index linking knowledge files.
    `gh issue create --title "Step 01 — Toolchain" --label "phase:0" --body "See plan/phase_0_foundations.md#step-01"`.
    Open the repo in the browser and find all three. Now you know exactly what the script automates.
 2. Labels: `scripts/create-labels.sh` runs `gh label create` for `phase:0..6`, `area:*`, `type:*`, `good-first-step`, `blocked` (colours of your choice).
-3. Milestones: `gh api repos/:owner/:repo/milestones -f title="Phase 0 — Foundations"` … for all 7.
+3. Milestones: `scripts/create-milestones.sh` runs `gh api repos/:owner/:repo/milestones -f title="Phase 0 — Foundations"` … for all 7, skipping titles that exist.
 4. Templates: copy the PR template from `knowledge/project_management.md` §4; create YAML issue
    forms with fields *Step number, Goal, Verify commands* (step), *Seed, Turn, Actions, Expected, Actual* (bug).
 5. Board: `gh project create --owner bryan-mcneil --title "Forgotten Heroes"`; add columns
    Backlog / Next / In progress / In review / Done (the CLI creates a default Status field; rename options in the UI).
 6. `scripts/create-issues.sh`: parse lines matching `- [ ] **NN** …` in `PLAN.md`, create one issue
-   per step with title `Step NN — <text before " — est">`, body linking to the phase file anchor,
-   labels `type:step`, `phase:N`, milestone by phase; then `gh project item-add`. Make it
-   **idempotent** (skip if an issue with the same title exists) so re-running is safe.
+   per step with title `Step NN — <the step's heading in its phase file>` (the full `PLAN.md` row goes in the
+   body, with a link to the phase-file anchor), labels `type:step`, `phase:N`, milestone by phase; then
+   `gh project item-add`. Make it **idempotent** (skip creation if an issue with the same title exists, but
+   still check its labels, milestone and board card) so re-running is safe; `--dry-run` prints without writing.
 7. Run it. Move Steps 01–06 to "Next" and close 01–03 as done (they already are).
 
-**Verify:** `gh issue list --limit 100 | wc -l` prints 77; the board shows all cards; opening an issue shows the right labels/milestone.
+**Verify:** `gh issue list --state all --limit 100 | wc -l` prints 77 (`--state all` because 01–03 are closed); the board shows all cards; opening an issue shows the right labels/milestone.
 
 **Commit:** `step-04: labels, milestones, templates, board and issue generator`
 
