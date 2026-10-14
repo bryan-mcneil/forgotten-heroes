@@ -104,9 +104,9 @@ check_docker() {
 
 check_aws() {
   local v
-  if ! have aws; then row aws "not found" ">=2.20" bad "install the AWS CLI v2 (docs/setup.md)"; return; fi
+  if ! have aws; then row aws "not found" ">=2.32" bad "install the AWS CLI v2 (docs/setup.md)"; return; fi
   v=$(aws --version 2>&1 | grep -oE 'aws-cli/[0-9.]+' | cut -d/ -f2)
-  if version_ge "$v" 2.20; then row aws "$v" ">=2.20" ok; else row aws "$v" ">=2.20" bad "upgrade the AWS CLI"; fi
+  if version_ge "$v" 2.32; then row aws "$v" ">=2.32" ok; else row aws "$v" ">=2.32" bad "upgrade the AWS CLI"; fi
 }
 
 check_sam() {

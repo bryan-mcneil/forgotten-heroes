@@ -247,55 +247,61 @@ Add a root `docs/README.md` index linking knowledge files.
 
 **Goal:** secure the account, get CLI access without long-lived keys, and install the spending alarms.
 
-**You will have:** root MFA on; IAM Identity Center user with `AdministratorAccess` for you;
-`aws configure sso` profile `fh`; `infra/budgets.yaml` deployed (budgets $5 and $20 with e-mail
+**You will have:** root MFA on; an IAM user `bryan` (MFA on, **no access keys**) for everyday work; CLI
+profile `fh` signed in with `aws login`; `infra/budgets.yaml` deployed (budgets $5 and $20 with e-mail
 alerts at 50/80/100 % and forecast); `docs/aws-account-setup.md` including your **Free plan** credits
 balance and expiry date.
 
 **Sensei notes**
-- *What:* the **root user** owns the account (use it only for billing/MFA). **IAM Identity Center**
-  gives you a personal login with short-lived credentials for the CLI. **Budgets** e-mail you.
+- *What:* the **root user** owns the account (use it only for billing/MFA). An **IAM user** is a second,
+  everyday login inside the account. `aws login` turns a normal browser sign-in into **temporary** CLI
+  credentials (12 h at most), so no access key is ever written to disk. **Budgets** e-mail you.
 - *Why:* leaked long-lived keys are the #1 cause of surprise bills on hobby accounts; budgets are the
-  last line of defence. Both are free.
-- *How:* console for MFA + Identity Center; budgets **by hand in the console first** (Q31), then
+  last line of defence. Both are free. The plan's first choice, **IAM Identity Center**, needs an AWS
+  Organization, and creating one ends the Free plan and expires the credits at once (Q32) — so it waits
+  for the Paid-plan upgrade (Step 77).
+- *How:* console for MFA + the IAM user; budgets **by hand in the console first** (Q31), then
   CloudFormation recreates them (so even the alarm is code).
-- *Where:* AWS console (once), `infra/budgets.yaml`, `~/.aws/config`.
+- *Where:* AWS console (once), `infra/budgets.yaml`, `~/.aws/config`, `docs/aws-account-setup.md`.
 
-**Do this**
+**Do this** (the click-by-click version is `docs/aws-account-setup.md`)
 0. Billing console → **Free Tier** page. Your account was created in Aug/Sep 2026, so it is on the
    credit-based **Free plan** (Q1). Write down: plan type, credits remaining, **expiry date** (6 months
    after creation ≈ Feb/Mar 2027). Put a calendar reminder two weeks before that date: *upgrade to the
    Paid plan* (decided, Q26; `knowledge/cost_estimator.md` §1 explains why). Until then AWS cannot bill
    you beyond the credits — a free safety net while you build.
-1. Console → root user → Security credentials → **enable MFA** (authenticator app). Also set
-   Billing → "IAM user and role access to Billing" = activate, and alternate contacts.
-2. **IAM Identity Center** (us-east-1): Enable → create user `bryan` (your e-mail) → create
-   permission set `AdministratorAccess` → assign user to this account. Note the **start URL**.
-3. CLI: `aws configure sso` → profile name `fh`, SSO start URL, region `us-east-1`, output `json`.
-   Then `echo 'export AWS_PROFILE=fh' >> ~/.bashrc && source ~/.bashrc` and `aws sso login`.
+1. Console → root user → Security credentials → **enable MFA** (authenticator app). Also Billing →
+   Account → "IAM user and role access to Billing information" = **Activate IAM access**, and alternate
+   contacts.
+2. **IAM** → Users → **Create user** `bryan` with console access (custom password) and the policies
+   `AdministratorAccess` + `SignInLocalDevelopmentAccess`; then assign an MFA device to it. **Never create
+   an access key.** Sign out of root; from now on sign in as `bryan`.
+3. CLI: `aws login --profile fh` (region `us-east-1`; the browser opens, pick the `bryan` session). Then
+   `aws configure set output json --profile fh`, `echo 'export AWS_PROFILE=fh' >> ~/.bashrc && source ~/.bashrc`.
+   The session lasts up to 12 h; run `aws login` again when a command says it has expired.
 4. **Console first (Q31):** Billing → **Budgets** → Create budget → Customize → Cost budget → monthly, `$5`,
    name it `manual-5`, alerts at 50 / 80 / 100 % actual + 100 % forecasted → e-mail <your-email>;
-   repeat for `$20` as `manual-20`. (The click-by-click walk-through is written when you reach this step —
-   the console changes too often to write it now.) Then make it code — `infra/budgets.yaml`:
-   `AWS::Budgets::Budget` ×2 (monthly cost, `$5` and `$20`) with
+   repeat for `$20` as `manual-20`. Click the **verification link** AWS e-mails you (new since 2025: an
+   address receives nothing until it is verified once per account). Then make it code — `infra/budgets.yaml`:
+   `AWS::Budgets::Budget` ×2 (monthly cost, `$5` and `$20`, named `forgotten-heroes-5` / `-20`) with
    `NotificationsWithSubscribers` (ACTUAL 50 %, 80 %, 100 %; FORECASTED 100 %) to your e-mail.
    Deploy: `aws cloudformation deploy --stack-name forgotten-heroes-budgets --template-file infra/budgets.yaml --parameter-overrides Email=<your-email>`.
-   Confirm the SNS/Budgets subscription e-mails, then **delete `manual-5` and `manual-20`** so the template
-   is the single source of truth.
+   Then **delete `manual-5` and `manual-20`** so the template is the single source of truth.
 5. Billing → Cost allocation tags: note that `project` must be activated **after** the first tagged
    resource exists (Step 34 reminder).
 6. Write `docs/aws-account-setup.md` with screenshots-free, numbered instructions and the "which
    free tier am I on" facts from item 0 (plan, credits, expiry, reminder set).
 
-**Verify:** `aws sts get-caller-identity` shows your account and an `AWSReservedSSO_…` ARN;
-`aws budgets describe-budgets --account-id <id>` lists two budgets; you received the confirmation e-mail.
+**Verify:** `aws sts get-caller-identity` shows your account and `arn:aws:iam::<id>:user/bryan`;
+`aws iam list-access-keys --user-name bryan` prints an empty list; `aws budgets describe-budgets --account-id <id>`
+lists `forgotten-heroes-5` and `forgotten-heroes-20`; a budget's page shows the **Email verification** card as **Verified**.
 
-**Review checklist:** [ ] root has MFA · [ ] no IAM access keys exist (`aws iam list-access-keys` empty for any user) · [ ] budgets e-mail confirmed · [ ] profile `fh` region is us-east-1.
+**Review checklist:** [ ] root has MFA · [ ] `bryan` has MFA and no access keys · [ ] budget e-mail verified · [ ] profile `fh` region is us-east-1 · [ ] `manual-5` and `manual-20` deleted.
 
 **Commit:** `step-06: budgets as code and AWS account setup guide`
 
 **Check your understanding:** Why is a *forecasted* budget alert useful in addition to *actual*? Why
-is it fine that the Identity Center permission set is AdministratorAccess here but not for the CI robot later (Step 62)?
+is it fine that `bryan` has AdministratorAccess here but the CI robot (Step 62) will not?
 
 ---
 

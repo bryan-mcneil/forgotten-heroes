@@ -19,7 +19,7 @@ loudly (exit code 1) on any miss, and never installs anything itself. The shell 
 | `JAVA_HOME` | the Corretto 25 folder | Maven (via the wrapper, Step 07) and VS Code's Java extension find the JDK through it, independently of the PATH. |
 | Node.js + npm | ≥ 22 (LTS) | Vite 8 / React 19 tooling for the frontend. |
 | Docker Desktop | installed **and running** | throwaway DynamoDB Local for backend tests; `sam local`. |
-| AWS CLI | ≥ 2.20 | talks to the AWS account (`aws configure sso`, Step 06). |
+| AWS CLI | ≥ 2.32 | talks to the AWS account; `aws login` (Step 06) exists from 2.32. |
 | AWS SAM CLI | ≥ 1.130 | validates, builds and deploys `infra/template.yaml`; runs Lambda locally. |
 | ffmpeg | any | builds the audio sprite (Step 50). |
 | Python + Pillow | ≥ 3.11, Pillow any | the asset pipeline (Step 39). |
@@ -118,7 +118,7 @@ JAVA_HOME  jdk25.0.4_10 (Java 25)         Corretto 25 dir  ✔
 node       26.2.0                         >=22             ✔
 npm        11.13.0                        any              ✔
 docker     29.6.1 (running)               running          ✔
-aws        2.37.10                        >=2.20           ✔
+aws        2.37.10                        >=2.32           ✔
 sam        1.167.0                        >=1.130          ✔
 ffmpeg     9.0.2                          any              ✔
 python     3.13.14 + Pillow 12.3.0        >=3.11 + Pillow  ✔

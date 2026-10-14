@@ -10,7 +10,7 @@ the plan came from, fixed after planning) and `plan/` (the step-by-step instruct
 | [setup.md](setup.md) | Set up a machine, then prove it with `scripts/check-env.sh` | Step 01 |
 | [journal.md](journal.md) | Learning journal: one paragraph per session and every step's "What I learned" | Step 01 |
 | [project_goal.md](project_goal.md) | The original brief. Superseded by `PLAN.md` and `knowledge/`; kept for history | Step 03 |
-| `aws-account-setup.md` | Console walk-through of the account hardening (MFA, Identity Center, budgets) | Step 06 |
+| [aws-account-setup.md](aws-account-setup.md) | Console walk-through of the account hardening: root MFA, the IAM user, `aws login`, budgets | Step 06 |
 | `reviews/phase-N.md` | The phase-end review, one file per phase | end of each phase |
 | `balance/` | Simulator balance reports worth keeping | Step 70 |
 | `adr/` | Architecture decision records, one short file each, copied from `knowledge/architecture.md` §13 | Step 69 |

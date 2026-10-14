@@ -20,6 +20,12 @@
 
 ## How do I run it
 
+Step 06, the budgets stack (two monthly cost budgets that e-mail you; the address never enters git):
+
+```bash
+aws cloudformation deploy --stack-name forgotten-heroes-budgets --template-file infra/budgets.yaml \n  --parameter-overrides Email=<your-email>
+```
+
 TODO Step 33: `sam validate --lint` checks the template;
 `sam local invoke ApiFunction -e infra/events/health.json` runs the function on your machine.
 TODO Step 34: `scripts/deploy-backend.sh dev` deploys the dev stack.
