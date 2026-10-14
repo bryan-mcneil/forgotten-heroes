@@ -35,3 +35,12 @@ Heroes" board, and 77 issues made by a script from `PLAN.md`. Did the first labe
 hand with `gh`, then ran the scripts. A short dash typed by hand instead of the long dash in the plan made one
 duplicate issue and one duplicate milestone; the script matches titles letter for letter. What I learned: a
 little about GitHub issues and tracking their status on the project board, and some `gh` terminal commands.
+
+## 2026-10-14 — Step 05, CI skeleton & branch protection
+
+Added the first GitHub Actions workflow: a `docs` job that lints every Markdown file and checks the links
+in `README.md` and `PLAN.md` on every PR and every push to `main`. Locked `main` with branch protection
+(the `docs` check is required, admins included, squash merges only, no force pushes) and proved it by
+pushing an empty commit that was rejected. What I learned: the three parts of GitHub Actions in detail. A
+workflow says when and what to run, in YAML. A job is one unit of work on its own virtual machine, the
+runner. Steps run one after the other on that machine, choosing which commands to run and in which order.
