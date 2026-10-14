@@ -31,6 +31,12 @@ choose **Free Tier** in the left menu. If that page is missing, the **Cost and U
 home page shows the credit balance and the days remaining. The plan rules are in
 `knowledge/cost_estimator.md` §1.
 
+While doing this step (14 Oct 2026) the terminal showed the account spending about $23 of credits a month: two
+`t3.micro` servers in Oregon (`us-west-2`), left running since 31 August by an AWS beginner tutorial, plus their public IPv4
+addresses and disks. They were terminated the same day. Lesson: credits hide spending, so look at **Cost Explorer**
+(Billing → Cost Explorer, group by *Service*) once a month even while everything is "free"; the project's guardrail list is
+`knowledge/cost_estimator.md` §5, item 12.
+
 ## 2. The root user: lock it, then stop using it
 
 Sign in as the **Root user** (e-mail + password) for this section only.
