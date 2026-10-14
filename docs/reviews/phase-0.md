@@ -8,7 +8,7 @@ board holding all 77 steps, and an AWS account that cannot surprise you with a b
 
 | Promise | Proof on 2026-10-14 |
 |---|---|
-| Machine verified: `scripts/check-env.sh` green | every row ✔ with Docker Desktop running (Docker itself is first needed in Step 28) |
+| Machine verified: `scripts/check-env.sh` green | every row ✔ on 2026-10-14 with Docker Desktop running (Docker itself is first needed in Step 28) |
 | Public repo, one squash commit per step | `bryan-mcneil/forgotten-heroes` is public; `main` holds six commits, `step-01` to `step-06`, each with Why / What / Learned lines |
 | Board holding all 77 steps | project "Forgotten Heroes": 77 cards, 6 Done, 71 Backlog; issues 6 closed, 71 open |
 | CI on every PR, required on `main` | workflow `ci`, job `docs` (Markdown lint + link check); branch protection: required check `docs`, up-to-date branches, admins included, linear history, no force pushes |
@@ -25,15 +25,27 @@ alarms."*
 
 **Went well**
 
-1. *to fill in*
-2. *to fill in*
-3. *to fill in*
+1. Creating the budgets by hand in the console was the best learning moment of the phase; hands-on beats reading.
+2. The small, broken-up steps keep things from becoming overwhelming.
+3. The instructions were mostly clear and easy to execute; the only hiccup was some outdated knowledge of the
+   AWS console's layout.
 
 **Change for Phase 1**
 
-1. *to fill in*
-2. *to fill in*
-3. *to fill in*
+1. The YAML files, and the code that follows, should be written by me with instructions on how, instead of
+   arriving ready-made. Writing them is how I learn.
+2. Sometimes there was a lot to read and I did not fully understand why things were connected or how they worked
+   together. Less text, more "how this connects".
+3. Step 05 had little teaching in it. Every step is a moment to learn and reflect, not just to ship.
+
+**Agreed for Phase 1**
+
+- From Step 07 on, Bryan types every file himself. Claude explains what the file is for and what each part does,
+  dictates the structure, and reviews the diff afterwards.
+- Each message carries one idea, says why it matters and how it connects to the previous step, and defines any
+  new term on the spot.
+- Every step ends with a teaching moment: the "Check your understanding" questions are asked and answered before
+  the merge, never skipped.
 
 ## 3. Open questions and risks
 
@@ -45,4 +57,4 @@ alarms."*
 
 ## 4. Sign-off
 
-Phase 0 complete. Signed: *to fill in*, 2026-10-14. Tag: `phase-0-complete`.
+Phase 0 complete. Signed: Bryan McNeil, 2026-10-14. Tag: `phase-0-complete`.
