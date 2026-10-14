@@ -20,11 +20,11 @@ Plain words used below:
 
 | Fact | Value |
 |---|---|
-| Account created | ≈ Aug/Sep 2026 |
+| Account created | ≈ 27 Aug 2026 (six months before the end date below) |
 | Plan | **Free plan** (credit-based): AWS cannot bill beyond the credits |
-| Credits remaining on 2026-10-14 | *fill in* |
-| Free plan ends | *fill in* (6 months after creation, or when the credits run out, whichever is first) |
-| Calendar reminder | *fill in* = two weeks before that date: **upgrade to the Paid plan** (Q26) |
+| Credits remaining on 2026-10-14 | $105.56 |
+| Free plan ends | **27 Feb 2027** (6 months after creation, or when the credits run out, whichever is first) |
+| Calendar reminder | **13 Feb 2027**, two weeks before: **upgrade to the Paid plan** (Q26) |
 
 Where to look: open the **Billing and Cost Management** console (search *Billing* in the top search bar) and
 choose **Free Tier** in the left menu. If that page is missing, the **Cost and Usage** box on the console
@@ -188,7 +188,7 @@ filter in Cost Explorer only after it is **activated** on **Billing → Cost all
 cost allocation tags**, and it appears on that page only up to 24 hours after a tagged resource has
 produced a bill line. Step 34 deploys the first such resource; activate `project` the day after.
 
-## 7. When the Free plan ends (≈ Feb/Mar 2027)
+## 7. When the Free plan ends (27 Feb 2027)
 
 Two weeks before the date in §1: **Billing → Free Tier → Upgrade** to the Paid plan (Q26). Then, and only
 then: enable **IAM Identity Center** (organization instance), move the CLI to `aws configure sso`, and
