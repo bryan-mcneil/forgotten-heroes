@@ -97,7 +97,7 @@ on disk for research and is deleted in Step 77).
 
 **Do this**
 1. Create `.gitignore` **first**, with this as its first entry (the trailing slash means "directory"):
-   ```
+   ```text
    # Reference copy of a commercial game — never commit (deleted in Step 77)
    Super Auto Pets/
    ```
@@ -107,7 +107,7 @@ on disk for research and is deleted in Step 77).
    (`__pycache__/`, `.venv/`), SAM (`.aws-sam/`), IDE folders, `*.log`, **and** the asset
    outputs: `frontend/public/assets/`, `tools/assets/build/`, `tools/assets/raw/`.
 4. `.gitattributes`:
-   ```
+   ```text
    * text=auto eol=lf
    *.cmd text eol=crlf
    *.ps1 text eol=crlf
@@ -227,14 +227,14 @@ Add a root `docs/README.md` index linking knowledge files.
 
 **Do this**
 1. `ci.yml`: job `docs` on `ubuntu-latest`: checkout → `npx markdownlint-cli2 "**/*.md" "#node_modules"` → `npx markdown-link-check` on `README.md` and `PLAN.md` (allow-list external domains to keep it fast).
-2. `.markdownlint.yaml`: relax line length (MD013 off) and allow inline HTML.
+2. `.markdownlint-cli2.yaml`: relax line length (MD013 off), allow inline HTML, switch off the cosmetic blank-line/table rules; fix the real findings the linter reports in the existing docs.
 3. `dependabot.yml`: `github-actions` weekly (Maven/npm ecosystems are added in Steps 36/37).
 4. Repo settings: allow **squash merge only**; auto-delete head branches; branch protection on
    `main`: require status check `docs`, require linear history, disallow force pushes. Via CLI:
    `gh api -X PUT repos/:owner/:repo/branches/main/protection --input infra/github/branch-protection.json`.
 5. Open the PR for this step — it is the first PR that must pass its own check.
 
-**Verify:** the PR shows the `docs` check green; trying `git push origin main` directly is rejected.
+**Verify:** the PR shows the `docs` check green; an empty commit pushed straight to `main` (`git commit --allow-empty -m test && git push origin main`) is rejected, then `git reset --hard origin/main` drops it.
 
 **Commit:** `step-05: CI skeleton, Dependabot and branch protection`
 

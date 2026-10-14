@@ -25,7 +25,7 @@ whole plan is visible on GitHub from day one.
 
 ## 2. The step ritual (same every time)
 
-```
+```text
 1. Pick the top card in "Next"  →  move to "In progress"
 2. git switch -c step-NN-slug main
 3. Read the step in plan/ (Goal → Sensei notes → Do → Verify)
@@ -43,7 +43,7 @@ Time-box: if a step takes more than ~2 sessions, split it (`Step NN-a`, `Step NN
 ## 3. Commit & branch conventions
 * Branch: `step-NN-short-slug` (e.g. `step-12-tavern-actions`). Bugfixes: `fix-NNN-slug`.
 * Squash commit message:
-  ```
+  ```text
   step-12: engine — tavern actions part 1 (#45)
 
   Why: players need roll/freeze/start-turn before anything else can be tested.
@@ -53,7 +53,7 @@ Time-box: if a step takes more than ~2 sessions, split it (`Step NN-a`, `Step NN
 * Tags: `phase-N-complete`, releases `vMAJOR.MINOR.PATCH` (prod deploys only from tags).
 
 ## 4. PR template (`.github/pull_request_template.md`)
-```
+```markdown
 ## Step NN — Title            Closes #<issue>
 ### What changed
 ### How to verify (commands)

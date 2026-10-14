@@ -8,7 +8,7 @@
 
 ## 1. The big picture
 
-```
+```text
                  ┌──────────────────────────── AWS (one account, two stacks: dev / prod) ───────────────────────────┐
                  │                                                                                                   │
   Browser        │   CloudFront (US only · Shield Std) ──► S3 (private, OAC)   Cognito User Pool (Managed Login)  │
@@ -49,7 +49,7 @@ ArchUnit enforces it. Reason: testable in milliseconds, reusable by the simulato
 
 ## 2. Repository layout
 
-```
+```text
 forgotten-heroes/
 ├── README.md                 ← recruiter-facing front page (demo link, GIF, architecture, how to run)
 ├── PLAN.md                   ← the step list with status; links into plan/
@@ -74,7 +74,7 @@ forgotten-heroes/
 ## 3. The engine (`engine/`)
 
 ### 3.1 Packages
-```
+```text
 com.forgottenheroes.engine
 ├── model        Stats, Rank, Level, Side, Position, UnitId, Perk, Unit, Band, Tavern, RunState, Outcome
 ├── content      HeroDefinition, RelicDefinition, TokenDefinition, AbilityDefinition (DSL records), ContentLoader, ContentIndex
@@ -88,7 +88,7 @@ com.forgottenheroes.engine
 ```
 
 ### 3.2 Flow of one action
-```
+```text
 Action ──► Resolver.validate(state, action)   → throws RuleViolation("NOT_ENOUGH_GOLD") if illegal
        ──► Resolver.apply(state, action)      → calls Mutators; each Mutator appends 1..n GameEvents
        ──► TriggerDispatcher.fire(trigger)    → finds eligible abilities, orders them (GDD §4.6), runs
@@ -126,7 +126,7 @@ frontend never carries its own copy of rules data.
 ## 4. The backend (`backend/`)
 
 ### 4.1 Layers
-```
+```text
 web        @RestController + DTO records + exception → RFC 9457 ProblemDetail
 service    RunService (uses engine.GameSession), MatchmakingService, LeaderboardService, ProfileService
 repo       RunRepository, GhostRepository, BattleLogRepository, LeaderboardRepository (DynamoDB Enhanced Client)
@@ -186,7 +186,7 @@ battle logs (compressed).
 
 ## 6. End-turn sequence (the most important flow)
 
-```
+```text
 Client                    API GW           Lambda/Spring                 Engine              DynamoDB
   │ POST end-turn            │                 │                             │                    │
   │ ───────────────────────► │ JWT ok ───────► │ load run (version check)  ─────────────────────► │
@@ -218,7 +218,7 @@ Client                    API GW           Lambda/Spring                 Engine 
 
 ## 8. Frontend (`frontend/`)
 
-```
+```text
 src/
 ├── app/            routes, providers (auth, query), layout shell, error boundary
 ├── api/            generated types (openapi-typescript), client.ts (fetch + auth + 409 retry)

@@ -49,7 +49,7 @@ for e in vscjava.vscode-java-pack vmware.vscode-boot-dev-pack esbenp.prettier-vs
 | Cognito/Google | none yet | created by the SAM template (Cognito); Google sign-in is a stretch |
 
 ## 4. `scripts/check-env.sh` (Step 01 deliverable) prints a table like
-```
+```text
 Tool        Found              Required        OK
 java        Corretto 25.0.x    25              ✔
 node        26.2.0             >=22            ✔

@@ -1,0 +1,16 @@
+# markdownlint-cli2 settings: which Markdown rules the `docs` CI job enforces.
+# Run locally with:  npx markdownlint-cli2 "**/*.md" "#node_modules"
+gitignore: true          # skip anything .gitignore skips (the local Super Auto Pets/ copy)
+ignores:
+  - .github/pull_request_template.md   # a snippet pasted into PR bodies, not a document
+config:
+  default: true          # start from every rule on, then switch off the purely cosmetic ones
+  MD013: false           # line length: prose wraps where it wraps
+  MD033: false           # inline HTML is allowed (details/summary, comments)
+  MD060: false           # table column alignment: compact tables are fine
+  MD022: false           # blank lines around headings
+  MD032: false           # blank lines around lists
+  MD031: false           # blank lines around code fences
+  MD058: false           # blank lines around tables
+  MD036: false           # bold text used as a mini heading (the plan's "Do this" blocks)
+  MD029: false           # ordered-list numbering style

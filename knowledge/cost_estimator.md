@@ -178,11 +178,11 @@ long before anything could reach $5.
 ---
 
 ## 7. Sources
-* Lambda pricing & free tier: https://aws.amazon.com/lambda/pricing/ · SnapStart (Java no charge): https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
-* API Gateway pricing: https://aws.amazon.com/api-gateway/pricing/
-* DynamoDB on-demand: https://aws.amazon.com/dynamodb/pricing/on-demand/
-* Cognito pricing: https://aws.amazon.com/cognito/pricing/
-* CloudFront free tier: https://aws.amazon.com/free/networking/ · S3 pricing: https://aws.amazon.com/s3/pricing/
-* CloudWatch pricing: https://aws.amazon.com/cloudwatch/pricing/ · Budgets pricing: https://aws.amazon.com/aws-cost-management/aws-budgets/pricing/
-* AWS Free Tier changes (Jul 2025): https://aws.amazon.com/free/ · announcement: https://aws.amazon.com/about-aws/whats-new/2025/07/aws-free-tier-credits-month-free-plan/ · hands-on: https://dev.classmethod.jp/en/articles/try-new-aws-free-tier-2025/ and https://dev.to/aws-builders/aws-free-tier-2025-how-to-get-200-in-credits-and-what-changed-3cj0
-* WAF pricing: https://aws.amazon.com/waf/pricing/ · GitHub Actions pricing: https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions
+* Lambda pricing & free tier: <https://aws.amazon.com/lambda/pricing/> · SnapStart (Java no charge): <https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html>
+* API Gateway pricing: <https://aws.amazon.com/api-gateway/pricing/>
+* DynamoDB on-demand: <https://aws.amazon.com/dynamodb/pricing/on-demand/>
+* Cognito pricing: <https://aws.amazon.com/cognito/pricing/>
+* CloudFront free tier: <https://aws.amazon.com/free/networking/> · S3 pricing: <https://aws.amazon.com/s3/pricing/>
+* CloudWatch pricing: <https://aws.amazon.com/cloudwatch/pricing/> · Budgets pricing: <https://aws.amazon.com/aws-cost-management/aws-budgets/pricing/>
+* AWS Free Tier changes (Jul 2025): <https://aws.amazon.com/free/> · announcement: <https://aws.amazon.com/about-aws/whats-new/2025/07/aws-free-tier-credits-month-free-plan/> · hands-on: <https://dev.classmethod.jp/en/articles/try-new-aws-free-tier-2025/> and <https://dev.to/aws-builders/aws-free-tier-2025-how-to-get-200-in-credits-and-what-changed-3cj0>
+* WAF pricing: <https://aws.amazon.com/waf/pricing/> · GitHub Actions pricing: <https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions>

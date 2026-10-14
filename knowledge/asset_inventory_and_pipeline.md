@@ -90,7 +90,7 @@ table recovered from FinalBossBlues' own paired packs (`--build-table`; unmapped
 `delta`). The jobs file (`{src, out}` pairs) is ours to add; outputs stay in `tool/derived/` so *The
 Forgotten Kanji* can reuse them (Q13). Our scripts below read only from there.
 
-```
+```text
 tools/assets/
 ├── config/assets.yaml      ← the ONLY hand-edited file: which raw files → which keys, trims, offsets
 ├── inventory.py            ← scans raw folders, prints counts & sizes (sanity check; Step 39)

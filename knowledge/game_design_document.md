@@ -104,7 +104,7 @@ Setup: both bands are copied; temporary stats start at 0; a seeded RNG is create
 `hash(runId, turn)`; the "home" side is the player on odd turns and the ghost on even turns (used
 only for tie-breaking so battles stay deterministic and symmetric over time).
 
-```
+```text
 events += BattleStarted
 fire START_OF_BATTLE for all units (ordering rule §4.6)
 while both sides have units and clashes < 300:

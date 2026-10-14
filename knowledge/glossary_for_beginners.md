@@ -13,7 +13,12 @@
 * **CD (Continuous Delivery/Deployment)** — the robot also deploys when `main` changes or a tag is pushed.
 * **Tag** — a named commit (`v1.0.0`). Prod only deploys from tags.
 * **OIDC (OpenID Connect)** — a way for GitHub's robot to prove its identity to AWS without stored passwords.
-* **Branch protection** — rule: nobody (including you) merges to `main` without green CI.
+* **Branch protection** — rule: nobody (including you) merges to `main` without green CI. Ours also requires a straight-line history (squash merges only) and forbids force pushes; the settings live in `infra/github/branch-protection.json`.
+* **GitHub Actions: workflow / job / step** — a *workflow* is one YAML file in `.github/workflows/` that says *when* to run (`on: pull_request`). It holds *jobs*; each job runs on its own fresh computer, a *runner* (`ubuntu-latest`). A job is a list of *steps*: a shell command (`run:`) or a reusable action someone published (`uses: actions/checkout@v7`). Ours: workflow `ci`, job `docs`, three steps.
+* **Status check** — the green tick or red cross a job reports back to the PR. Branch protection can require a check by its job name (`docs`).
+* **Linter** — a program that reads files and complains about rule violations without running anything: `markdownlint` for Markdown now, ESLint for TypeScript later. Rules are switched on and off in a config file (`.markdownlint-cli2.yaml`).
+* **Dependabot** — GitHub's robot that opens a PR when something you depend on has a new version. Ours watches the actions used in the workflows, weekly; Maven and npm are added when those files exist.
+* **YAML** — the indentation-based text format used for workflows, issue forms and (later) SAM templates: `key: value`, lists start with `-`. Two spaces per level, never tabs; a wrong indent changes the meaning without an error.
 * **`git init`** — turns a plain folder into a repository by creating the hidden `.git/` folder; `-b main` names the first branch.
 * **Remote / `origin`** — a copy of the repo somewhere else (GitHub). `origin` is the conventional name for the main one; `git push` sends commits to it.
 * **`gh` (GitHub CLI)** — GitHub from the terminal: `gh repo create`, `gh pr create`, `gh issue list`. Our scripts use it so nothing has to be clicked.

@@ -21,7 +21,7 @@
 
 ## The map
 
-```
+```text
 Phase 0  Foundations ──► Phase 1  Game Engine (Java) ──► Phase 2  Backend (Spring Boot on Lambda)
   tools, repo, CI,         rules, battles, bots,           API, DynamoDB, auth, Lambda, first deploy
   AWS account, budgets     simulator, 90 % tests
@@ -53,7 +53,7 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 - [x] **02** Create the public GitHub repo `forgotten-heroes`; root files (README, LICENSE, .gitignore, .editorconfig, .gitattributes); gitignore the `Super Auto Pets/` reference copy — est 1h
 - [x] **03** Monorepo skeleton: `engine/ backend/ sim/ frontend/ infra/ tools/ studio/ docs/ knowledge/ plan/` with READMEs — est 1h
 - [x] **04** Project management: labels, milestones, issue/PR templates, Project board, script that creates all 77 issues — est 1.5h
-- [ ] **05** CI skeleton (`ci.yml` with docs lint), Dependabot, branch protection on `main` — est 1h
+- [x] **05** CI skeleton (`ci.yml` with docs lint), Dependabot, branch protection on `main` — est 1h
 - [ ] **06** AWS account hardening: root MFA, Identity Center CLI user, `aws configure sso`, budgets template ($5/$20), cost tag — est 1.5h
 
 ## Phase 1 — Game Engine (pure Java)
@@ -164,6 +164,7 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 | 2026-10-07 | Console-first for AWS: Steps 06, 34, 61, 62, 66, 67, 68 get a numbered web-console walk-through (written at step time) before the template/script; ≈ 1–2 h extra per step (≈ +10 h, not folded into the phase totals) | Q31 — Bryan wants to set AWS up manually in the GUI and learn it |
 | 2026-10-07 | Step 01: the SAM CLI ships only as `sam.cmd`, which Git Bash cannot run by the bare name `sam`; `docs/setup.md` §5 adds a tiny `~/bin/sam` shim and `check-env.sh` shows ✘ until it exists. Step 01 lands before `git init` (Step 02), so its files become the **first** commit on `main` (`step-01: …`) when Step 02 initialises the repo, followed by `step-02: …` | Q18 (Git Bash) · the repo does not exist before Step 02 |
 | 2026-10-08 | Step 04: issue titles are the phase-file headings (`Step 04 — Project management on GitHub`) and the `PLAN.md` row goes in the body; milestones get their own `create-milestones.sh`; `create-issues.sh` also re-checks labels, milestone and board card on an issue that already exists and has `--dry-run`; Verify counts with `gh issue list --state all` because the step itself closes 01–03 | board cards must stay readable (the longest row is 240 characters); idempotent means "same end state", not only "skip" |
+| 2026-10-14 | Step 05: lint rules live in `.markdownlint-cli2.yaml` (one file; also honours `.gitignore` and skips the PR template snippet); cosmetic rules are off (line length, blank lines around blocks, table style, bold-as-heading, list numbering); the 68 real findings in the planning docs were fixed (bare URLs wrapped, fence languages, two tables, trailing spaces); Verify tests the push rejection with an empty commit | the docs predate the linter; structural rules are the ones worth keeping, and `git push origin main` with nothing to push is not rejected |
 
 ## Where the thinking lives
 `knowledge/` — research & design: SAP deep dive, tech stack, costs, GDD, architecture, assets, UX/sound, testing, PM, environment, glossary, learning path, open questions.

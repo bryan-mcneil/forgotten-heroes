@@ -21,5 +21,17 @@ Templates need no running: GitHub reads them from this folder on `main`. The lab
 issues they refer to are created by `scripts/create-labels.sh`, `scripts/create-milestones.sh` and
 `scripts/create-issues.sh` (Step 04).
 
-TODO Step 05: workflows run on every pull request; `gh run list` and `gh run watch` follow them from
-the terminal.
+`workflows/ci.yml` runs by itself on every pull request and every push to `main`. From the terminal,
+`gh pr checks` shows the result on the current PR, and `gh run list` / `gh run watch` follow a run.
+The same two commands run locally:
+
+```bash
+npx markdownlint-cli2 "**/*.md" "#node_modules"
+npx markdown-link-check --config .markdown-link-check.json README.md PLAN.md
+```
+
+Branch protection on `main` (Step 05) is applied from `infra/github/branch-protection.json`:
+
+```bash
+gh api -X PUT repos/:owner/:repo/branches/main/protection --input infra/github/branch-protection.json
+```
