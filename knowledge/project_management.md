@@ -114,3 +114,6 @@ that are mostly configuration, good for low-energy days) · `blocked`.
 | Cost surprise | budget e-mail | follow `docs/runbook.md`; teardown script if needed |
 | Tool breakage on Windows | red CI only on local | prefer Git Bash for scripts; Docker Desktop running; WSL2 as fallback |
 | Licence doubt | — | keep assets out of git (ADR-13); credits file |
+| Credits hide spending | Cost Explorer shows gross usage while the bill shows $0 (Phase 0: two tutorial servers cost ≈ $23/month of credits) | look at Billing → Cost Explorer by service once a month (cost_estimator §5 item 12); terminate what the project does not own |
+| Console drift (AWS UI changes) | a walk-through button or label is not where the doc says | search the page for the bold word; note the drift in the step's doc the same day |
+| Free-plan limits | a step needs a blocked service or an AWS Organization (Identity Center) | postpone it to the Paid-plan upgrade (Q32); never create an Organization before 13 Feb 2027 |
