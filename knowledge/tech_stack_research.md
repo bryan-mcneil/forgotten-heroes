@@ -207,7 +207,7 @@ truth, and OIDC bootstrap for GitHub Actions. CDK is a reasonable later upgrade.
 
 ## 10. Local development loop (what a normal day looks like)
 
-```
+```text
 Terminal 1:  docker compose up           # DynamoDB Local (+ a tiny admin UI)
 Terminal 2:  ./mvnw -pl backend spring-boot:run -Dspring-boot.run.profiles=local
 Terminal 3:  cd frontend && npm run dev  # Vite on :5173, proxies /api → :8080
@@ -232,17 +232,17 @@ proves that code cannot be active in prod). Tests: `./mvnw verify` (engine + bac
 ---
 
 ## 12. Sources
-* AWS Lambda Java 25 runtime (14 Nov 2025): https://aws.amazon.com/about-aws/whats-new/2025/11/aws-lambda-java-25
-* Lambda SnapStart docs (Java no extra charge): https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
-* aws-serverless-java-container springboot4 3.0.2 (Jun 2026): https://repo1.maven.org/maven2/com/amazonaws/serverless/aws-serverless-java-container-springboot4/
-* Spring Boot 4.1.0 (10 Jun 2026): https://www.herodevs.com/blog-posts/spring-boot-versions-eol-dates-and-latest-releases-april-2026
-* DynamoDB on-demand pricing: https://aws.amazon.com/dynamodb/pricing/on-demand/
-* API Gateway pricing: https://aws.amazon.com/api-gateway/pricing/
-* Cognito pricing (10k MAU free): https://aws.amazon.com/cognito/pricing/
-* CloudFront free tier (1 TB): https://aws.amazon.com/free/networking/
-* AWS Free Tier 2025 changes: https://dev.to/ushpal/new-aws-free-tier-updates-after-july-15-2025-what-you-need-to-know-3m36
-* GitHub Actions OIDC + SAM: https://aws.amazon.com/blogs/compute/securing-ci-cd-pipelines-with-aws-sam-pipelines-and-oidc/
-* Hostinger Git deploy: https://docs.hostinger.com/websites/git · Node.js apps: https://docs.hostinger.com/node.js/creating-an-app
-* PixiJS React v8: https://pixijs.com/blog/pixi-react-v8-live · Vite 8: https://www.voidzero.dev/blog
-* dnd-kit accessibility: https://dndkit.com/guides/accessibility · Howler.js: https://howlerjs.com/
-* jqwik: https://jqwik.net/ · ArchUnit 1.4.2: https://archunit.org/ · PIT: https://pitest.org/quickstart/maven
+* AWS Lambda Java 25 runtime (14 Nov 2025): <https://aws.amazon.com/about-aws/whats-new/2025/11/aws-lambda-java-25>
+* Lambda SnapStart docs (Java no extra charge): <https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html>
+* aws-serverless-java-container springboot4 3.0.2 (Jun 2026): <https://repo1.maven.org/maven2/com/amazonaws/serverless/aws-serverless-java-container-springboot4/>
+* Spring Boot 4.1.0 (10 Jun 2026): <https://www.herodevs.com/blog-posts/spring-boot-versions-eol-dates-and-latest-releases-april-2026>
+* DynamoDB on-demand pricing: <https://aws.amazon.com/dynamodb/pricing/on-demand/>
+* API Gateway pricing: <https://aws.amazon.com/api-gateway/pricing/>
+* Cognito pricing (10k MAU free): <https://aws.amazon.com/cognito/pricing/>
+* CloudFront free tier (1 TB): <https://aws.amazon.com/free/networking/>
+* AWS Free Tier 2025 changes: <https://dev.to/ushpal/new-aws-free-tier-updates-after-july-15-2025-what-you-need-to-know-3m36>
+* GitHub Actions OIDC + SAM: <https://aws.amazon.com/blogs/compute/securing-ci-cd-pipelines-with-aws-sam-pipelines-and-oidc/>
+* Hostinger Git deploy: <https://docs.hostinger.com/websites/git> · Node.js apps: <https://docs.hostinger.com/node.js/creating-an-app>
+* PixiJS React v8: <https://pixijs.com/blog/pixi-react-v8-live> · Vite 8: <https://www.voidzero.dev/blog>
+* dnd-kit accessibility: <https://dndkit.com/guides/accessibility> · Howler.js: <https://howlerjs.com/>
+* jqwik: <https://jqwik.net/> · ArchUnit 1.4.2: <https://archunit.org/> · PIT: <https://pitest.org/quickstart/maven>

@@ -1,0 +1,25 @@
+# Runs on every pull request and on every push to main.
+# One job for now ("docs"). Steps 23, 36, 56 and 63 add the real test jobs.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read        # this workflow only reads the repository; nothing here may write or deploy
+
+jobs:
+  docs:
+    name: docs          # branch protection requires a check with exactly this name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Lint every Markdown file
+        run: npx --yes markdownlint-cli2 "**/*.md" "#node_modules"
+
+      - name: Check the links in the two entry-point files
+        run: npx --yes markdown-link-check --config .markdown-link-check.json README.md PLAN.md

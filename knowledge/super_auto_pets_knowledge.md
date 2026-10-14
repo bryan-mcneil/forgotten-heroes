@@ -287,7 +287,7 @@ This is the part you cannot get from any wiki, and it is the most valuable for u
 Namespaces: `Spacewood.Core.Actions.{Build, Battle, Board, Deck, Minions, Spells, User, Resolver}`,
 `Spacewood.Core.Models.{Board, BoardResolver, Abilities}`, `Spacewood.Core.Models.BoardResolver.BoardEvents`.
 
-```
+```text
 Player intent            Rules engine                     Atomic state change            Fact that happened
 (Action)          →      (BoardResolver + Systems)   →    (Mutator)                 →    (BoardEvent)
 "RollShop"               checks gold, tier, freezes       RollShopMutator, SpendGold      ShopRolled, GoldChanged

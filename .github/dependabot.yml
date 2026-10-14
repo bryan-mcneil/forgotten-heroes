@@ -1,0 +1,10 @@
+# Dependabot opens a PR when something we depend on has a new version.
+# For now only the actions used in .github/workflows/ (actions/checkout@v7 ...).
+# Maven (Step 36) and npm (Step 37) are added here once those files exist.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels: ["type:chore"]

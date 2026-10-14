@@ -3,7 +3,7 @@
 > Calibrated to your self-rating (Q16): Java 1 · Spring 1 · React/TS 1 · AWS 1 · Git 3 · SQL/NoSQL 4.
 > Everything in the first four columns is taught from zero; Git is assumed; data steps teach the NoSQL
 > *differences* from the SQL you already know.
-
+>
 > You said: "think of me as a complete beginner and train me." This file is the syllabus. Each
 > phase has learning objectives, the steps that teach them, and the interview-ready sentence you
 > will be able to say afterwards. Official docs are linked because they are the source of truth

@@ -273,8 +273,8 @@ built once in a static initializer); `lambda/SnapStartPriming implements org.cra
 `SnapStart: {ApplyOn: PublishedVersions}`, `AutoPublishAlias: live`, env `TABLE_NAME`,
 `COGNITO_ISSUER`, `SPRING_PROFILES_ACTIVE: prod`, `JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1`),
 `HttpApi` (`$default` route → function, JWT authorizer on all routes except `/api/health` and
-`/api/content`, CORS placeholder), `Table` (from `infra/table.json`), `UserPool` + `UserPoolClient`
-+ `UserPoolDomain`, `Parameters: Env`, tags `project=forgotten-heroes`, `Outputs`.
+`/api/content`, CORS placeholder), `Table` (from `infra/table.json`), `UserPool` + `UserPoolClient` +
+`UserPoolDomain`, `Parameters: Env`, tags `project=forgotten-heroes`, `Outputs`.
 
 **Sensei notes**
 - *What:* Lambda calls `handleRequest(InputStream, OutputStream, Context)`; the adapter turns the

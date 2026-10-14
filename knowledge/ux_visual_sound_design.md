@@ -7,7 +7,7 @@
 
 ## 1. Screen flow
 
-```
+```text
 [Corgi Space Cadet intro] → [Title] → (Sign in) → [Home] ──► [Leaderboard]
                                           │           └──► [How to play] / [Settings]
                                           ▼
@@ -25,7 +25,7 @@ tavern or mid-battle-replay; there is never a modal you cannot escape with `Esc`
 
 ## 2. Tavern screen (wireframe, 1280×720)
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────────────────────┐
 │ ♥ 4/5   👑 3/10   Turn 5 · Rank III        [⚙]  [?]        GOLD  ◉ 7        [END TURN ⏎] │
 ├──────────────────────────────────────────────────────────────────────────────────────┤
@@ -57,7 +57,7 @@ tavern or mid-battle-replay; there is never a modal you cannot escape with `Esc`
 
 ## 3. Battle screen
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────────────────────┐
 │  You  ♥4 👑3                 TURN 5 BATTLE                  Ghost: "Bryan's Band" 👑3   │
 │                                                                                       │
@@ -99,7 +99,7 @@ tavern or mid-battle-replay; there is never a modal you cannot escape with `Esc`
 | `F` | freeze/unfreeze the selected tavern item |
 | `R` | roll · `X` sell the selected band hero · `Esc` cancel selection / close dialog |
 | `⏎ End` (or `Ctrl+Enter`) | End turn (confirmation only if gold ≥ 3 is unspent) |
-| Battle: `Space` pause/play · `1 2 3` speed · `S` skip · `Esc` back after result |
+| Battle | `Space` pause/play · `1 2 3` speed · `S` skip · `Esc` back after result |
 | `?` | shortcut overlay · `M` mute · `Tab` cycles focusable controls as normal |
 
 dnd-kit's keyboard sensor announces "Picked up Aoi. Press arrow keys to move, Enter to drop."
@@ -131,6 +131,7 @@ dnd-kit's keyboard sensor announces "Picked up Aoi. Press arrow keys to move, En
 | Fall | 400 ms (grey + drop) | ease-in | fade |
 | Summon | 350 ms (scale 0→1 + dust) | back-out | fade |
 | Ability callout | 500 ms hold | — | same |
+
 Rule: nothing blocks input in the tavern; in battle the timeline is the clock.
 
 ## 7. Sound design
