@@ -294,7 +294,7 @@ balance and expiry date.
 
 **Verify:** `aws sts get-caller-identity` shows your account and `arn:aws:iam::<id>:user/bryan`;
 `aws iam list-access-keys --user-name bryan` prints an empty list; `aws budgets describe-budgets --account-id <id>`
-lists `forgotten-heroes-5` and `forgotten-heroes-20`; the e-mail recipient shows **Active** on a budget's page.
+lists `forgotten-heroes-5` and `forgotten-heroes-20`; a budget's page shows the **Email verification** card as **Verified**.
 
 **Review checklist:** [ ] root has MFA · [ ] `bryan` has MFA and no access keys · [ ] budget e-mail verified · [ ] profile `fh` region is us-east-1 · [ ] `manual-5` and `manual-20` deleted.
 

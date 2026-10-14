@@ -160,9 +160,10 @@ early. The cached credentials live in `~/.aws/login/cache`, never in the repo.
 ### 5.2 Verify the e-mail address
 
 Since 2025 a new recipient receives nothing until it is verified once per account. Open the e-mail from an
-`@aws.com` address and click its link while signed in as `bryan`; the link is valid for 12 hours. On the
-budget's page the recipient then shows **Active**. One verification covers every budget in the account,
-including the ones the template creates next.
+`@aws.com` address and click its link while signed in as `bryan`; the link is valid for 12 hours. Open the
+budget's page (**Budgets** → click its name): the **Email verification** card then shows **Verified** for
+each alert (seen 14 Oct 2026). One verification covers every budget in the account, including the ones the
+template creates next.
 
 ### 5.3 As code: `infra/budgets.yaml`
 
@@ -207,5 +208,5 @@ delete the IAM user `bryan`. The Step 77 checklist repeats this.
 - [ ] IAM user `bryan` exists with MFA, `AdministratorAccess` + `SignInLocalDevelopmentAccess`, and **no access keys**
       (`aws iam list-access-keys --user-name bryan` prints an empty list).
 - [ ] `aws sts get-caller-identity` shows `user/bryan`; profile `fh` is `us-east-1`, output `json`.
-- [ ] Stack `forgotten-heroes-budgets` exists; `manual-5` and `manual-20` are deleted; the recipient is **Active**.
+- [ ] Stack `forgotten-heroes-budgets` exists; `manual-5` and `manual-20` are deleted; the **Email verification** card says **Verified**.
 - [ ] §1 is filled in and the calendar reminder exists.

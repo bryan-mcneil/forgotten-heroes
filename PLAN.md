@@ -54,7 +54,7 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 - [x] **03** Monorepo skeleton: `engine/ backend/ sim/ frontend/ infra/ tools/ studio/ docs/ knowledge/ plan/` with READMEs — est 1h
 - [x] **04** Project management: labels, milestones, issue/PR templates, Project board, script that creates all 77 issues — est 1.5h
 - [x] **05** CI skeleton (`ci.yml` with docs lint), Dependabot, branch protection on `main` — est 1h
-- [ ] **06** AWS account hardening: root MFA, IAM user `bryan` + MFA (no access keys), `aws login` profile `fh`, budgets template ($5/$20), cost tag; Identity Center waits for the Paid-plan upgrade (Q32) — est 1.5h
+- [x] **06** AWS account hardening: root MFA, IAM user `bryan` + MFA (no access keys), `aws login` profile `fh`, budgets template ($5/$20), cost tag; Identity Center waits for the Paid-plan upgrade (Q32) — est 1.5h
 
 ## Phase 1 — Game Engine (pure Java)
 - [ ] **07** Maven parent + wrapper (script-only zip, no global Maven) + `engine` module; JUnit, AssertJ, JaCoCo gate; first test — est 2h

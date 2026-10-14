@@ -87,8 +87,8 @@
     Free-plan account upgrades it to the Paid plan at once and expires the credits. The smaller *account instance*
     cannot hand out CLI credentials at all. *Default: keep the Free plan; create one IAM user `bryan` (MFA, no
     access keys) and sign the CLI in with `aws login` (browser sign-in → temporary credentials, 12 h); enable
-    Identity Center at the Paid-plan upgrade (Step 77) and delete the IAM user then.* → **Proposed 2026-10-14;
-    Bryan's confirmation pending.**
+    Identity Center at the Paid-plan upgrade (Step 77) and delete the IAM user then.* → **Answered 2026-10-14: Bryan
+    went ahead with the default (IAM user `bryan` + `aws login`); Identity Center waits for the upgrade.**
 
 ## Answers log
 | # | Your answer | Date | Files updated |
@@ -119,4 +119,4 @@
 | 29 | Default — **same-seed challenge link** first; live rooms stay a door | 2026-10-07 | GDD §3, architecture §4.4 |
 | 30 | **Done** — folder renamed to `forgotten_heroes` | 2026-10-07 | README "Before Step 01", PLAN rule 6 removed, Claude Code project memory |
 | 31 | Set AWS services up **by hand in the web console**, with detailed step-by-step instructions when each step arrives | 2026-10-07 | PLAN rule 6 + changelog, project_management §7, phase_0 Step 06, phase_2 Step 34, phase_5 intro, tech_stack §8, CLAUDE.md, Claude Code memory |
-| 32 | Default (proposed) — IAM user `bryan` + `aws login` now, Identity Center at the Paid-plan upgrade | 2026-10-14 | PLAN Step 06 row + changelog, phase_0 Step 06, phase_6 Step 77 checklist, docs/aws-account-setup.md, docs/setup.md, scripts/check-env.sh (AWS CLI ≥ 2.32), environment_audit §3, glossary |
+| 32 | Default — IAM user `bryan` + `aws login` now, Identity Center at the Paid-plan upgrade | 2026-10-14 | PLAN Step 06 row + changelog, phase_0 Step 06, phase_6 Step 77 checklist, docs/aws-account-setup.md, docs/setup.md, scripts/check-env.sh (AWS CLI ≥ 2.32), environment_audit §3, glossary |
