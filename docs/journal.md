@@ -44,3 +44,12 @@ in `README.md` and `PLAN.md` on every PR and every push to `main`. Locked `main`
 pushing an empty commit that was rejected. What I learned: the three parts of GitHub Actions in detail. A
 workflow says when and what to run, in YAML. A job is one unit of work on its own virtual machine, the
 runner. Steps run one after the other on that machine, choosing which commands to run and in which order.
+
+## 2026-10-14 — Step 06, AWS account hardening and budgets
+
+Locked the AWS account: MFA on the root user, an everyday IAM user `bryan` with MFA and no access keys, and the
+terminal signed in through the browser with `aws login`. The plan's IAM Identity Center had to wait: enabling it
+creates an AWS Organization, which ends the Free plan and its credits (Q32). Built the $5 and $20 budgets by hand
+in the console, then as `infra/budgets.yaml`, and deleted the hand-made ones. Along the way Cost Explorer showed
+two forgotten tutorial servers in Oregon eating about $23 of credits a month; terminated the same day. What I
+learned: how to create a custom budget with e-mail alerts.
