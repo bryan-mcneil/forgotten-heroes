@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Forgotten Heroes cost guardrails (Step 06): two monthly cost budgets that e-mail the account owner.
+  $5 is the "look at this" alarm, $20 the "something is wrong" alarm (knowledge/cost_estimator.md section 5).
+
+# Deploy (the e-mail address is passed on the command line so it never enters the public repo):
+#   aws cloudformation deploy --stack-name forgotten-heroes-budgets \
+#     --template-file infra/budgets.yaml --parameter-overrides Email=<your-email>
+#
+# A budget is free. Each one e-mails at 50 %, 80 % and 100 % of money actually spent this month,
+# and at 100 % of what AWS *forecasts* the month will cost. The forecast alert stays quiet until the
+# account has about five weeks of usage history, which is normal for a new account.
+
+Parameters:
+  Email:
+    Type: String
+    Description: Address that receives the budget e-mails (must be verified once; see docs/aws-account-setup.md).
+    AllowedPattern: '[^@\s]+@[^@\s]+'
+    ConstraintDescription: must look like an e-mail address
+
+Resources:
+  BudgetFive:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: forgotten-heroes-5
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: 5
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 50
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+      ResourceTags:
+        - Key: project
+          Value: forgotten-heroes
+
+  BudgetTwenty:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: forgotten-heroes-20
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: 20
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 50
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+      ResourceTags:
+        - Key: project
+          Value: forgotten-heroes
+
+Outputs:
+  BudgetNames:
+    Description: The two budgets this stack owns
+    Value: !Sub "${BudgetFive}, ${BudgetTwenty}"

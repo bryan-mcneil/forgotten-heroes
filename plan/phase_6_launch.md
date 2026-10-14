@@ -156,7 +156,7 @@ exist. Make those three impossible to miss.
 - [ ] Demo account works; README "Play it" link points at prod; portfolio updated.
 - [ ] Post-launch policy written in `docs/release.md`: *no manual changes in prod — every change is a PR → main (dev) → tag (prod)*; monthly 5-minute cost check; dependency PRs merged monthly.
 - [ ] Delete the local reference copy: `rm -rf "Super Auto Pets"` (it was never in git; the real install lives elsewhere) and drop its `.gitignore` line in the same PR.
-- [ ] Free plan reminder is in your calendar (credits expire ≈ 6 months after account creation; `knowledge/cost_estimator.md` §1 — decided Q26: *upgrade to the Paid plan* two weeks before they expire).
+- [ ] Free plan reminder is in your calendar (credits expire ≈ 6 months after account creation; `knowledge/cost_estimator.md` §1 — decided Q26: *upgrade to the Paid plan* two weeks before they expire). At the upgrade: enable **IAM Identity Center** (organization instance), move the CLI to `aws configure sso`, then delete the IAM user `bryan` (Q32).
 - [ ] `docs/reviews/phase-6.md` + overall retro; tag `phase-6-complete`.
 
 **Commit:** `step-77: v1.0.0 launch checklist and post-launch policy`

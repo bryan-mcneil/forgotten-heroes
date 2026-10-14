@@ -43,7 +43,7 @@ for e in vscjava.vscode-java-pack vmware.vscode-boot-dev-pack esbenp.prettier-vs
 ## 3. Accounts
 | Account | State | Action |
 |---|---|---|
-| AWS | created ≈ Aug/Sep 2026 → credit-based **Free plan** (Q1); **no credentials configured** | Step 06: record credits + expiry (reminder to upgrade ≈ Feb/Mar 2027), root MFA, IAM Identity Center user, `aws configure sso` profile `fh`, **us-east-1**, budgets to the account owner's e-mail (kept out of the public repo) |
+| AWS | created ≈ Aug/Sep 2026 → credit-based **Free plan** (Q1); **no credentials configured** | Step 06: record credits + expiry (reminder to upgrade ≈ Feb/Mar 2027), root MFA, IAM user `bryan` (MFA, no access keys), `aws login` profile `fh`, **us-east-1**, budgets to the account owner's e-mail (kept out of the public repo); Identity Center waits for the Paid-plan upgrade (Q32) |
 | GitHub | bryan-mcneil, 14 public repos incl. `portfolio` (Next.js) | Step 02 creates `forgotten-heroes` (public) |
 | Hostinger | Business hosting; domains **bryanmcneil.pro** (chosen, Q2) and gadgetdrop.tech | Step 66: `heroes.bryanmcneil.pro` → CloudFront via ACM + Hostinger DNS; Phase 4: `corgi.bryanmcneil.pro` studio page |
 | Cognito/Google | none yet | created by the SAM template (Cognito); Google sign-in is a stretch |
@@ -54,7 +54,7 @@ Tool        Found              Required        OK
 java        Corretto 25.0.x    25              ✔
 node        26.2.0             >=22            ✔
 docker      29.6.1 (running)   running         ✔
-aws         2.36.x             >=2.20          ✔
+aws         2.36.x             >=2.32          ✔
 sam         1.164.x            >=1.130         ✔
 ffmpeg      7.x                any             ✔
 python      3.13.14 + Pillow   >=3.11          ✔
