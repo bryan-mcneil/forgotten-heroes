@@ -53,3 +53,10 @@ creates an AWS Organization, which ends the Free plan and its credits (Q32). Bui
 in the console, then as `infra/budgets.yaml`, and deleted the hand-made ones. Along the way Cost Explorer showed
 two forgotten tutorial servers in Oregon eating about $23 of credits a month; terminated the same day. What I
 learned: how to create a custom budget with e-mail alerts.
+
+## 2026-10-14 — Phase 0 review
+
+Phase 0 closed: machine verified, public repo with six squash commits, 77 cards on the board, CI required on
+`main`, AWS account hardened and budgeted. The review is `docs/reviews/phase-0.md`. The three changes for Phase 1
+came from Bryan: he writes the files himself from now on, messages stay short and say how things connect, and
+every step keeps its teaching moment.
