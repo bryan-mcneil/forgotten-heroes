@@ -108,6 +108,11 @@ public final class Unit {
         return new Stats(attack(), maxHealth());
     }
 
+    /** Base plus the permanent bonus only, uncapped: what survives a battle and what a merge compares. */
+    public Stats permanentStats() {
+        return base.plus(permanentBonus);
+    }
+
     public boolean isAlive() {
         return health() > 0;
     }

@@ -4,18 +4,25 @@ import static com.forgottenheroes.engine.resolver.RuleViolation.require;
 
 import com.forgottenheroes.engine.action.Action;
 import com.forgottenheroes.engine.content.ContentIndex;
+import com.forgottenheroes.engine.content.HeroDefinition;
 import com.forgottenheroes.engine.content.Trigger;
 import com.forgottenheroes.engine.event.EventLog;
 import com.forgottenheroes.engine.event.GameEvent.GoldReason;
 import com.forgottenheroes.engine.event.GameEvent.HeartsReason;
+import com.forgottenheroes.engine.event.GameEvent.HeroBought;
+import com.forgottenheroes.engine.event.GameEvent.MergeSource;
+import com.forgottenheroes.engine.model.Band;
 import com.forgottenheroes.engine.model.ItemKind;
 import com.forgottenheroes.engine.model.RunState;
 import com.forgottenheroes.engine.model.Rules;
 import com.forgottenheroes.engine.model.Tavern;
 import com.forgottenheroes.engine.model.TavernSlot;
+import com.forgottenheroes.engine.model.Unit;
+import com.forgottenheroes.engine.mutator.BandMutator;
 import com.forgottenheroes.engine.mutator.GoldMutator;
 import com.forgottenheroes.engine.mutator.RunMutator;
 import com.forgottenheroes.engine.mutator.TavernMutator;
+import com.forgottenheroes.engine.mutator.UnitMutator;
 import com.forgottenheroes.engine.resolver.RuleViolation.Code;
 import com.forgottenheroes.engine.rng.GameRandom;
 import com.forgottenheroes.engine.rng.SeedDerivation;
@@ -25,7 +32,8 @@ import java.util.List;
 /**
  * The tavern rules (GDD §4.2–§4.4). {@link #apply} validates the action first, then mutates; a
  * {@link RuleViolation} always leaves the state exactly as it was. Randomness comes from the run
- * seed, the turn and the roll index, so the same state and action always produce the same shelves.
+ * seed, the turn and the roll or action index, so the same state and action always produce the
+ * same result.
  */
 public final class TavernResolver {
 
@@ -39,16 +47,17 @@ public final class TavernResolver {
         require(!state.status().isOver(), Code.RUN_OVER, "the run is " + state.status());
         EventLog log = new EventLog(state.lastEventSeq());
         List<PendingTrigger> triggers = new ArrayList<>();
+        GameRandom dice = actionRandom(state);
         switch (action) {
             case Action.StartTurn s -> startTurn(state, log, triggers);
             case Action.Roll r -> roll(state, log);
             case Action.Freeze f -> freeze(state, log, f.kind(), f.slot());
             case Action.Unfreeze u -> unfreeze(state, log, u.kind(), u.slot());
-            case Action.Buy b -> throw new UnsupportedOperationException("Buy arrives in Step 14");
+            case Action.Buy b -> buy(state, log, triggers, dice, b.slot(), b.bandIndex());
             case Action.BuyRelic b -> throw new UnsupportedOperationException("BuyRelic arrives in Step 15");
-            case Action.Sell s -> throw new UnsupportedOperationException("Sell arrives in Step 14");
-            case Action.Move m -> throw new UnsupportedOperationException("Move arrives in Step 14");
-            case Action.Merge m -> throw new UnsupportedOperationException("Merge arrives in Step 14");
+            case Action.Sell s -> sell(state, log, triggers, s.bandIndex());
+            case Action.Move m -> move(state, log, m.from(), m.to());
+            case Action.Merge m -> merge(state, log, triggers, dice, m.from(), m.to());
             case Action.EndTurn e -> throw new IllegalArgumentException("EndTurn is resolved by GameSession.endTurn");
         }
         state.setLastEventSeq(log.lastSeq());
@@ -97,6 +106,76 @@ public final class TavernResolver {
         TavernMutator.unfreeze(state, log, kind, slot);
     }
 
+    /**
+     * GDD §4.3–§4.4: 3 gold for the hero on a shelf; it joins the band at the index (the band's size
+     * appends), or merges into the same hero already standing there.
+     */
+    private void buy(RunState state, EventLog log, List<PendingTrigger> triggers, GameRandom dice, int slot, int bandIndex) {
+        TavernSlot item = requireItem(state, ItemKind.HERO, slot);
+        Band band = state.band();
+        require(state.gold() >= item.price(), Code.NOT_ENOUGH_GOLD,
+            "the hero costs " + item.price() + " gold, you have " + state.gold());
+        require(bandIndex <= band.size(), Code.INVALID_INDEX, "band index " + bandIndex + " is beyond the band (" + band.size() + ")");
+        HeroDefinition definition = content.hero(item.itemId());
+        Unit copy = Unit.fromDefinition(definition, state.nextUnitId());
+        copy.addPermanentBonus(item.bonus());
+        boolean merging = bandIndex < band.size() && band.at(bandIndex).heroId().equals(definition.id());
+        if (merging) {
+            require(BandMutator.canStack(band.at(bandIndex)), Code.MAX_LEVEL, definition.name() + " is already level 3");
+        } else {
+            require(!band.isFull(), Code.BAND_FULL, "the band already has " + Rules.BAND_SIZE + " heroes");
+        }
+
+        GoldMutator.spend(state, log, item.price(), GoldReason.BUY_HERO);
+        TavernMutator.takeHero(state, slot);
+        if (merging) {
+            Unit survivor = band.at(bandIndex);
+            log.append(new HeroBought(0, survivor.id(), survivor.heroId(), slot, bandIndex, copy.stats(), item.price()));
+            levelUpIf(BandMutator.stack(band, log, survivor, copy, MergeSource.TAVERN, null), state, log, triggers, dice, survivor);
+            triggers.add(PendingTrigger.of(Trigger.BUY, survivor.id()));
+        } else {
+            BandMutator.buy(state, log, copy, bandIndex, slot, item.price());
+            triggers.add(PendingTrigger.of(Trigger.BUY, copy.id()));
+            triggers.add(PendingTrigger.of(Trigger.ALLY_SUMMONED, copy.id()));
+        }
+    }
+
+    /** GDD §4.3: a hero sells for gold equal to its level; selling is not a Fall. */
+    private void sell(RunState state, EventLog log, List<PendingTrigger> triggers, int bandIndex) {
+        requireBandIndex(state, bandIndex);
+        Unit unit = state.band().at(bandIndex);
+        triggers.add(PendingTrigger.of(Trigger.SELL, unit.id()));
+        BandMutator.sell(state, log, bandIndex);
+        GoldMutator.gain(state, log, unit.level(), GoldReason.SELL);
+    }
+
+    private void move(RunState state, EventLog log, int from, int to) {
+        requireBandIndex(state, from);
+        requireBandIndex(state, to);
+        require(from != to, Code.INVALID_INDEX, "a hero cannot move onto itself");
+        BandMutator.move(state.band(), log, from, to);
+    }
+
+    /** GDD §4.4: dropping a hero onto its twin on the band merges them for free. */
+    private void merge(RunState state, EventLog log, List<PendingTrigger> triggers, GameRandom dice, int from, int to) {
+        requireBandIndex(state, from);
+        requireBandIndex(state, to);
+        Band band = state.band();
+        Unit copy = band.at(from);
+        Unit survivor = band.at(to);
+        require(copy.heroId().equals(survivor.heroId()), Code.NOT_SAME_HERO, copy.heroId() + " cannot merge with " + survivor.heroId());
+        require(BandMutator.canStack(survivor), Code.MAX_LEVEL, survivor.heroId() + " is already level 3");
+        band.remove(copy);
+        levelUpIf(BandMutator.stack(band, log, survivor, copy, MergeSource.BAND, copy.id()), state, log, triggers, dice, survivor);
+    }
+
+    private void levelUpIf(boolean leveled, RunState state, EventLog log, List<PendingTrigger> triggers, GameRandom dice, Unit unit) {
+        if (leveled) {
+            TavernMutator.openBonusSlot(state, log, content, dice.fork("bonus"));
+            triggers.add(PendingTrigger.of(Trigger.LEVEL_UP, unit.id()));
+        }
+    }
+
     private static TavernSlot requireItem(RunState state, ItemKind kind, int slot) {
         requireTurnStarted(state);
         Tavern tavern = state.tavern();
@@ -107,6 +186,12 @@ public final class TavernResolver {
         return item;
     }
 
+    private static void requireBandIndex(RunState state, int index) {
+        requireTurnStarted(state);
+        require(index < state.band().size(), Code.INVALID_INDEX,
+            "band index " + index + " does not exist (" + state.band().size() + " heroes)");
+    }
+
     private static void requireTurnStarted(RunState state) {
         require(state.turn() >= 1, Code.WRONG_PHASE, "the first turn has not started");
     }
@@ -115,5 +200,11 @@ public final class TavernResolver {
     private static GameRandom rollRandom(RunState state) {
         long turnSeed = SeedDerivation.turnSeed(state.runSeed(), state.turn());
         return new GameRandom(SeedDerivation.rollSeed(turnSeed, state.rollsThisTurn())).fork("tavern");
+    }
+
+    /** The dice for everything else one action may need (bonus slot, abilities, relics), unique per action. */
+    private static GameRandom actionRandom(RunState state) {
+        long turnSeed = SeedDerivation.turnSeed(state.runSeed(), Math.max(1, state.turn()));
+        return new GameRandom(SeedDerivation.actionSeed(turnSeed, state.lastEventSeq()));
     }
 }

@@ -147,3 +147,16 @@ leaves the state equal to a copy taken before it. 36 new tests, 176 in the modul
 `RunStarted → TurnStarted → GoldChanged → TavernRolled`. Lesson: validate everything before mutating anything, and
 derive the dice from the saved state, and "rejected action, state unchanged" and "same seed, same shelves" both
 come for free.
+
+## 2026-10-14 — Step 14, tavern actions II
+
+The whole tavern economy: `Buy` (3 gold; the band index places the hero, the band's size appends, a copy at the
+index merges), `Sell` (gold = level, `SELL` trigger recorded before the unit leaves), `Move` (no gaps, 4 → 0 puts a
+hero in front) and `Merge` (free, band to band). The merge rule is now explicit: keep the higher of each stat, XP =
+survivor + copy + 1, and every XP point is +1/+1 for good, so three copies make level 2, six copies or two level-2s
+make level 3, and a level-3 hero refuses a seventh. A level-up opens the bonus slot with a hero of the next rank,
+announced by a new `BonusSlotOpened` event. New mutators `BandMutator` and `UnitMutator`; the resolver's dice for
+anything but a roll come from `actionSeed(turnSeed, lastEventSeq)`. 14 new tests (incl. a 400-action random loop
+that checks gold and invariants after every accepted or rejected action), 190 in the module; `TavernResolver` at
+100 % lines. Lesson: write the general rule ("every XP point is +1/+1") and let the single-copy case fall out of it,
+instead of coding the example from the plan and discovering two level-2s later.

@@ -32,6 +32,7 @@ import java.util.List;
     @JsonSubTypes.Type(GameEvent.TavernItemUnfrozen.class),
     @JsonSubTypes.Type(GameEvent.TavernBuffed.class),
     @JsonSubTypes.Type(GameEvent.RelicStocked.class),
+    @JsonSubTypes.Type(GameEvent.BonusSlotOpened.class),
     @JsonSubTypes.Type(GameEvent.HeroBought.class),
     @JsonSubTypes.Type(GameEvent.RelicBought.class),
     @JsonSubTypes.Type(GameEvent.HeroSold.class),
@@ -112,6 +113,11 @@ public sealed interface GameEvent {
     /** An ability put a relic on a shelf at a price (Herbalist). */
     record RelicStocked(int seq, String relicId, int slot, int price) implements GameEvent {
         public RelicStocked withSeq(int s) { return new RelicStocked(s, relicId, slot, price); }
+    }
+
+    /** A level-up opened the temporary bonus slot with a hero of the next rank (GDD §4.4). */
+    record BonusSlotOpened(int seq, int slot, TavernSlot item) implements GameEvent {
+        public BonusSlotOpened withSeq(int s) { return new BonusSlotOpened(s, slot, item); }
     }
 
     /** A hero was bought from a shelf and placed on the band. */

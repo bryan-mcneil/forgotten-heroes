@@ -42,7 +42,7 @@ class EventJsonTest {
     void goldenFileReadsBackAsTheSameEvents() throws IOException {
         List<GameEvent> events = EventJson.listFromJson(Files.readString(GOLDEN, StandardCharsets.UTF_8));
         assertThat(events).isEqualTo(SampleEvents.all());
-        assertThat(events).hasSize(36);
+        assertThat(events).hasSize(37);
     }
 
     @Test
@@ -54,7 +54,7 @@ class EventJsonTest {
         Set<Class<?>> sampled = SampleEvents.all().stream().map(GameEvent::getClass).collect(Collectors.toSet());
         assertThat(registered).isEqualTo(permitted);
         assertThat(sampled).isEqualTo(permitted);
-        assertThat(permitted).hasSize(33);
+        assertThat(permitted).hasSize(34);
     }
 
     @Test
