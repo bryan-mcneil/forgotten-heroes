@@ -1,6 +1,5 @@
 package com.forgottenheroes.engine.content;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.forgottenheroes.engine.model.Rank;
 import java.util.List;
 
@@ -25,7 +24,6 @@ public record RelicDefinition(String id, String name, Rank rank, int price, Stri
         effects = List.copyOf(effects);
     }
 
-    @JsonIgnore
     public boolean isPerk() {
         return effects.stream().anyMatch(effect -> effect instanceof EffectDefinition.GivePerk);
     }
