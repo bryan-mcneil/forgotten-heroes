@@ -17,5 +17,16 @@
 
 ## How do I run it
 
-TODO Step 22: `./mvnw -pl sim exec:java -Dexec.args="run --games 1000"` or the shortcut
-`scripts/sim.sh run --games 1000`.
+From the repo root (the script compiles `engine` and `sim` first; the Maven wrapper needs no global Maven):
+
+```bash
+scripts/sim.sh run --games 1000 --bot greedy --seed 1    # report in target/sim/report.json and report.md
+scripts/sim.sh check                                     # compares the report with sim/thresholds.yaml; exit 1 on a miss
+scripts/sim.sh fuzz --actions 200000 --seed 7            # random actions; any exception but a RuleViolation is a bug
+scripts/sim.sh replay --file bug.json                    # {"seed": …, "actions": […]}: the file fuzz prints
+./mvnw -pl sim -am -B -ntp verify                        # the module's own tests (8) and its 70 % coverage gate
+```
+
+`run` fills a ghost pool with random-bot bands, then plays the measured bot against the pool, every finished run
+adding its own bands, so bots fight bands of the same age; with the greedy bot it also plays 200 games against
+random-only ghosts for the GDD §9 "greedy vs random" number. Reports worth keeping are copied to `docs/balance/`.

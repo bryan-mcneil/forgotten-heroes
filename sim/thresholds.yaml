@@ -1,0 +1,27 @@
+# Balance targets from knowledge/game_design_document.md §9, as numbers `sim check` can test.
+# A missing min or max means "no bound on that side". Step 70 tunes the content until `check` passes.
+runLength:
+  min: 8
+  max: 12
+greedyVsRandom:
+  min: 0.75
+  max: 0.90
+heroWinRateOnBand:
+  min: 0.40
+  max: 0.60
+pickRate:
+  min: 0.05
+  max: 0.25
+medianClashes:
+  min: 6
+  max: 14
+p999Clashes:
+  max: 60
+clashCapDraws:
+  max: 0
+# a hero's win rate is only judged once it fought this many battles in the report
+minBattlesForHeroRates: 30
+# economy heroes must pay for themselves over a run (gold earned by their ability, per game they were played)
+minGoldPerGame:
+  merchant: 4
+  treasurer: 6

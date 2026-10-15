@@ -257,7 +257,20 @@ run through `GameSession` exactly as the backend will drive a human, counts refu
 them, and has three safety valves so a run always ends; `RunSummary` records every battle with the band that fought
 it, and `GhostPool` files those bands per turn so later runs fight earlier ones, like production's ghost table.
 Greedy wins about 97 % of its battles against random-bot ghosts and every one of 200 runs; a mirror ghost, as
-expected, mostly draws. 7 new tests, 327 in the module, the whole bot suite in under two seconds. Lesson: "Greedy
+expected, mostly draws. 8 new tests, 328 in the module, the whole bot suite in under two seconds. Lesson: "Greedy
 beats Random" is not about correctness but it is still a test, because it is the cheapest alarm for a rule change
 that quietly makes the game random, and because a bot that keeps proposing illegal moves is pointing at a
 confusing rule.
+
+## 2026-10-14 — Step 22, the balance simulator
+
+A second Maven module, `sim`: a picocli command line with `run` (plays N games against a ghost pool and writes the
+balance report as JSON and Markdown), `check` (compares a report with `sim/thresholds.yaml`, the GDD §9 targets as
+numbers, and exits 1 on a miss), `fuzz` (random legal and illegal actions through `GameSession`; a refusal is fine,
+anything else is a bug printed as a replay file) and `replay` (a seed and an action list, played back line by line).
+`scripts/sim.sh` compiles both modules and runs it; `./mvnw -pl sim -am` builds the engine from source first. The
+first report is committed under `docs/balance/`: 2,000 greedy games: average run length 13.6 turns, greedy beats random-bot ghosts 96 % of the time, median battle 7 clashes, 99.9th percentile 14, 0 clash-cap draws; best hero on the band `druid` (73 %), worst `drill_sergeant` (0 %). It is not balanced, which is the point of Step 70.
+200,000 fuzz actions found no engine exception. 8 tests in the sim module (small runs, determinism, Markdown,
+thresholds, the commands end to end, fuzz, replay), 336 across both modules. Lesson: balance thresholds fail a
+nightly job and not every pull request because they measure the content, not the change; a hero rebalance in one
+PR must not block an unrelated bug fix in another, and a 2,000-game run is seconds, not milliseconds.
