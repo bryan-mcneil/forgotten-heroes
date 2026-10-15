@@ -24,5 +24,14 @@
 
 ## How do I run it
 
-TODO Step 07: `./mvnw -pl engine -B -ntp verify` runs every engine test with the coverage gate;
-`./mvnw -pl engine -Dtest=BandTest test` runs one test class.
+From the repo root (the wrapper downloads Maven 3.9.16 into `~/.m2/wrapper` the first time):
+
+```bash
+./mvnw -pl engine -B -ntp verify             # compile, run every engine test, write the coverage report, apply the gate
+./mvnw -pl engine -Dtest=SmokeTest test      # run one test class
+start engine/target/site/jacoco/index.html   # open the coverage report (Git Bash on Windows)
+```
+
+Read the `Tests run:` line, not only `BUILD SUCCESS`: a test saved outside `src/test/java/...` is silently
+skipped. The coverage gate is 60 % of lines (Step 07) and rises to 90 % in Step 23. CI runs the same
+`./mvnw -B -ntp verify` in the `java` job.

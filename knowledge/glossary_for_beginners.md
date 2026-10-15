@@ -39,10 +39,28 @@
 
 ## Java & build
 * **JDK** — the Java toolkit (compiler + runtime). **LTS** = long-term-support version (21, 25).
-* **Maven** — Java's build tool; `pom.xml` lists modules and dependencies. **Maven Wrapper (`mvnw`)**
-  downloads the right Maven automatically, so nobody installs it.
+* **Maven** — Java's build tool: it downloads the libraries the code needs, compiles, runs the tests and packages the result from one command. It reads its instructions from `pom.xml`.
+* **Maven Wrapper (`mvnw`)** — two committed scripts (`mvnw`, `mvnw.cmd`) that download the exact Maven version named in `.mvn/wrapper/maven-wrapper.properties` into `~/.m2/wrapper` on first use. Nobody installs Maven; every build command is `./mvnw …`. Ours is the *script-only* flavour (no jar in the repo).
+* **`pom.xml` / parent pom** — Maven's description of a project. The root pom is the *parent*: it lists the modules and pins every version once; each module's pom names it in `<parent>` and inherits the rest.
 * **Module** — a sub-project (`engine`, `backend`, `sim`) with its own `pom.xml`.
-* **Dependency** — a library you download by naming it in the pom.
+* **Dependency** — a library you use by naming it in the pom; Maven downloads it into `~/.m2/repository`.
+* **BOM (Bill of Materials)** — a pom that only lists library versions known to work together. We import Spring Boot's (`spring-boot-dependencies`) so JUnit, AssertJ and Jackson get tested versions without typing a number; importing it adds no Spring code.
+* **`dependencyManagement` vs `dependencies`** — the first says "if a module asks for library X, use version Y" and downloads nothing; the second actually adds the library to a module. Same split for plugins: `pluginManagement` pins versions, `plugins` runs them.
+* **Plugin / goal / execution** — a plugin is a piece of Maven that does one job (compiler, surefire, JaCoCo, enforcer); a goal is one task of it (`jacoco:check`); an execution binds a goal to a point in the build.
+* **Phase (build lifecycle)** — Maven runs phases in a fixed order: `validate → compile → test → package → verify`. Asking for `verify` runs everything before it; a failing phase stops the rest, so nothing downstream happens on red.
+* **Reactor** — the list of modules Maven builds in one run, parent first (the "Reactor Summary" at the end). `-pl engine` limits it to one module; `-N` builds only the pom you are in.
+* **Scope `test`** — a dependency used only to compile and run tests; it never ships with the code.
+* **Surefire** — the plugin that runs the JUnit tests and writes `target/surefire-reports/`. Always read the `Tests run:` line: code saved in the wrong folder gives a green build with zero tests.
+* **Enforcer** — the plugin that refuses to build on the wrong Java or Maven version (`[25,26)` = 25 or higher, below 26).
+* **Coverage gate** — JaCoCo's `check` goal: the build fails if too few code lines ran under a test (60 % now, 90 % from Step 23). The HTML report is `engine/target/site/jacoco/index.html`.
+* **Maven flags** — `-B` batch mode (plain output, what CI uses) · `-ntp` no download progress bars · `-pl <module>` only that module · `-N` do not recurse into modules · `-Dtest=BandTest` run one test class · `-v` print the version.
+* **`src/main/java` / `src/test/java`** — Maven's folder convention for real code and test code; no configuration names them. Below each, the folders mirror the package name (`com/forgottenheroes/engine`).
+* **`target/`** — Maven's build output (classes, jar, reports); gitignored and recreated on every build.
+* **Package** — Java's way of grouping classes, like a namespace; the `package` line at the top of a file must match its folder. `package-info.java` is a file that holds only the package's Javadoc.
+* **Javadoc** — the `/** … */` comment style that tools turn into documentation.
+* **Annotation** — a label on code that tools read, written `@Name`. `@Test` tells JUnit "this method is a test".
+* **`import static`** — lets you call a static method by its short name: `assertThat(…)` instead of `Assertions.assertThat(…)`.
+* **Smoke test** — the smallest test that proves the machine turns on; `SmokeTest` checks `1 + 1 == 2`. A failing assertion prints `expected: 3 / but was: 2` and the file and line to open.
 * **Record** — a tiny immutable class for data (`record Stats(int attack, int health)`).
 * **Sealed interface** — an interface with a fixed, listed set of implementations; lets the compiler
   check we handled every `Action`/`GameEvent` type (`switch` exhaustiveness).
@@ -51,8 +69,6 @@
 * **ArchUnit** — tests about code structure ("engine must not import Spring").
 * **JaCoCo** — measures test coverage. **PIT** — mutation testing: changes your code on purpose to see if tests notice.
 * **Jackson** — converts Java objects ⇄ JSON.
-
-* **Script-only wrapper** — the `mvnw` scripts plus `.mvn/wrapper/maven-wrapper.properties`; the properties file names the Maven version to download. No global Maven install needed.
 
 ## Spring Boot
 * **Spring Boot** — the standard Java web framework; auto-configures a web server, JSON, validation.

@@ -1,5 +1,5 @@
 # Runs on every pull request and on every push to main.
-# One job for now ("docs"). Steps 23, 36, 56 and 63 add the real test jobs.
+# Two jobs: "docs" (Markdown lint, Step 05) and "java" (every Maven module, Step 07). Steps 36, 56 and 63 add more.
 name: ci
 
 on:
@@ -23,3 +23,20 @@ jobs:
 
       - name: Check the links in the two entry-point files
         run: npx --yes markdown-link-check --config .markdown-link-check.json README.md PLAN.md
+
+  java:
+    name: java          # branch protection requires a check with exactly this name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Install Java 25 (Corretto) and cache the Maven downloads
+        uses: actions/setup-java@v6
+        with:
+          distribution: corretto
+          java-version: 25
+          cache: maven
+
+      - name: Build and test every Java module
+        run: ./mvnw -B -ntp verify
