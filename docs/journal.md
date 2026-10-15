@@ -79,3 +79,13 @@ in compact constructors. Seven test classes, 41 tests; the GDD's turn and XP tab
 tests. Gotcha: VS Code auto-imported a wrong package because it had not yet seen the poms; delete the import
 and reload the window once. What I learned: how to set up model types with their tests, and about Java types
 like enums and records.
+
+## 2026-10-14 — Step 09, deterministic RNG
+
+Randomness you can replay: package `rng` with `Hash64` (the splitmix64 mixer, proven equal to the JDK's own by a
+known-answer test), `SeedDerivation` (turn, battle and roll seeds all computed from one stored run seed) and
+`GameRandom`, the engine's only dice, whose `fork(label)` comes from the stored seed plus a name so an extra draw
+in the shop never reshuffles the battle. Replayed "seed 42, turn 5" twice in jshell and got the same three numbers;
+broke `fork` on purpose and watched exactly one test fail. Kept the `UnitId` counter after all, because random ids
+can collide and a counter cannot. What I learned: pseudorandom RNG with SplittableRandom, and the interesting idea
+of using pseudorandom numbers to track history and keep the server in sync with the game.

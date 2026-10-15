@@ -59,7 +59,7 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 ## Phase 1 — Game Engine (pure Java)
 - [x] **07** Maven parent + wrapper (script-only zip, no global Maven) + `engine` module; JUnit, AssertJ, JaCoCo gate; first test — est 2h
 - [x] **08** Core value types: `Stats`, `Rank`, `Level/Xp`, `Side`, `Position`, `UnitId`, `Perk` (records, sealed types) — est 2h
-- [~] **09** Deterministic RNG: `GameRandom`, seed derivation per turn/battle, reproducibility tests — est 2h
+- [x] **09** Deterministic RNG: `GameRandom`, seed derivation per turn/battle, reproducibility tests — est 2h
 - [ ] **10** Content model + JSON loader + schema validation; rank I heroes & relics in `heroes.json` — est 3h
 - [ ] **11** Board model: `Unit`, `Band` (5 slots), `Tavern`, `RunState`; invariants — est 3h
 - [ ] **12** Event model: sealed `GameEvent` family, `EventLog`, JSON serialization, golden test — est 2h
