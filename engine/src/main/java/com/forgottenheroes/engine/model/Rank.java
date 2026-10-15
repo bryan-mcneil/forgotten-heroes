@@ -14,6 +14,19 @@ public enum Rank {
         return turnUnlocked;
     }
 
+    /** The rank as a number 1..6, the way the content files write it. */
+    public int number() {
+        return ordinal() + 1;
+    }
+
+    /** The rank for a number 1..6 from a content file. */
+    public static Rank of(int number) {
+        if (number < 1 || number > values().length) {
+            throw new IllegalArgumentException("rank must be 1.." + values().length + ", got " + number);
+        }
+        return values()[number - 1];
+    }
+
     /** The highest rank the tavern offers on this turn. */
     public static Rank availableAt(int turn) {
         if (turn < 1) {

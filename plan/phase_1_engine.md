@@ -173,6 +173,15 @@ an intentionally broken JSON in `src/test/resources` fails validation with a rea
 
 **Verify:** `./mvnw -pl engine -B -ntp verify`; print `ContentIndex.summary()` in a test log (counts per rank).
 
+**As built (2026-10-14):** Jackson 3 (`tools.jackson.databind`, Spring Boot 4's Jackson) and `json-schema-validator` 3.0.8;
+every DSL number that may scale with level (`count`, `limit.perTurn`, `limit.perBattle`, summon `attack`/`health`) is an
+`Amount` object, never a bare integer; two additions to the GDD §7 lists: target `CHOSEN` (the band member the player
+picks when buying a relic) and effect `KILL` (Poison Vial); `EffectDefinition.target()` returns the target or `null` for
+effects without one; ranks are written `1..6` in the files and bridged to `Rank` by a custom (de)serializer inside
+`ContentLoader`; `ContentIndex` is immutable, keeps file order and cross-checks ids, summon tokens and stocked relics;
+one schema validates the three files as a single `{heroes, tokens, relics}` document and reports paths like
+`/heroes/0/ability`. 25 tests (`AmountTest`, `ContentLoaderTest`, `ContentIndexTest`), 84 in the module.
+
 **Commit:** `step-10: content DSL, loader, schema and rank I content`
 
 **Check your understanding:** What does a sealed interface give us when we `switch` over effect types in the interpreter later?

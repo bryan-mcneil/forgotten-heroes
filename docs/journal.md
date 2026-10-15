@@ -89,3 +89,23 @@ in the shop never reshuffles the battle. Replayed "seed 42, turn 5" twice in jsh
 broke `fork` on purpose and watched exactly one test fail. Kept the `UnitId` counter after all, because random ids
 can collide and a counter cannot. What I learned: pseudorandom RNG with SplittableRandom, and the interesting idea
 of using pseudorandom numbers to track history and keep the server in sync with the game.
+
+## 2026-10-14 — Steps 10–24, built by Claude
+
+From this entry to the Phase 1 review, Claude wrote the code and the docs at Bryan's request (logged in the PLAN
+changelog): the engine is the road to the AWS phases, which are the goal, so the "type every file yourself" rule
+from the Phase 0 retro is paused for Steps 10–24. Each step still gets its own branch, pull request, CI run and
+squash commit, and each entry below ends with the one lesson worth keeping from that step, written by Claude for
+Bryan to read rather than by Bryan.
+
+## 2026-10-14 — Step 10, content model, loader and schema
+
+Heroes, tokens and relics became data: package `content` holds the DSL as records (`HeroDefinition`,
+`AbilityDefinition`, a sealed `EffectDefinition` with ten `type`-tagged kinds, `TargetSpec`, `Amount`, `Limit`,
+`Condition`) and `ContentLoader` reads the three JSON files with Jackson 3, checks them against
+`content.schema.json` first, and hands back an immutable `ContentIndex` that also cross-checks ids and references.
+A deliberately broken file under `src/test/resources/content-broken` fails with `/heroes/0/ability: property
+'triger' is not defined`. Rank I is complete (Aoi, Farmhand, Merchant, Bard, Archer, Hotaru), plus Scarecrow and
+Sprite and the five rank I–II relics; 25 new tests, 84 in the module. Lesson: a sealed interface plus an exhaustive
+`switch` turns "did I forget an effect type?" into a compile error, and a JSON Schema turns a typo in data into a
+build error with a path, both long before a rule runs.

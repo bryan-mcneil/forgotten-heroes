@@ -1,0 +1,121 @@
+[
+  {
+    "id": "aoi",
+    "name": "Aoi",
+    "title": "the Novice Scribe",
+    "kanji": "葵",
+    "rank": 1,
+    "attack": 2,
+    "health": 2,
+    "sprite": "sv/set1/1",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → one random ally gains +1/+1 (×level).",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": { "select": "RANDOM_ALLY" },
+          "attack": { "perLevel": 1 },
+          "health": { "perLevel": 1 },
+          "untilEndOfBattle": false
+        }
+      ]
+    }
+  },
+  {
+    "id": "farmhand",
+    "name": "Farmhand",
+    "rank": 1,
+    "attack": 1,
+    "health": 3,
+    "sprite": "sv/set2/1",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → summon a 1/1 Scarecrow (×level) in this slot.",
+      "effects": [
+        {
+          "type": "SUMMON",
+          "tokenId": "scarecrow",
+          "attack": { "perLevel": 1 },
+          "health": { "perLevel": 1 }
+        }
+      ]
+    }
+  },
+  {
+    "id": "merchant",
+    "name": "Merchant",
+    "rank": 1,
+    "attack": 4,
+    "health": 1,
+    "sprite": "sv/set3/1",
+    "ability": {
+      "trigger": "SELL",
+      "text": "Sell → gain +1 gold (×level).",
+      "effects": [
+        { "type": "GAIN_GOLD", "amount": { "perLevel": 1 } }
+      ]
+    }
+  },
+  {
+    "id": "bard",
+    "name": "Bard",
+    "rank": 1,
+    "attack": 2,
+    "health": 1,
+    "sprite": "sv/set2/2",
+    "ability": {
+      "trigger": "ALLY_SUMMONED",
+      "text": "Ally summoned → it gains +1 attack (×level) until the end of battle.",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": { "select": "TRIGGERING_UNIT" },
+          "attack": { "perLevel": 1 },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "archer",
+    "name": "Archer",
+    "rank": 1,
+    "attack": 2,
+    "health": 2,
+    "sprite": "sv/set1/3",
+    "ability": {
+      "trigger": "START_OF_BATTLE",
+      "text": "Start of battle → deal 1 damage (×level) to one random enemy.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": { "select": "RANDOM_ENEMY" },
+          "amount": { "perLevel": 1 }
+        }
+      ]
+    }
+  },
+  {
+    "id": "hotaru",
+    "name": "Hotaru",
+    "title": "the Calligrapher",
+    "kanji": "蛍",
+    "rank": 1,
+    "attack": 1,
+    "health": 3,
+    "sprite": "sv/set3/3",
+    "ability": {
+      "trigger": "BUY",
+      "text": "Buy → one random ally gains +1 health (×level).",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": { "select": "RANDOM_ALLY" },
+          "health": { "perLevel": 1 },
+          "untilEndOfBattle": false
+        }
+      ]
+    }
+  }
+]

@@ -87,7 +87,16 @@
 * **jqwik** — property-based testing: you state a rule ("gold never negative") and it tries thousands of random inputs.
 * **ArchUnit** — tests about code structure ("engine must not import Spring").
 * **JaCoCo** — measures test coverage. **PIT** — mutation testing: changes your code on purpose to see if tests notice.
-* **Jackson** — converts Java objects ⇄ JSON.
+* **Jackson** — converts Java objects ⇄ JSON. We use Jackson 3 (`tools.jackson.databind`), the same one Spring Boot 4 uses: `JsonMapper.builder().build()` makes the mapper once, `readTree` parses text into a tree, `treeToValue(node, HeroDefinition[].class)` fills records (a record's components are the JSON field names, no annotations needed), `writeValueAsString` goes the other way.
+* **Polymorphic JSON (`@JsonTypeInfo` / `@JsonSubTypes`)** — one JSON field (`"type": "SUMMON"`) tells Jackson which record to build. The annotations sit on the sealed interface (`EffectDefinition`) and list every name ⇄ record pair; a name not in the list fails to load.
+* **`@JsonIgnore`** — tells Jackson a method is not a field. Jackson treats `isPerk()` as a property called `perk` unless told otherwise, which would put a field in the JSON that no constructor accepts.
+* **Custom (de)serializer** — a tiny class that tells Jackson how to read or write one type: the files say `"rank": 1`, the records hold `Rank.I`, and `RankFromNumber` / `RankToNumber` (inside `ContentLoader`) bridge the two, so `Rank` itself knows nothing about JSON.
+* **JSON Schema** — a JSON document that describes the shape another JSON document must have (required fields, allowed values, no unknown fields). `content.schema.json` is checked by `json-schema-validator` before Jackson sees the content, and a typo fails with the path to it: `/heroes/0/ability: property 'triger' is not defined`. `$defs` holds named pieces, `$ref` points at them, `oneOf` says "exactly one of these shapes", `const` pins a field to one value.
+* **Classpath resource** — a file packed next to the compiled classes (`src/main/resources/content/heroes.json` lands at `content/heroes.json` in the jar) and read with `getClassLoader().getResourceAsStream(...)`. Test-only files go under `src/test/resources`.
+* **Exhaustive `switch` over a sealed type** — `switch (effect) { case Summon s -> …; case GainGold g -> …; }` with one `case` per permitted record and no `default`; add an eleventh effect and every such switch stops compiling until it handles it. Pattern `case Summon s` also gives you the typed value, no cast.
+* **`Integer` vs `int`** — `int` is a plain number that always has a value; `Integer` is the boxed object version that can be `null`, which is how a record such as `Amount(Integer flat, Integer perLevel, …)` says "this field was not set".
+* **`instanceof` pattern** — `if (effect instanceof Summon summon)` tests the type and, when true, gives you `summon` already cast.
+* **`Function<T, R>` / method reference** — a value that is a one-argument function; `HeroDefinition::id` is the method `id()` handed over as one, used by `ContentIndex` to index any list by its id.
 
 ## Spring Boot
 * **Spring Boot** — the standard Java web framework; auto-configures a web server, JSON, validation.
@@ -175,7 +184,9 @@
   state change. **Event** — a fact about what happened. **Event log** — the ordered list of events;
   the client animates it. **Event sourcing** — storing/transmitting events rather than only final state.
 * **Trigger** — the moment an ability fires (Fall, Hurt…). **Target** — who it affects. **Effect** — what it does.
-* **DSL (Domain-Specific Language)** — our small JSON vocabulary for abilities.
+* **DSL (Domain-Specific Language)** — our small JSON vocabulary for abilities: a **trigger** (when), **effects** (what; each has a `type`), **targets** (who; `select` + `count`), **amounts** (how much; `flat`, `perLevel`, `byLevel`, `percentOfAttack`), an optional **limit** (how often) and **condition** (a multiplier against a rank). Adding a hero is data plus a scenario test; the interpreter (Step 16) never changes.
+* **Content** — the three data files `heroes.json`, `tokens.json`, `relics.json` under `engine/src/main/resources/content/`; `ContentLoader.load()` validates them and returns a `ContentIndex` (`hero(id)`, `heroesOfRankUpTo(rank)`, `summary()`). The full roster lands in Step 19.
+* **Token** — a unit only an ability can create (Scarecrow, Sprite, Wolf…); never for sale.
 * **Ghost** — a saved copy of another player's band used as an opponent. **Matchmaking** — picking it.
 * **Lambdalith** — one Lambda running a whole (small) app.
 * **Simulator / bot** — code that plays the game thousands of times to measure balance.
