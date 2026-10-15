@@ -482,6 +482,14 @@ unkillable test units → DRAW with CLASH_CAP.
 
 **Verify:** tests green; a `BattleResolverTest.printsStory()` test logs a readable event story for one battle.
 
+**As built (2026-10-14):** package `resolver.battle` with `BattleState` (a `Board`: band copies, clash counter, summon ids
+`s1…`), `BattleResult(events, homeOutcome, playerSide, reason, clashes)` + `playerOutcome()`, `Damage` (`attack`, `incoming`,
+`Hit` with the perks it spends; Iron Blade and Chainmail now), `BattleResolver.resolve(home, away, seed[, turn, playerSide])`.
+Loop as GDD §4.5 with the Step 16 dispatcher doing every moment and every fall; `Knockout` only on a damaging hit;
+`AFTER_ATTACK`/`ALLY_AHEAD_ATTACKS` only for surviving attackers; `LineShifted` per changed side after each dispatch.
+The plan's 1v1 numbers were corrected (2/2 vs 1/2 → home survives at 2/1). 13 tests (`BattleResolverTest` 10, `DamageTest` 3),
+233 in the module.
+
 **Commit:** `step-17: battle resolver core loop`
 
 **Check your understanding:** If both fronts have 1 health and 1 attack, why is it a draw and not a win for the home side?
