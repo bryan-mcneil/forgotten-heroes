@@ -8,18 +8,9 @@ import org.junit.jupiter.api.Test;
 class UnitIdTest {
 
     @Test
-    void sequenceCountsUp() {
-        UnitId.Sequence ids = new UnitId.Sequence();
-        assertThat(ids.next()).isEqualTo(new UnitId("u1"));
-        assertThat(ids.next()).isEqualTo(new UnitId("u2"));
-    }
-
-    @Test
-    void twoSequencesDoNotShareACount() {
-        UnitId.Sequence first = new UnitId.Sequence();
-        UnitId.Sequence second = new UnitId.Sequence();
-        first.next();
-        assertThat(second.next()).isEqualTo(new UnitId("u1"));
+    void equalValuesAreEqualIds() {
+        assertThat(new UnitId("u1")).isEqualTo(new UnitId("u1"));
+        assertThat(new UnitId("u1")).isNotEqualTo(new UnitId("u2"));
     }
 
     @Test

@@ -6,6 +6,8 @@ package com.forgottenheroes.engine.model;
  */
 public record Stats(int attack, int health) {
 
+    public static final Stats ZERO = new Stats(0, 0);
+
     /** Compact constructor: runs before the values are stored. */
     public Stats {
         if (attack < 0 || health < 0) {
@@ -23,6 +25,10 @@ public record Stats(int attack, int health) {
 
     public Stats withHealth(int newHealth) {
         return new Stats(attack, newHealth);
+    }
+
+    public boolean isZero() {
+        return attack == 0 && health == 0;
     }
 
     public Stats clamp() {

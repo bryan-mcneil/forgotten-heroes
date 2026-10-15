@@ -109,3 +109,15 @@ A deliberately broken file under `src/test/resources/content-broken` fails with 
 Sprite and the five rank I–II relics; 25 new tests, 84 in the module. Lesson: a sealed interface plus an exhaustive
 `switch` turns "did I forget an effect type?" into a compile error, and a JSON Schema turns a typo in data into a
 build error with a path, both long before a rule runs.
+
+## 2026-10-14 — Step 11, board model
+
+The mutable heart of a run: `Unit` (base + permanent bonus + temporary bonus − damage, all derived on read, capped
+at 50), `Band` (ordered, no gaps, five at most, `move(4, 0)` puts a unit in front), `TavernSlot` and `Tavern` (slot
+counts from the GDD table, the level-up bonus slot after the regular ones, the Royal Decree buff), `RunState` (the
+aggregate root with gold, hearts, crowns, turn, status, version, the event sequence and the unit-id counter) and
+`assertInvariants()`, which throws on a sixth unit, a fallen unit outside a battle, a frozen empty slot or slot
+counts that do not match the turn. Every class has a deep `copy()` and a hand-written `equals`, so a later test can
+prove a rejected action changed nothing. 45 new tests, 129 in the module, plus `TestFixtures` for one-line units
+and bands. Lesson: keep base, permanent and temporary stats apart and derive the number the player sees, because
+"clear the battle buffs" is then one line that cannot accidentally erase a Ration.
