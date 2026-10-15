@@ -16,6 +16,7 @@ import com.forgottenheroes.engine.mutator.BandMutator;
 import com.forgottenheroes.engine.mutator.GoldMutator;
 import com.forgottenheroes.engine.mutator.TavernMutator;
 import com.forgottenheroes.engine.mutator.UnitMutator;
+import com.forgottenheroes.engine.resolver.battle.Damage;
 
 /**
  * Runs one effect of the DSL against the board: resolves the amounts for the level, finds the
@@ -91,11 +92,21 @@ public final class EffectApplier {
             com.forgottenheroes.engine.model.UnitId sourceId = self == null ? null : self.id();
             com.forgottenheroes.engine.model.Position sourcePosition =
                 self == null ? null : UnitMutator.positionOf(context.band(), context.side(), self);
+            Damage.Hit hit = Damage.incoming(target, dealt);
+            Damage.spend(hit, null, context.band(), context.side(), target, targetBand, targetSide, context.log());
             if (context.inTavern()) {
-                UnitMutator.damagePermanently(targetBand, targetSide, target, context.log(), dealt, sourceId, sourcePosition,
+                UnitMutator.damagePermanently(targetBand, targetSide, target, context.log(), hit.amount(), sourceId, sourcePosition,
                     DamageKind.ABILITY);
             } else {
-                UnitMutator.damage(targetBand, targetSide, target, context.log(), dealt, sourceId, sourcePosition, DamageKind.ABILITY);
+                UnitMutator.damage(targetBand, targetSide, target, context.log(), hit.amount(), sourceId, sourcePosition, DamageKind.ABILITY);
+                if (hit.amount() > 0) {
+                    context.triggers().add(PendingTrigger.of(Trigger.HURT, target, targetSide));
+                    if (!target.isAlive() && self != null) {
+                        context.log().append(new com.forgottenheroes.engine.event.GameEvent.Knockout(0, self.id(), self.heroId(),
+                            sourcePosition, target.id()));
+                        context.triggers().add(PendingTrigger.of(Trigger.KNOCKOUT, self, context.side()));
+                    }
+                }
             }
         }
     }

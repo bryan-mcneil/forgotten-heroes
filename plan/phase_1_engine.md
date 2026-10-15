@@ -524,6 +524,14 @@ battle summons too; Druid summons two Wolves — second one fails if only one sl
 
 **Verify:** tests green; coverage of `resolver.battle` ≥ 90 %.
 
+**As built (2026-10-14):** `Damage.attack` (Iron Blade, Enchanted Blade, Venom on the attacker side; Aegis, Ward, Chainmail on
+the defender side), `Damage.incoming` for abilities and splashes, `Damage.spend` (perk consumption before the damage event),
+`Damage.SPLASH = 5`; `BattleResolver.splash` (Flame Oil, `DamageKind.SPLASH`, HURT and KNOCKOUT for the victim); `EffectApplier`
+battle damage through `Damage.incoming` plus `HURT`/`KNOCKOUT` moments; `TriggerDispatcher`: a fallen unit still answers `HURT`.
+Fairy Charm, Phoenix Feather, battle summons, `SetHealthPercent`, `percentOfAttack` and the before/after-attack and ally
+triggers were already in place from Steps 16–17 and are now proven by tests. Content: rank III heroes and the Wolf token.
+16 tests (`BattlePerksTest` 9, `BattleSummonsTest` 7), 249 in the module; `resolver.battle` above 90 % lines.
+
 **Commit:** `step-18: battle summons, perks and remaining triggers`
 
 **Check your understanding:** Why should Flame Oil's splash damage go through the same `Damage` function as a normal hit?

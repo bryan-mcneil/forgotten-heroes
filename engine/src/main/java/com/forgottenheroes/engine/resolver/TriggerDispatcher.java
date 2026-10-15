@@ -162,10 +162,14 @@ public final class TriggerDispatcher {
             }
         }
 
-        /** Earlier abilities in the same batch may have killed or spent this one. */
+        /**
+         * Earlier abilities in the same batch may have killed or spent this one. A fallen unit still
+         * answers its own Fall, Sell and Hurt (a lethal hit is still a hit: Kaede strikes back as she falls).
+         */
         private boolean stillEligible(Candidate candidate, Trigger trigger) {
             Unit unit = candidate.unit();
-            if (trigger != Trigger.FALL && trigger != Trigger.SELL && !unit.isAlive()) {
+            boolean answersWhenFallen = trigger == Trigger.FALL || trigger == Trigger.SELL || trigger == Trigger.HURT;
+            if (!answersWhenFallen && !unit.isAlive()) {
                 return false;
             }
             Limit limit = candidate.ability().limit();

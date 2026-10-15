@@ -292,5 +292,157 @@
         }
       ]
     }
+  },
+  {
+    "id": "berserker",
+    "name": "Berserker",
+    "rank": 3,
+    "attack": 6,
+    "health": 3,
+    "sprite": "mon/orc1",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → deal 50% of this hero's attack (×level) to the units ahead and behind it.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": {
+            "select": "ADJACENT"
+          },
+          "amount": {
+            "percentOfAttack": 50
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "iwao",
+    "name": "Iwao",
+    "title": "the Stone Scribe",
+    "kanji": "岩男",
+    "rank": 3,
+    "attack": 3,
+    "health": 4,
+    "sprite": "sv/set8/3",
+    "ability": {
+      "trigger": "HURT",
+      "text": "Hurt → the nearest ally behind gains +1/+2 (×level).",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "NEAREST_ALLIES_BEHIND"
+          },
+          "attack": {
+            "perLevel": 1
+          },
+          "health": {
+            "perLevel": 2
+          },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "beastmaster",
+    "name": "Beastmaster",
+    "rank": 3,
+    "attack": 3,
+    "health": 2,
+    "sprite": "sv/set6/1",
+    "ability": {
+      "trigger": "ALLY_SUMMONED",
+      "text": "Ally summoned → it gains +2/+1 (×level) until the end of battle.",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "TRIGGERING_UNIT"
+          },
+          "attack": {
+            "perLevel": 2
+          },
+          "health": {
+            "perLevel": 1
+          },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "assassin",
+    "name": "Assassin",
+    "rank": 3,
+    "attack": 4,
+    "health": 3,
+    "sprite": "sv/set4/2",
+    "ability": {
+      "trigger": "START_OF_BATTLE",
+      "text": "Start of battle → deal 4 damage (×level) to the enemy with the lowest health.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": {
+            "select": "LOWEST_HEALTH_ENEMY"
+          },
+          "amount": {
+            "perLevel": 4
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "clay_golem",
+    "name": "Clay Golem",
+    "rank": 3,
+    "attack": 3,
+    "health": 7,
+    "sprite": "mon/golem1",
+    "ability": {
+      "trigger": "AFTER_ATTACK",
+      "text": "After attack → deal 1 damage (×level) to the nearest ally behind.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": {
+            "select": "NEAREST_ALLIES_BEHIND"
+          },
+          "amount": {
+            "perLevel": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "druid",
+    "name": "Druid",
+    "rank": 3,
+    "attack": 2,
+    "health": 2,
+    "sprite": "sv/set5/2",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → summon two 2/2 Wolves (×level) in this slot.",
+      "effects": [
+        {
+          "type": "SUMMON",
+          "tokenId": "wolf",
+          "count": {
+            "flat": 2
+          },
+          "attack": {
+            "perLevel": 2
+          },
+          "health": {
+            "perLevel": 2
+          }
+        }
+      ]
+    }
   }
 ]
