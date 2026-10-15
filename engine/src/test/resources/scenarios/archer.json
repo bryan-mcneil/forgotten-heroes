@@ -1,0 +1,37 @@
+{
+  "name": "Archer's opener kills a 1-health enemy before any clash",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "archer"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 1
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "START_OF_BATTLE"
+    },
+    {
+      "type": "DamageDealt",
+      "target": "away:0",
+      "amount": 1,
+      "kind": "ABILITY"
+    },
+    {
+      "type": "UnitFell",
+      "unit": "away:0"
+    }
+  ],
+  "expectCounts": {
+    "Clash": 0
+  },
+  "expectResult": "WIN"
+}

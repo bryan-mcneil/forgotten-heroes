@@ -1,0 +1,32 @@
+{
+  "name": "Herbalist stocks a Ration priced by level",
+  "seed": 1,
+  "turn": 2,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "herbalist",
+      "level": 2
+    }
+  ],
+  "actions": [
+    {
+      "type": "StartTurn"
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "START_OF_TURN"
+    },
+    {
+      "type": "RelicStocked",
+      "relicId": "ration",
+      "price": 1
+    }
+  ],
+  "expectState": {
+    "relicSlots": 3
+  }
+}

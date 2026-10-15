@@ -1,0 +1,34 @@
+{
+  "name": "Royal Decree buffs the shelves now and later",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [],
+  "tavern": {
+    "relics": [
+      "royal_decree"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0
+    },
+    {
+      "type": "Roll"
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "TavernBuffed",
+      "permanent": true
+    },
+    {
+      "type": "TavernRolled"
+    }
+  ],
+  "expectState": {
+    "gold": 7,
+    "tavernBuff": "1/1"
+  }
+}

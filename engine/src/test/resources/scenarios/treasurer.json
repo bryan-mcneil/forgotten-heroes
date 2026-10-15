@@ -1,0 +1,33 @@
+{
+  "name": "Treasurer adds gold at the start of the turn",
+  "seed": 1,
+  "turn": 2,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "treasurer"
+    }
+  ],
+  "actions": [
+    {
+      "type": "StartTurn"
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "TurnStarted"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "START_OF_TURN"
+    },
+    {
+      "type": "GoldChanged",
+      "gold": "10→11"
+    }
+  ],
+  "expectState": {
+    "gold": 11
+  }
+}

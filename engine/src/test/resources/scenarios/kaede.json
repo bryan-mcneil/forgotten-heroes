@@ -1,0 +1,31 @@
+{
+  "name": "Kaede strikes a random enemy when hurt",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "kaede"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 10
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "HURT"
+    },
+    {
+      "type": "DamageDealt",
+      "source": "home:0",
+      "target": "away:0",
+      "amount": 3,
+      "kind": "ABILITY"
+    }
+  ],
+  "expectResult": "WIN"
+}

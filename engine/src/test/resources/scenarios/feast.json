@@ -1,0 +1,40 @@
+{
+  "name": "Feast feeds two random heroes",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    },
+    {
+      "hero": "bard"
+    },
+    {
+      "hero": "archer"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "feast"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "feast"
+    }
+  ],
+  "expectCounts": {
+    "StatsChanged": 2
+  },
+  "expectState": {
+    "gold": 7
+  }
+}

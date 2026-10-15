@@ -1,0 +1,39 @@
+{
+  "name": "Plague Rat's fall gives the enemy a Dirty Rat up front",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "plague_rat"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 6,
+      "health": 10
+    },
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 1
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "FALL"
+    },
+    {
+      "type": "UnitSummoned",
+      "unit": "away:0",
+      "token": "dirty_rat",
+      "stats": "1/1"
+    }
+  ],
+  "expectResult": "LOSS"
+}

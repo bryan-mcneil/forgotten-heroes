@@ -1,0 +1,34 @@
+{
+  "name": "Farmhand leaves a Scarecrow in its slot",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "farmhand"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 3,
+      "health": 10
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "FALL"
+    },
+    {
+      "type": "UnitSummoned",
+      "unit": "home:0",
+      "token": "scarecrow",
+      "stats": "1/1"
+    }
+  ],
+  "expectResult": "LOSS"
+}

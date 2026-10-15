@@ -220,3 +220,16 @@ Beastmaster, Druid). One rule changed: a fallen unit still answers its own Hurt,
 hit. Three of my hand-written expectations were wrong on the first run and the engine was right, which is the
 other thing a hand-calculated test is for. 16 new tests, 249 in the module. Lesson: route every kind of damage
 through one function, then nine perks are nine lines instead of nine special cases in three places.
+
+## 2026-10-14 — Step 19, full MVP content and scenario tests
+
+All 36 heroes, 7 tokens and 16 relics are data now (`ContentIndex.summary()` reads `heroes 36 (I=6 II=6 III=6 IV=6
+V=6 VI=6), tokens 7, relics 16`), and not one needed a new word in the DSL. The proof is table-driven: `ScenarioTest`
+turns every file under `src/test/resources/scenarios` into a named test through `ScenarioRunner`, which builds the
+board from the file, runs the battle or the tavern actions, and matches the expected events as an ordered subsequence
+by position, id and `before→after` strings; a meta-test insists every content id owns a file. 59 scenarios: 36 heroes,
+16 relics, 7 tokens. They caught one engine bug (Stone Golem's buff on an enemy reported no position, because the
+applier used the caster's band for the target) and two slips in my own arithmetic. 60 new tests, 309 in the module.
+Lesson: which hero needed a DSL feature I had not planned? None, because the DSL was written from the whole roster
+first; the surprises came from the engine's edges (which side is a target on?), which is exactly where a scenario
+per hero earns its keep.

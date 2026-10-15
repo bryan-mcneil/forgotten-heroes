@@ -1,0 +1,61 @@
+{
+  "name": "Drill Sergeant trains two level-2 allies at the end of the turn",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "drill_sergeant"
+    },
+    {
+      "hero": "aoi",
+      "level": 2
+    },
+    {
+      "hero": "bard",
+      "level": 2
+    },
+    {
+      "hero": "archer"
+    }
+  ],
+  "actions": [
+    {
+      "type": "EndOfTurn"
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "END_OF_TURN"
+    }
+  ],
+  "expectCounts": {
+    "StatsChanged": 2
+  },
+  "expectState": {
+    "band": [
+      {
+        "hero": "drill_sergeant",
+        "attack": 1,
+        "health": 3
+      },
+      {
+        "hero": "aoi",
+        "attack": 3,
+        "health": 3
+      },
+      {
+        "hero": "bard",
+        "attack": 3,
+        "health": 2
+      },
+      {
+        "hero": "archer",
+        "attack": 2,
+        "health": 2
+      }
+    ]
+  }
+}

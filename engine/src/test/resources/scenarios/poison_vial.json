@@ -1,0 +1,54 @@
+{
+  "name": "Poison Vial makes a hero fall in the tavern for 1 gold",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    },
+    {
+      "hero": "farmhand"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "poison_vial"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 1
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "poison_vial"
+    },
+    {
+      "type": "UnitFell",
+      "unit": "home:1"
+    },
+    {
+      "type": "UnitSummoned",
+      "unit": "home:1",
+      "token": "scarecrow"
+    }
+  ],
+  "expectState": {
+    "gold": 9,
+    "band": [
+      {
+        "hero": "aoi"
+      },
+      {
+        "hero": "scarecrow",
+        "attack": 1,
+        "health": 1
+      }
+    ]
+  }
+}

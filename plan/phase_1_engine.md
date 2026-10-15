@@ -560,6 +560,15 @@ are shown to players later — write them well); write scenarios; fix the DSL wh
 
 **Verify:** `./mvnw -pl engine -B -ntp verify` → 36 + 16 + token scenarios green; `ContentIndex.summary()` prints 6 heroes per rank.
 
+**As built (2026-10-14):** `heroes.json` (36), `tokens.json` (7), `relics.json` (16) complete; no DSL change was needed.
+`engine/src/test/java/.../scenario/ScenarioRunner` + `ScenarioTest` (`@TestFactory` over the folder, meta-test on file names:
+`<id>.json` or `<id>-<anything>.json` for every hero, relic and token). Scenario format: battle (`home`, `away`, `seed`,
+`expectEvents`, `expectCounts`, `expectResult`) or tavern (`turn`, `gold`, `band`, `tavern.heroes`/`relics`, `actions` incl.
+`EndOfTurn`, `expectState`); unit specs `hero`/`attack`/`health`/`level`/`xp`/`perk`; expected-event keys `unit`, `target`,
+`source` (positions), `hero`/`token`, `stats`, `attack`/`health`/`gold`/`xp` as `before→after`, anything else by value.
+59 scenario files; one engine fix (`EffectApplier.sideOf`: a target's position is reported on its own band). 60 tests
+added, 309 in the module.
+
 **Commit:** `step-19: full MVP content with scenario tests`
 
 **Check your understanding:** Which hero needed a DSL feature you had not planned? What does that tell you about building the DSL before the content?

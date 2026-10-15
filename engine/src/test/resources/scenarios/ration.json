@@ -1,0 +1,46 @@
+{
+  "name": "Ration gives +1/+1 for good",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "ration"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "ration"
+    },
+    {
+      "type": "StatsChanged",
+      "unit": "home:0",
+      "attack": "2→3",
+      "health": "2→3",
+      "temporary": false
+    }
+  ],
+  "expectState": {
+    "gold": 7,
+    "band": [
+      {
+        "hero": "aoi",
+        "attack": 3,
+        "health": 3
+      }
+    ]
+  }
+}

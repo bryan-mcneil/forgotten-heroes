@@ -1,0 +1,34 @@
+{
+  "name": "Druid's fall summons two Wolves",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "druid"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 3,
+      "health": 20
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "UnitSummoned",
+      "unit": "home:0",
+      "token": "wolf",
+      "stats": "2/2"
+    },
+    {
+      "type": "UnitSummoned",
+      "unit": "home:1",
+      "token": "wolf",
+      "stats": "2/2"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "A Dirty Rat is a plain 1/1",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "dirty_rat"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow"
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "Clash"
+    }
+  ],
+  "expectCounts": {
+    "AbilityTriggered": 0
+  },
+  "expectResult": "DRAW"
+}

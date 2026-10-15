@@ -1,0 +1,43 @@
+{
+  "name": "flame_oil gives the perk",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "flame_oil"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "flame_oil"
+    },
+    {
+      "type": "PerkGained",
+      "unit": "home:0",
+      "perk": "FLAME_OIL"
+    }
+  ],
+  "expectState": {
+    "gold": 7,
+    "band": [
+      {
+        "hero": "aoi",
+        "perk": "FLAME_OIL"
+      }
+    ]
+  }
+}

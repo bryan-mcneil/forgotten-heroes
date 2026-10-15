@@ -1,0 +1,40 @@
+{
+  "name": "Banquet feeds three random heroes",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    },
+    {
+      "hero": "bard"
+    },
+    {
+      "hero": "archer"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "banquet"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "banquet"
+    }
+  ],
+  "expectCounts": {
+    "StatsChanged": 3
+  },
+  "expectState": {
+    "gold": 7
+  }
+}

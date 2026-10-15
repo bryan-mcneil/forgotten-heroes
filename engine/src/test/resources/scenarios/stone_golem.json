@@ -1,0 +1,33 @@
+{
+  "name": "Stone Golem gives every unit +8 health",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "stone_golem"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 1
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "START_OF_BATTLE"
+    },
+    {
+      "type": "StatsChanged",
+      "unit": "home:0",
+      "health": "6→14"
+    },
+    {
+      "type": "StatsChanged",
+      "unit": "away:0",
+      "health": "1→9"
+    }
+  ]
+}

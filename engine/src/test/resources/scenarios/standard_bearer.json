@@ -1,0 +1,79 @@
+{
+  "name": "Standard Bearer poisoned in the tavern buffs the two allies behind",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    },
+    {
+      "hero": "standard_bearer"
+    },
+    {
+      "hero": "archer"
+    },
+    {
+      "hero": "bard"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "poison_vial"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 1
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "poison_vial"
+    },
+    {
+      "type": "UnitFell",
+      "unit": "home:1"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:1",
+      "trigger": "FALL"
+    },
+    {
+      "type": "StatsChanged",
+      "unit": "home:2",
+      "attack": "2→3",
+      "health": "2→3"
+    },
+    {
+      "type": "StatsChanged",
+      "unit": "home:3",
+      "attack": "2→3",
+      "health": "1→2"
+    }
+  ],
+  "expectState": {
+    "gold": 9,
+    "band": [
+      {
+        "hero": "aoi",
+        "attack": 2,
+        "health": 2
+      },
+      {
+        "hero": "archer",
+        "attack": 3,
+        "health": 3
+      },
+      {
+        "hero": "bard",
+        "attack": 3,
+        "health": 2
+      }
+    ]
+  }
+}

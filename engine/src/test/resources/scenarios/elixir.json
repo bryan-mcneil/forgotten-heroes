@@ -1,0 +1,41 @@
+{
+  "name": "Elixir gives +2/+2",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "elixir"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "StatsChanged",
+      "unit": "home:0",
+      "attack": "2→4",
+      "health": "2→4",
+      "temporary": false
+    }
+  ],
+  "expectState": {
+    "band": [
+      {
+        "hero": "aoi",
+        "attack": 4,
+        "health": 4
+      }
+    ]
+  }
+}

@@ -15,7 +15,7 @@ class ContentLoaderTest {
     @Test
     void theRealContentLoadsAndPrintsItsSummary() {
         System.out.println("content: " + CONTENT.summary());
-        assertThat(CONTENT.summary()).startsWith("heroes 18 (I=6 II=6 III=6").endsWith("relics 16 (I=2 II=3 III=2 IV=2 V=3 VI=4)");
+        assertThat(CONTENT.summary()).isEqualTo("heroes 36 (I=6 II=6 III=6 IV=6 V=6 VI=6), tokens 7, relics 16 (I=2 II=3 III=2 IV=2 V=3 VI=4)");
     }
 
     @Test

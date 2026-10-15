@@ -1,0 +1,28 @@
+{
+  "name": "Phoenix leaves a Hatchling with half its attack",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "phoenix"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 4,
+      "health": 20
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "UnitSummoned",
+      "unit": "home:0",
+      "token": "hatchling",
+      "stats": "3/1"
+    }
+  ]
+}

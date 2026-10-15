@@ -1,0 +1,42 @@
+{
+  "name": "Battle Brew gives +3/+3 until the end of battle",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "battle_brew"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "StatsChanged",
+      "unit": "home:0",
+      "attack": "2→5",
+      "health": "2→5",
+      "temporary": true
+    }
+  ],
+  "expectState": {
+    "gold": 7,
+    "band": [
+      {
+        "hero": "aoi",
+        "attack": 5,
+        "health": 5
+      }
+    ]
+  }
+}

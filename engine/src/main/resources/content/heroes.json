@@ -444,5 +444,470 @@
         }
       ]
     }
+  },
+  {
+    "id": "kaede",
+    "name": "Kaede",
+    "title": "the Ink Warden",
+    "kanji": "楓",
+    "rank": 4,
+    "attack": 3,
+    "health": 6,
+    "sprite": "sv/set7/5",
+    "ability": {
+      "trigger": "HURT",
+      "text": "Hurt → deal 3 damage (×level) to one random enemy.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": {
+            "select": "RANDOM_ENEMY"
+          },
+          "amount": {
+            "perLevel": 3
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "stable_master",
+    "name": "Stable Master",
+    "rank": 4,
+    "attack": 2,
+    "health": 2,
+    "sprite": "sv/set7/1",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → summon a 5/3 War Horse (×level) with Flame Oil in this slot.",
+      "effects": [
+        {
+          "type": "SUMMON",
+          "tokenId": "war_horse",
+          "attack": {
+            "perLevel": 5
+          },
+          "health": {
+            "perLevel": 3
+          },
+          "perk": "FLAME_OIL"
+        }
+      ]
+    }
+  },
+  {
+    "id": "ogre",
+    "name": "Ogre",
+    "rank": 4,
+    "attack": 4,
+    "health": 5,
+    "sprite": "mon/orc8",
+    "ability": {
+      "trigger": "KNOCKOUT",
+      "text": "Knockout → gain +3/+3 (×level) until the end of battle.",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "SELF"
+          },
+          "attack": {
+            "perLevel": 3
+          },
+          "health": {
+            "perLevel": 3
+          },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "witch",
+    "name": "Witch",
+    "rank": 4,
+    "attack": 3,
+    "health": 5,
+    "sprite": "sv/set6/2",
+    "ability": {
+      "trigger": "START_OF_BATTLE",
+      "text": "Start of battle → the enemy with the most health loses 33% (×level) of it.",
+      "effects": [
+        {
+          "type": "SET_HEALTH_PERCENT",
+          "target": {
+            "select": "HIGHEST_HEALTH_ENEMY"
+          },
+          "percent": {
+            "perLevel": 33
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "kashi",
+    "name": "Kashi",
+    "title": "the Warden Scribe",
+    "kanji": "樫",
+    "rank": 4,
+    "attack": 2,
+    "health": 5,
+    "sprite": "sv/set2/4",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → the nearest ally behind gains Ward (level 2: two allies, level 3: three).",
+      "effects": [
+        {
+          "type": "GIVE_PERK",
+          "target": {
+            "select": "NEAREST_ALLIES_BEHIND",
+            "count": {
+              "perLevel": 1
+            }
+          },
+          "perk": "WARD"
+        }
+      ]
+    }
+  },
+  {
+    "id": "drill_sergeant",
+    "name": "Drill Sergeant",
+    "rank": 4,
+    "attack": 1,
+    "health": 3,
+    "sprite": "sv/military2/2",
+    "ability": {
+      "trigger": "END_OF_TURN",
+      "text": "End of turn → two allies of level 2 or more gain +1/+1 (×level).",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "LEVEL_2_PLUS_ALLIES",
+            "count": {
+              "flat": 2
+            }
+          },
+          "attack": {
+            "perLevel": 1
+          },
+          "health": {
+            "perLevel": 1
+          },
+          "untilEndOfBattle": false
+        }
+      ]
+    }
+  },
+  {
+    "id": "stone_golem",
+    "name": "Stone Golem",
+    "rank": 5,
+    "attack": 2,
+    "health": 6,
+    "sprite": "mon/golem2",
+    "ability": {
+      "trigger": "START_OF_BATTLE",
+      "text": "Start of battle → every unit on both sides gains +8 health (×level).",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "ALL_UNITS"
+          },
+          "health": {
+            "perLevel": 8
+          },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "dragon_knight",
+    "name": "Dragon Knight",
+    "rank": 5,
+    "attack": 8,
+    "health": 4,
+    "sprite": "mon/dknight1",
+    "ability": {
+      "trigger": "START_OF_BATTLE",
+      "text": "Start of battle → deal 8 damage (×level) to the last enemy.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": {
+            "select": "LAST_ENEMY"
+          },
+          "amount": {
+            "perLevel": 8
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "minotaur",
+    "name": "Minotaur",
+    "rank": 5,
+    "attack": 6,
+    "health": 9,
+    "sprite": "mon/minotaur",
+    "ability": {
+      "trigger": "KNOCKOUT",
+      "text": "Knockout → deal 4 damage (×level) to the first enemy, doubled against rank I.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": {
+            "select": "FIRST_ENEMY"
+          },
+          "amount": {
+            "perLevel": 4
+          },
+          "condition": {
+            "ifTargetRank": 1,
+            "multiplier": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "phoenix",
+    "name": "Phoenix",
+    "rank": 5,
+    "attack": 6,
+    "health": 4,
+    "sprite": "mon/phoenix",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → summon a Hatchling with 1 health and 50% (×level) of this attack.",
+      "effects": [
+        {
+          "type": "SUMMON",
+          "tokenId": "hatchling",
+          "attack": {
+            "percentOfAttack": 50
+          },
+          "health": {
+            "flat": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "lich",
+    "name": "Lich",
+    "rank": 5,
+    "attack": 2,
+    "health": 2,
+    "sprite": "mon/lich",
+    "ability": {
+      "trigger": "ALLY_FALL",
+      "text": "Ally falls → gain +2/+2 (×level) until the end of battle.",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "SELF"
+          },
+          "attack": {
+            "perLevel": 2
+          },
+          "health": {
+            "perLevel": 2
+          },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "warlord",
+    "name": "Warlord",
+    "rank": 5,
+    "attack": 3,
+    "health": 4,
+    "sprite": "mon/orc3",
+    "ability": {
+      "trigger": "ALLY_SUMMONED",
+      "text": "Ally summoned → it gains +3/+1 (×level) until the end of battle.",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "TRIGGERING_UNIT"
+          },
+          "attack": {
+            "perLevel": 3
+          },
+          "health": {
+            "perLevel": 1
+          },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "juggernaut",
+    "name": "Juggernaut",
+    "rank": 6,
+    "attack": 10,
+    "health": 6,
+    "sprite": "mon/dknight2",
+    "ability": {
+      "trigger": "BEFORE_ATTACK",
+      "text": "Before attack → gain +4/+2 (×level) until the end of battle.",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "SELF"
+          },
+          "attack": {
+            "perLevel": 4
+          },
+          "health": {
+            "perLevel": 2
+          },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "elder_treant",
+    "name": "Elder Treant",
+    "rank": 6,
+    "attack": 4,
+    "health": 12,
+    "sprite": "mon/treant",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → every ally gains +2/+2 (×level) until the end of battle.",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "ALL_ALLIES"
+          },
+          "attack": {
+            "perLevel": 2
+          },
+          "health": {
+            "perLevel": 2
+          },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "nagi",
+    "name": "Nagi",
+    "title": "the Blade Scribe",
+    "kanji": "凪",
+    "rank": 6,
+    "attack": 10,
+    "health": 4,
+    "sprite": "sv/set2/8",
+    "ability": {
+      "trigger": "START_OF_BATTLE",
+      "text": "Start of battle → deal 50% (×level) of this attack to one random enemy.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": {
+            "select": "RANDOM_ENEMY"
+          },
+          "amount": {
+            "percentOfAttack": 50
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "hydra",
+    "name": "Hydra",
+    "rank": 6,
+    "attack": 6,
+    "health": 6,
+    "sprite": "enemies/hydra_5_1",
+    "ability": {
+      "trigger": "ALLY_AHEAD_ATTACKS",
+      "text": "Ally ahead attacks → deal 5 damage (×level) to one random enemy.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": {
+            "select": "RANDOM_ENEMY"
+          },
+          "amount": {
+            "perLevel": 5
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "demon",
+    "name": "Demon",
+    "rank": 6,
+    "attack": 7,
+    "health": 10,
+    "sprite": "mon/demon",
+    "ability": {
+      "trigger": "HURT",
+      "text": "Hurt → gain Aegis (once per battle; level 2: twice, level 3: three times).",
+      "effects": [
+        {
+          "type": "GIVE_PERK",
+          "target": {
+            "select": "SELF"
+          },
+          "perk": "AEGIS"
+        }
+      ],
+      "limit": {
+        "perBattle": {
+          "perLevel": 1
+        }
+      }
+    }
+  },
+  {
+    "id": "necromancer",
+    "name": "Necromancer",
+    "rank": 6,
+    "attack": 5,
+    "health": 5,
+    "sprite": "mon/wizard4",
+    "ability": {
+      "trigger": "ALLY_FALL",
+      "text": "Ally falls → summon a 4/4 Skeleton (×level) in its slot, up to three times per battle.",
+      "effects": [
+        {
+          "type": "SUMMON",
+          "tokenId": "skeleton",
+          "attack": {
+            "perLevel": 4
+          },
+          "health": {
+            "perLevel": 4
+          }
+        }
+      ],
+      "limit": {
+        "perBattle": {
+          "flat": 3
+        }
+      }
+    }
   }
 ]

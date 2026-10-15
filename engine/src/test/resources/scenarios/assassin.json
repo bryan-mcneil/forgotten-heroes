@@ -1,0 +1,38 @@
+{
+  "name": "Assassin opens on the lowest-health enemy",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "assassin"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 8
+    },
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 4
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "START_OF_BATTLE"
+    },
+    {
+      "type": "DamageDealt",
+      "target": "away:1",
+      "amount": 4
+    },
+    {
+      "type": "UnitFell",
+      "unit": "away:1"
+    }
+  ],
+  "expectResult": "WIN"
+}

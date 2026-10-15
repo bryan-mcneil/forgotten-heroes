@@ -133,6 +133,9 @@
 * **Clash cap** — `Rules.CLASH_CAP = 300`: the loop condition `while (bothAlive && clashes < CLASH_CAP)` is the server's promise never to hang on a content combo that cannot kill anything; the result is a draw with reason `CLASH_CAP`.
 * **One code path for every hit** — attacks, splashes and ability damage all go through `Damage.incoming`/`attack` and `Damage.spend`, so a defender's Chainmail, Ward or Aegis works the same whichever way the damage arrives (Flame Oil's splash on a Chainmail unit is 3, not 5). Two code paths would drift apart the first time one of them changed.
 * **Spend before the damage lands** — a hit is computed (`Hit`), its once-only perks are reported (`PerkConsumed`), then the damage is applied; the log reads "the ward shatters, 5 damage" instead of the other way round, and the frontend can animate it in that order.
+* **Table-driven test / `@TestFactory`** — the test is data: `ScenarioTest` lists every file under `src/test/resources/scenarios` and returns one `DynamicTest` per file, so 59 scenarios are 59 named tests from one runner, and a new hero is a new JSON file, never a new Java method.
+* **Subsequence matching** — the scenario's `expectEvents` must appear in order among the actual events, but other events may sit in between; the runner walks a cursor forward and fails with the whole story printed, numbered, so the fix is one look away.
+* **Meta-test** — a test about the tests: `everyContentIdHasAScenario` fails the build when a hero, relic or token has no `<id>.json` scenario, which is how "every hero has a scenario" stays true without anyone remembering.
 * **`Function<T, R>` / method reference** — a value that is a one-argument function; `HeroDefinition::id` is the method `id()` handed over as one, used by `ContentIndex` to index any list by its id.
 
 ## Spring Boot
@@ -242,7 +245,7 @@
 * **Ghost** — a saved copy of another player's band used as an opponent. **Matchmaking** — picking it.
 * **Lambdalith** — one Lambda running a whole (small) app.
 * **Simulator / bot** — code that plays the game thousands of times to measure balance.
-* **Scenario test** — a test written as data: starting board, what happens, expected events.
+* **Scenario test** — a test written as data: starting board, what happens, expected events. Ours: a battle file has `home`/`away` unit lists (`hero`, optional `attack`/`health`/`level`/`xp`/`perk`), `expectEvents`, `expectCounts` and `expectResult`; a tavern file has `turn`, `gold`, `band`, `tavern.heroes`/`relics`, `actions` (any `Action` as JSON, plus `EndOfTurn`) and `expectState` (gold, hearts, bonus slot, tavern buff, relic slots, the band's heroes/stats/levels/perks). Expected events name units by position (`"unit": "home:1"`, `"target": "away:0"`), stat changes as `"attack": "1→2"`, summons by `token` and `stats`.
 
 * **Elements palette** — FinalBossBlues' newer, deeper colour set; all our art is converted into it so sprites match.
 * **Cameo** — a hero named after a character from *The Forgotten Kanji* (Aoi, Hotaru, Iwao, Kashi, Kaede, Nagi).

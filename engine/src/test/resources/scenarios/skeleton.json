@@ -1,0 +1,25 @@
+{
+  "name": "A Skeleton is a plain 4/4",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "skeleton"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 4,
+      "health": 4
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "Clash"
+    }
+  ],
+  "expectCounts": {
+    "AbilityTriggered": 0
+  },
+  "expectResult": "DRAW"
+}

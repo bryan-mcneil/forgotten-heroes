@@ -36,7 +36,8 @@ public final class EffectApplier {
             case EffectDefinition.ModifyStats e -> modifyStats(e, context);
             case EffectDefinition.GivePerk e -> {
                 for (Unit target : Targeting.select(e.target(), context)) {
-                    UnitMutator.givePerk(context.band(), context.side(), target, context.log(), e.perk());
+                    Side side = sideOf(target, context);
+                    UnitMutator.givePerk(context.board().band(side), side, target, context.log(), e.perk());
                 }
             }
             case EffectDefinition.GiveXp e -> giveXp(e, context);
@@ -63,8 +64,14 @@ public final class EffectApplier {
         Stats delta = new Stats(resolve(e.attack(), context), resolve(e.health(), context));
         boolean temporary = context.inTavern() ? e.untilEndOfBattle() : true;
         for (Unit target : Targeting.select(e.target(), context)) {
-            UnitMutator.modifyStats(context.band(), context.side(), target, context.log(), delta, temporary, context.source());
+            Side side = sideOf(target, context);
+            UnitMutator.modifyStats(context.board().band(side), side, target, context.log(), delta, temporary, context.source());
         }
+    }
+
+    /** The side a target stands on: its own band may be the enemy's (Stone Golem buffs everybody). */
+    private static Side sideOf(Unit target, EffectContext context) {
+        return context.band().contains(target.id()) ? context.side() : context.side().opposite();
     }
 
     private void giveXp(EffectDefinition.GiveXp e, EffectContext context) {
@@ -86,7 +93,7 @@ public final class EffectApplier {
                     && content.hero(target.heroId()).rank().number() == e.condition().ifTargetRank()) {
                 dealt *= e.condition().multiplier();
             }
-            Side targetSide = context.band().contains(target.id()) ? context.side() : context.side().opposite();
+            Side targetSide = sideOf(target, context);
             Unit self = context.self();
             Band targetBand = context.board().band(targetSide);
             com.forgottenheroes.engine.model.UnitId sourceId = self == null ? null : self.id();
@@ -115,7 +122,7 @@ public final class EffectApplier {
     private static void setHealthPercent(EffectDefinition.SetHealthPercent e, EffectContext context) {
         int percent = resolve(e.percent(), context);
         for (Unit target : Targeting.select(e.target(), context)) {
-            Side targetSide = context.band().contains(target.id()) ? context.side() : context.side().opposite();
+            Side targetSide = sideOf(target, context);
             int loss = target.health() * percent / 100;
             UnitMutator.loseHealth(context.board().band(targetSide), targetSide, target, context.log(), loss, context.source());
         }

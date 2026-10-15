@@ -1,0 +1,39 @@
+{
+  "name": "Necromancer raises a Skeleton where an ally fell",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 1
+    },
+    {
+      "hero": "necromancer"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 30
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:1",
+      "trigger": "ALLY_FALL"
+    },
+    {
+      "type": "UnitSummoned",
+      "unit": "home:0",
+      "token": "skeleton",
+      "stats": "4/4"
+    }
+  ],
+  "expectResult": "WIN"
+}

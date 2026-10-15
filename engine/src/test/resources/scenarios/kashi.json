@@ -1,0 +1,37 @@
+{
+  "name": "Kashi's fall gives the ally behind a Ward",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "kashi"
+    },
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 1
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 6,
+      "health": 20
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "FALL"
+    },
+    {
+      "type": "PerkGained",
+      "unit": "home:1",
+      "perk": "WARD"
+    }
+  ]
+}

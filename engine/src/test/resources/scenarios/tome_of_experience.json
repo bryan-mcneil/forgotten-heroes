@@ -1,0 +1,55 @@
+{
+  "name": "Tome of Experience levels a hero at the threshold",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi",
+      "xp": 1
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "tome_of_experience"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "StatsChanged",
+      "unit": "home:0",
+      "attack": "2→3",
+      "health": "2→3"
+    },
+    {
+      "type": "XpGained",
+      "xp": "1→2"
+    },
+    {
+      "type": "LevelUp",
+      "level": 2
+    },
+    {
+      "type": "BonusSlotOpened"
+    }
+  ],
+  "expectState": {
+    "gold": 7,
+    "bonusSlot": true,
+    "band": [
+      {
+        "hero": "aoi",
+        "attack": 3,
+        "health": 3,
+        "level": 2
+      }
+    ]
+  }
+}
