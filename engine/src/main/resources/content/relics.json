@@ -1,0 +1,69 @@
+[
+  {
+    "id": "ration",
+    "name": "Ration",
+    "rank": 1,
+    "price": 3,
+    "text": "Give one hero +1/+1.",
+    "sprite": "icons/food/bread",
+    "effects": [
+      {
+        "type": "MODIFY_STATS",
+        "target": { "select": "CHOSEN" },
+        "attack": { "flat": 1 },
+        "health": { "flat": 1 },
+        "untilEndOfBattle": false
+      }
+    ]
+  },
+  {
+    "id": "fairy_charm",
+    "name": "Fairy Charm",
+    "rank": 1,
+    "price": 3,
+    "text": "Perk: when this hero falls, summon a 1/1 Sprite in its slot.",
+    "sprite": "icons/misc/charm",
+    "effects": [
+      { "type": "GIVE_PERK", "target": { "select": "CHOSEN" }, "perk": "FAIRY_CHARM" }
+    ]
+  },
+  {
+    "id": "battle_brew",
+    "name": "Battle Brew",
+    "rank": 2,
+    "price": 3,
+    "text": "Give one hero +3/+3 until the end of the next battle.",
+    "sprite": "icons/potions/red",
+    "effects": [
+      {
+        "type": "MODIFY_STATS",
+        "target": { "select": "CHOSEN" },
+        "attack": { "flat": 3 },
+        "health": { "flat": 3 },
+        "untilEndOfBattle": true
+      }
+    ]
+  },
+  {
+    "id": "iron_blade",
+    "name": "Iron Blade",
+    "rank": 2,
+    "price": 3,
+    "text": "Perk: this hero's attacks deal +3 damage.",
+    "sprite": "icons/weapons/sword",
+    "effects": [
+      { "type": "GIVE_PERK", "target": { "select": "CHOSEN" }, "perk": "IRON_BLADE" }
+    ]
+  },
+  {
+    "id": "poison_vial",
+    "name": "Poison Vial",
+    "rank": 2,
+    "price": 1,
+    "text": "One hero falls; its Fall ability triggers here in the tavern.",
+    "sprite": "icons/potions/green",
+    "effects": [
+      { "type": "KILL", "target": { "select": "CHOSEN" } }
+    ]
+  }
+]

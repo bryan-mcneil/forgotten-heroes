@@ -15,6 +15,15 @@
 
   <dependencies>
     <dependency>
+      <!-- Jackson 3: JSON <-> records for content (Step 10) and events (Step 12); same Jackson the backend uses -->
+      <groupId>tools.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>

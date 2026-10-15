@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forgottenheroes.dev/content.schema.json",
+  "title": "Forgotten Heroes content",
+  "description": "The shape of heroes.json, tokens.json and relics.json, validated together as one document at load time (GDD §7).",
+  "type": "object",
+  "required": ["heroes", "tokens", "relics"],
+  "additionalProperties": false,
+  "properties": {
+    "heroes": { "type": "array", "items": { "$ref": "#/$defs/hero" } },
+    "tokens": { "type": "array", "items": { "$ref": "#/$defs/token" } },
+    "relics": { "type": "array", "items": { "$ref": "#/$defs/relic" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "nonNegativeInt": { "type": "integer", "minimum": 0 },
+    "rank": { "type": "integer", "minimum": 1, "maximum": 6 },
+    "text": { "type": "string", "minLength": 1 },
+
+    "hero": {
+      "type": "object",
+      "required": ["id", "name", "rank", "attack", "health", "sprite", "ability"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "$ref": "#/$defs/text" },
+        "title": { "$ref": "#/$defs/text" },
+        "kanji": { "$ref": "#/$defs/text" },
+        "rank": { "$ref": "#/$defs/rank" },
+        "attack": { "$ref": "#/$defs/nonNegativeInt" },
+        "health": { "$ref": "#/$defs/nonNegativeInt" },
+        "sprite": { "$ref": "#/$defs/text" },
+        "ability": { "$ref": "#/$defs/ability" }
+      }
+    },
+
+    "token": {
+      "type": "object",
+      "required": ["id", "name", "attack", "health", "sprite"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "$ref": "#/$defs/text" },
+        "attack": { "$ref": "#/$defs/nonNegativeInt" },
+        "health": { "$ref": "#/$defs/nonNegativeInt" },
+        "sprite": { "$ref": "#/$defs/text" }
+      }
+    },
+
+    "relic": {
+      "type": "object",
+      "required": ["id", "name", "rank", "price", "text", "sprite", "effects"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "$ref": "#/$defs/text" },
+        "rank": { "$ref": "#/$defs/rank" },
+        "price": { "$ref": "#/$defs/nonNegativeInt" },
+        "text": { "$ref": "#/$defs/text" },
+        "sprite": { "$ref": "#/$defs/text" },
+        "effects": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/effect" } }
+      }
+    },
+
+    "ability": {
+      "type": "object",
+      "required": ["trigger", "text", "effects"],
+      "additionalProperties": false,
+      "properties": {
+        "trigger": {
+          "enum": [
+            "START_OF_TURN", "END_OF_TURN", "BUY", "SELL", "LEVEL_UP", "ALLY_SUMMONED", "EAT_RELIC",
+            "START_OF_BATTLE", "BEFORE_ATTACK", "AFTER_ATTACK", "HURT", "FALL", "ALLY_FALL",
+            "ALLY_AHEAD_FALLS", "ALLY_AHEAD_ATTACKS", "KNOCKOUT", "SUMMONED"
+          ]
+        },
+        "text": { "$ref": "#/$defs/text" },
+        "effects": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/effect" } },
+        "limit": { "$ref": "#/$defs/limit" }
+      }
+    },
+
+    "amount": {
+      "type": "object",
+      "oneOf": [
+        { "required": ["flat"], "additionalProperties": false,
+          "properties": { "flat": { "$ref": "#/$defs/nonNegativeInt" } } },
+        { "required": ["perLevel"], "additionalProperties": false,
+          "properties": { "perLevel": { "$ref": "#/$defs/nonNegativeInt" } } },
+        { "required": ["byLevel"], "additionalProperties": false,
+          "properties": { "byLevel": { "type": "array", "minItems": 3, "maxItems": 3,
+                                       "items": { "$ref": "#/$defs/nonNegativeInt" } } } },
+        { "required": ["percentOfAttack"], "additionalProperties": false,
+          "properties": { "percentOfAttack": { "$ref": "#/$defs/nonNegativeInt" } } }
+      ]
+    },
+
+    "target": {
+      "type": "object",
+      "required": ["select"],
+      "additionalProperties": false,
+      "properties": {
+        "select": {
+          "enum": [
+            "SELF", "CHOSEN", "RANDOM_ALLY", "RANDOM_ENEMY", "ALL_ALLIES", "ALL_ENEMIES", "ALL_UNITS",
+            "ADJACENT", "NEAREST_ALLIES_BEHIND", "NEAREST_ALLIES_AHEAD", "FIRST_ENEMY", "LAST_ENEMY",
+            "LOWEST_HEALTH_ENEMY", "HIGHEST_HEALTH_ENEMY", "TRIGGERING_UNIT", "FRONT_ALLY",
+            "LEVEL_2_PLUS_ALLIES", "TAVERN_HEROES"
+          ]
+        },
+        "count": { "$ref": "#/$defs/amount" }
+      }
+    },
+
+    "limit": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "perTurn": { "$ref": "#/$defs/amount" },
+        "perBattle": { "$ref": "#/$defs/amount" }
+      }
+    },
+
+    "condition": {
+      "type": "object",
+      "required": ["ifTargetRank", "multiplier"],
+      "additionalProperties": false,
+      "properties": {
+        "ifTargetRank": { "$ref": "#/$defs/rank" },
+        "multiplier": { "type": "integer", "minimum": 1 }
+      }
+    },
+
+    "perk": {
+      "enum": ["FAIRY_CHARM", "IRON_BLADE", "CHAINMAIL", "FLAME_OIL", "WARD", "PHOENIX_FEATHER",
+               "ENCHANTED_BLADE", "AEGIS", "VENOM"]
+    },
+
+    "effect": {
+      "type": "object",
+      "required": ["type"],
+      "oneOf": [
+        { "$ref": "#/$defs/modifyStats" },
+        { "$ref": "#/$defs/dealDamage" },
+        { "$ref": "#/$defs/setHealthPercent" },
+        { "$ref": "#/$defs/summon" },
+        { "$ref": "#/$defs/gainGold" },
+        { "$ref": "#/$defs/givePerk" },
+        { "$ref": "#/$defs/stockRelic" },
+        { "$ref": "#/$defs/giveXp" },
+        { "$ref": "#/$defs/buffTavern" },
+        { "$ref": "#/$defs/kill" }
+      ]
+    },
+
+    "modifyStats": {
+      "type": "object",
+      "required": ["type", "target"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "MODIFY_STATS" },
+        "target": { "$ref": "#/$defs/target" },
+        "attack": { "$ref": "#/$defs/amount" },
+        "health": { "$ref": "#/$defs/amount" },
+        "untilEndOfBattle": { "type": "boolean" }
+      }
+    },
+    "dealDamage": {
+      "type": "object",
+      "required": ["type", "target", "amount"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "DEAL_DAMAGE" },
+        "target": { "$ref": "#/$defs/target" },
+        "amount": { "$ref": "#/$defs/amount" },
+        "condition": { "$ref": "#/$defs/condition" }
+      }
+    },
+    "setHealthPercent": {
+      "type": "object",
+      "required": ["type", "target", "percent"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "SET_HEALTH_PERCENT" },
+        "target": { "$ref": "#/$defs/target" },
+        "percent": { "$ref": "#/$defs/amount" }
+      }
+    },
+    "summon": {
+      "type": "object",
+      "required": ["type", "tokenId"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "SUMMON" },
+        "tokenId": { "$ref": "#/$defs/id" },
+        "count": { "$ref": "#/$defs/amount" },
+        "attack": { "$ref": "#/$defs/amount" },
+        "health": { "$ref": "#/$defs/amount" },
+        "perk": { "$ref": "#/$defs/perk" },
+        "side": { "enum": ["ALLY", "ENEMY"] },
+        "position": { "enum": ["HERE", "FRONT"] }
+      }
+    },
+    "gainGold": {
+      "type": "object",
+      "required": ["type", "amount"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "GAIN_GOLD" },
+        "amount": { "$ref": "#/$defs/amount" }
+      }
+    },
+    "givePerk": {
+      "type": "object",
+      "required": ["type", "target", "perk"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "GIVE_PERK" },
+        "target": { "$ref": "#/$defs/target" },
+        "perk": { "$ref": "#/$defs/perk" }
+      }
+    },
+    "stockRelic": {
+      "type": "object",
+      "required": ["type", "relicId", "price"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "STOCK_RELIC" },
+        "relicId": { "$ref": "#/$defs/id" },
+        "price": { "$ref": "#/$defs/amount" }
+      }
+    },
+    "giveXp": {
+      "type": "object",
+      "required": ["type", "target", "amount"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "GIVE_XP" },
+        "target": { "$ref": "#/$defs/target" },
+        "amount": { "$ref": "#/$defs/amount" }
+      }
+    },
+    "buffTavern": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "BUFF_TAVERN" },
+        "attack": { "$ref": "#/$defs/amount" },
+        "health": { "$ref": "#/$defs/amount" },
+        "permanent": { "type": "boolean" }
+      }
+    },
+    "kill": {
+      "type": "object",
+      "required": ["type", "target"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "KILL" },
+        "target": { "$ref": "#/$defs/target" }
+      }
+    }
+  }
+}

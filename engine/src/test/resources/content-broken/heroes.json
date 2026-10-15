@@ -1,0 +1,21 @@
+[
+  {
+    "id": "aoi",
+    "name": "Aoi",
+    "rank": 1,
+    "attack": -2,
+    "health": 2,
+    "sprite": "sv/set1/1",
+    "ability": {
+      "triger": "FALL",
+      "text": "Fall → one random ally gains +1/+1 (×level).",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": { "select": "RANDOM_ALLY" },
+          "attack": { "perLevel": 1 }
+        }
+      ]
+    }
+  }
+]
