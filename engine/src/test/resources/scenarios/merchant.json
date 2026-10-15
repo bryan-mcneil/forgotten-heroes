@@ -1,0 +1,41 @@
+{
+  "name": "Merchant pays gold per level when sold",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "merchant",
+      "level": 2
+    }
+  ],
+  "actions": [
+    {
+      "type": "Sell",
+      "bandIndex": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "HeroSold",
+      "hero": "merchant"
+    },
+    {
+      "type": "GoldChanged",
+      "gold": "10→12"
+    },
+    {
+      "type": "AbilityTriggered",
+      "hero": "merchant",
+      "trigger": "SELL"
+    },
+    {
+      "type": "GoldChanged",
+      "gold": "12→14"
+    }
+  ],
+  "expectState": {
+    "gold": 14,
+    "band": []
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "chainmail gives the perk",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "chainmail"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "chainmail"
+    },
+    {
+      "type": "PerkGained",
+      "unit": "home:0",
+      "perk": "CHAINMAIL"
+    }
+  ],
+  "expectState": {
+    "gold": 7,
+    "band": [
+      {
+        "hero": "aoi",
+        "perk": "CHAINMAIL"
+      }
+    ]
+  }
+}

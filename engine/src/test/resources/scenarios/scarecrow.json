@@ -1,0 +1,29 @@
+{
+  "name": "A Scarecrow is a plain 1/1",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "scarecrow"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow"
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "Clash"
+    },
+    {
+      "type": "UnitFell"
+    },
+    {
+      "type": "UnitFell"
+    }
+  ],
+  "expectCounts": {
+    "AbilityTriggered": 0
+  },
+  "expectResult": "DRAW"
+}

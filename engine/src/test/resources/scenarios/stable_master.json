@@ -1,0 +1,29 @@
+{
+  "name": "Stable Master's fall summons a War Horse with Flame Oil",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "stable_master"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 3,
+      "health": 20
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "UnitSummoned",
+      "unit": "home:0",
+      "token": "war_horse",
+      "stats": "5/3",
+      "perk": "FLAME_OIL"
+    }
+  ]
+}

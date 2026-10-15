@@ -1,0 +1,43 @@
+{
+  "name": "phoenix_feather gives the perk",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "phoenix_feather"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "phoenix_feather"
+    },
+    {
+      "type": "PerkGained",
+      "unit": "home:0",
+      "perk": "PHOENIX_FEATHER"
+    }
+  ],
+  "expectState": {
+    "gold": 7,
+    "band": [
+      {
+        "hero": "aoi",
+        "perk": "PHOENIX_FEATHER"
+      }
+    ]
+  }
+}

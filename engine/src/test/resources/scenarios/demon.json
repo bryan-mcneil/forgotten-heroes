@@ -1,0 +1,42 @@
+{
+  "name": "Demon gains Aegis once per battle when hurt",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "demon"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 30
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "HURT"
+    },
+    {
+      "type": "PerkGained",
+      "unit": "home:0",
+      "perk": "AEGIS"
+    },
+    {
+      "type": "PerkConsumed",
+      "unit": "home:0",
+      "perk": "AEGIS"
+    },
+    {
+      "type": "DamageDealt",
+      "target": "home:0",
+      "amount": 0
+    }
+  ],
+  "expectCounts": {
+    "PerkGained": 1
+  },
+  "expectResult": "WIN"
+}

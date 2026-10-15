@@ -1,0 +1,33 @@
+{
+  "name": "Dragon Knight opens on the last enemy",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "dragon_knight"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 10
+    },
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 8
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "DamageDealt",
+      "target": "away:1",
+      "amount": 8
+    },
+    {
+      "type": "UnitFell",
+      "unit": "away:1"
+    }
+  ],
+  "expectResult": "WIN"
+}

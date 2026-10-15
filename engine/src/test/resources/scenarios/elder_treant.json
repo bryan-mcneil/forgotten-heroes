@@ -1,0 +1,49 @@
+{
+  "name": "Elder Treant's fall buffs every ally",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "elder_treant"
+    },
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 1
+    },
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 1
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 12,
+      "health": 30
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "FALL"
+    },
+    {
+      "type": "StatsChanged",
+      "unit": "home:1",
+      "attack": "1→3",
+      "health": "1→3"
+    },
+    {
+      "type": "StatsChanged",
+      "unit": "home:2",
+      "attack": "1→3",
+      "health": "1→3"
+    }
+  ]
+}

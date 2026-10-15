@@ -1,0 +1,25 @@
+{
+  "name": "A Wolf is a plain 2/2",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "wolf"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 2,
+      "health": 2
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "Clash"
+    }
+  ],
+  "expectCounts": {
+    "AbilityTriggered": 0
+  },
+  "expectResult": "DRAW"
+}

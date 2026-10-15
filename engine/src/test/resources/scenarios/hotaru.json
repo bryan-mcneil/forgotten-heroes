@@ -1,0 +1,52 @@
+{
+  "name": "Hotaru gives a random ally +1 health when bought",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    }
+  ],
+  "tavern": {
+    "heroes": [
+      "hotaru",
+      "aoi",
+      "bard"
+    ]
+  },
+  "actions": [
+    {
+      "type": "Buy",
+      "slot": 0,
+      "bandIndex": 1
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:1",
+      "trigger": "BUY"
+    },
+    {
+      "type": "StatsChanged",
+      "unit": "home:0",
+      "health": "2→3",
+      "temporary": false
+    }
+  ],
+  "expectState": {
+    "band": [
+      {
+        "hero": "aoi",
+        "attack": 2,
+        "health": 3
+      },
+      {
+        "hero": "hotaru",
+        "attack": 1,
+        "health": 3
+      }
+    ]
+  }
+}

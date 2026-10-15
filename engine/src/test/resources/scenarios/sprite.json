@@ -1,0 +1,29 @@
+{
+  "name": "Fairy Charm leaves a Sprite in the slot",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "aoi",
+      "perk": "FAIRY_CHARM"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 3,
+      "health": 20
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "UnitSummoned",
+      "unit": "home:0",
+      "token": "sprite",
+      "stats": "1/1"
+    }
+  ]
+}

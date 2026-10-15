@@ -1,0 +1,41 @@
+{
+  "name": "A War Horse splashes the unit behind its target",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "war_horse",
+      "perk": "FLAME_OIL"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 10
+    },
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 4
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "DamageDealt",
+      "target": "away:0",
+      "amount": 5,
+      "kind": "ATTACK"
+    },
+    {
+      "type": "DamageDealt",
+      "target": "away:1",
+      "amount": 5,
+      "kind": "SPLASH"
+    },
+    {
+      "type": "UnitFell",
+      "unit": "away:1"
+    }
+  ],
+  "expectResult": "WIN"
+}

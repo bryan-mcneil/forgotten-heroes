@@ -1,0 +1,49 @@
+{
+  "name": "Grand Feast gives two heroes +2/+2",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    },
+    {
+      "hero": "bard"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "grand_feast"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "grand_feast"
+    }
+  ],
+  "expectCounts": {
+    "StatsChanged": 2
+  },
+  "expectState": {
+    "gold": 7,
+    "band": [
+      {
+        "hero": "aoi",
+        "attack": 4,
+        "health": 4
+      },
+      {
+        "hero": "bard",
+        "attack": 4,
+        "health": 3
+      }
+    ]
+  }
+}

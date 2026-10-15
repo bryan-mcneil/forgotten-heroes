@@ -1,0 +1,35 @@
+{
+  "name": "Clay Golem hurts the ally behind after attacking",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "clay_golem"
+    },
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 5
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 3
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "AFTER_ATTACK"
+    },
+    {
+      "type": "DamageDealt",
+      "source": "home:0",
+      "target": "home:1",
+      "amount": 1
+    }
+  ],
+  "expectResult": "WIN"
+}

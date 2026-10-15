@@ -1,0 +1,48 @@
+{
+  "name": "Alchemist's fall damages every unit (the line has already closed when the ally falls)",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "alchemist"
+    },
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 1
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 5,
+      "health": 1
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "UnitFell",
+      "unit": "away:0"
+    },
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "FALL"
+    },
+    {
+      "type": "DamageDealt",
+      "source": "home:0",
+      "target": "home:1",
+      "amount": 2,
+      "kind": "ABILITY"
+    },
+    {
+      "type": "UnitFell",
+      "unit": "home:0"
+    }
+  ],
+  "expectResult": "DRAW"
+}

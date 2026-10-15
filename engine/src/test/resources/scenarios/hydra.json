@@ -1,0 +1,38 @@
+{
+  "name": "Hydra strikes when the ally ahead attacks",
+  "seed": 1,
+  "home": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 10
+    },
+    {
+      "hero": "hydra"
+    }
+  ],
+  "away": [
+    {
+      "hero": "scarecrow",
+      "attack": 1,
+      "health": 30
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "Clash"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:1",
+      "trigger": "ALLY_AHEAD_ATTACKS"
+    },
+    {
+      "type": "DamageDealt",
+      "source": "home:1",
+      "target": "away:0",
+      "amount": 5
+    }
+  ],
+  "expectResult": "WIN"
+}

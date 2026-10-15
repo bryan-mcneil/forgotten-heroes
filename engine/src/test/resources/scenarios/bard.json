@@ -1,0 +1,57 @@
+{
+  "name": "Bard gives a bought ally +1 attack until the end of battle",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "bard"
+    }
+  ],
+  "tavern": {
+    "heroes": [
+      "archer",
+      "aoi",
+      "hotaru"
+    ]
+  },
+  "actions": [
+    {
+      "type": "Buy",
+      "slot": 0,
+      "bandIndex": 1
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "HeroBought",
+      "hero": "archer"
+    },
+    {
+      "type": "AbilityTriggered",
+      "unit": "home:0",
+      "trigger": "ALLY_SUMMONED"
+    },
+    {
+      "type": "StatsChanged",
+      "unit": "home:1",
+      "attack": "2→3",
+      "temporary": true
+    }
+  ],
+  "expectState": {
+    "gold": 7,
+    "band": [
+      {
+        "hero": "bard",
+        "attack": 2,
+        "health": 1
+      },
+      {
+        "hero": "archer",
+        "attack": 3,
+        "health": 2
+      }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "enchanted_blade gives the perk",
+  "seed": 1,
+  "turn": 3,
+  "gold": 10,
+  "band": [
+    {
+      "hero": "aoi"
+    }
+  ],
+  "tavern": {
+    "relics": [
+      "enchanted_blade"
+    ]
+  },
+  "actions": [
+    {
+      "type": "BuyRelic",
+      "slot": 0,
+      "bandIndex": 0
+    }
+  ],
+  "expectEvents": [
+    {
+      "type": "RelicBought",
+      "relicId": "enchanted_blade"
+    },
+    {
+      "type": "PerkGained",
+      "unit": "home:0",
+      "perk": "ENCHANTED_BLADE"
+    }
+  ],
+  "expectState": {
+    "gold": 7,
+    "band": [
+      {
+        "hero": "aoi",
+        "perk": "ENCHANTED_BLADE"
+      }
+    ]
+  }
+}
