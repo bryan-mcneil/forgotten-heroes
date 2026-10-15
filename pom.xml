@@ -11,6 +11,7 @@
 
   <modules>
     <module>engine</module>
+    <module>sim</module>
   </modules>
 
   <properties>
@@ -18,6 +19,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring-boot.version>4.1.1</spring-boot.version>
     <json-schema-validator.version>3.0.8</json-schema-validator.version>
+    <picocli.version>4.7.7</picocli.version>
   </properties>
 
   <dependencyManagement>
@@ -34,6 +36,12 @@
         <groupId>com.networknt</groupId>
         <artifactId>json-schema-validator</artifactId>
         <version>${json-schema-validator.version}</version>
+      </dependency>
+      <dependency>
+        <!-- command-line parsing for the simulator (Step 22) -->
+        <groupId>info.picocli</groupId>
+        <artifactId>picocli</artifactId>
+        <version>${picocli.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -60,6 +68,16 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
           <version>3.6.3</version>
+        </plugin>
+        <plugin>
+          <!-- runs a main class from the build: only the sim module switches skip off (Step 22) -->
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.6.4</version>
+          <configuration>
+            <skip>true</skip>
+            <mainClass>com.forgottenheroes.sim.SimMain</mainClass>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>

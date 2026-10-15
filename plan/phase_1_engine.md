@@ -636,9 +636,9 @@ unit to front; roll if nothing good; end turn), `BotRunner.playRun(bot, seed, gh
 `RandomBot`, `GreedyBot` (merge → buy best → sell weakest for a clearly better hero → relic on the strongest, never Poison
 Vial → toughest in front → roll while a hero stays affordable → end), `GhostProvider` (`mirror()`, `nobody()`), `GhostPool`
 (per-turn bands, nearest earlier turn, mirror fallback), `BotRunner.playRun(bot, seed, ghosts)` with the three valves,
-`RunSummary` + `TurnRecord`. 7 tests in `BotTest` (50 runs each bot against a growing pool, greedy ≥ 70 % battle wins vs
+`RunSummary` + `TurnRecord`. 8 tests in `BotTest` (50 runs each bot against a growing pool, greedy ≥ 70 % battle wins vs
 random ghosts (≈ 97 %), determinism, the stubborn bot is cut off, economy heroes credited, pool fallbacks, mirror draws),
-327 in the module, ≈ 1.5 s.
+328 in the module, ≈ 1.5 s.
 
 **Commit:** `step-21: random and greedy bots`
 
@@ -676,6 +676,13 @@ first report at `docs/balance/2026-10-report.md` (it will look unbalanced — th
 ./scripts/sim.sh run --games 2000 --bot greedy --seed 1        # < 60 s
 ./scripts/sim.sh fuzz --actions 200000 --seed 7                 # 0 engine exceptions
 ```
+
+**As built (2026-10-14):** `sim/pom.xml` (engine, picocli, Jackson 3 JSON + YAML, exec plugin, JaCoCo 70 %); package
+`com.forgottenheroes.sim`: `SimMain` (sub-commands), `Simulation` (pool protocol + greedy-vs-random tournament), `Report`
+(+ `HeroStats`, `TurnStats`), `ReportMarkdown`, `Thresholds` (+ `Range`, `Finding`, `check`), `Json`, `RunCommand`,
+`CheckCommand`, `FuzzCommand` (+ `Outcome`, `Replay`), `ReplayCommand`, `ActionGenerator`; `sim/thresholds.yaml`;
+`scripts/sim.sh`; `docs/balance/2026-10-report.md`. 8 tests in `SimulationTest`, 336 across both modules.
+Verify as run: 2,000 greedy games in a few seconds, 200,000 fuzz actions with 0 engine exceptions.
 
 **Commit:** `step-22: balance simulator and fuzzer`
 
