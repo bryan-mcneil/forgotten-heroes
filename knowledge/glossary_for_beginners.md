@@ -61,7 +61,17 @@
 * **Annotation** — a label on code that tools read, written `@Name`. `@Test` tells JUnit "this method is a test".
 * **`import static`** — lets you call a static method by its short name: `assertThat(…)` instead of `Assertions.assertThat(…)`.
 * **Smoke test** — the smallest test that proves the machine turns on; `SmokeTest` checks `1 + 1 == 2`. A failing assertion prints `expected: 3 / but was: 2` and the file and line to open.
-* **Record** — a tiny immutable class for data (`record Stats(int attack, int health)`).
+* **Record** — a class that only carries data: you name the fields once and Java writes the constructor, the getters, `equals`, `hashCode` and `toString` (`record Stats(int attack, int health)`). Two records with the same values are equal.
+* **Immutable** — a value that never changes after it is made. To "change" a record you make a new one (`stats.withAttack(5)` returns a new `Stats`; the original is untouched). Safe to share, easy to test, no hidden state.
+* **Compact constructor** — the short block inside a record, written `public Stats { … }` with no parameter list, that checks the incoming values before Java stores them (`if (attack < 0) throw new IllegalArgumentException(…)`). It refuses bad values; it never fixes them.
+* **`IllegalArgumentException`** — the standard exception for "you called me with a value that makes no sense". Our value types throw it; tests catch it with `assertThatThrownBy(() -> …)`.
+* **Enum** — a type with a fixed list of named values and nothing else (`enum Rank { I, II, III, IV, V, VI }`), so `rank = 7` cannot compile. Values can carry data and methods (`Rank.VI.turnUnlocked()`); `values()` is the list in order and `ordinal()` a value's position in it, from 0.
+* **Constant (`static final`)** — one shared value that never changes (`Rules.BAND_SIZE = 5`). Every rulebook number lives in `Rules`; nothing else may hard-code them. A constants holder has a private constructor so nobody writes `new Rules()`.
+* **Derived value** — something computed from stored data instead of stored beside it: a hero's level is `Xp.level()`, never a second field that could disagree.
+* **Nested class** — a class written inside another (`UnitId.Sequence`), used when a helper only makes sense next to its owner.
+* **Lambda** — a small piece of code handed over to run later, written `() -> new Stats(-1, 3)`; AssertJ runs it and catches the exception.
+* **Ternary `a ? b : c`** — reads "if a then b, else c" in one expression (`this == VI ? VI : values()[ordinal() + 1]`).
+* **Parameterized test** — one test method run once per row of a table: `@ParameterizedTest` + `@CsvSource({"3, II", …})`; JUnit converts `"3"` to an `int` and `"II"` to `Rank.II`. The GDD's turn and XP tables are tests this way.
 * **Sealed interface** — an interface with a fixed, listed set of implementations; lets the compiler
   check we handled every `Action`/`GameEvent` type (`switch` exhaustiveness).
 * **JUnit 5 / AssertJ** — test framework / readable assertions (`assertThat(gold).isEqualTo(7)`).
