@@ -219,11 +219,11 @@ class TavernResolverTest {
     @Test
     void laterActionsAreNotThereYet() {
         RunState state = runAtTurn(1, 1);
-        assertThatThrownBy(() -> resolver().apply(state, new Action.Buy(0, 0))).isInstanceOf(UnsupportedOperationException.class);
+        
         assertThatThrownBy(() -> resolver().apply(state, new Action.BuyRelic(0, 0))).isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> resolver().apply(state, new Action.Sell(0))).isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> resolver().apply(state, new Action.Move(0, 1))).isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> resolver().apply(state, new Action.Merge(0, 1))).isInstanceOf(UnsupportedOperationException.class);
+        
+        
+        
         assertThatThrownBy(() -> resolver().apply(state, new Action.EndTurn())).isInstanceOf(IllegalArgumentException.class);
     }
 

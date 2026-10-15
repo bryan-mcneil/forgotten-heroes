@@ -4,6 +4,7 @@ import com.forgottenheroes.engine.content.ContentIndex;
 import com.forgottenheroes.engine.content.HeroDefinition;
 import com.forgottenheroes.engine.content.RelicDefinition;
 import com.forgottenheroes.engine.event.EventLog;
+import com.forgottenheroes.engine.event.GameEvent.BonusSlotOpened;
 import com.forgottenheroes.engine.event.GameEvent.TavernItemFrozen;
 import com.forgottenheroes.engine.event.GameEvent.TavernItemUnfrozen;
 import com.forgottenheroes.engine.event.GameEvent.TavernRolled;
@@ -54,6 +55,32 @@ public final class TavernMutator {
             tavern.closeBonusSlot();
         }
         log.append(new TavernRolled(0, free, tavern.allHeroSlots(), tavern.relicSlots()));
+    }
+
+    /** Empty a hero shelf after a purchase; the bonus slot simply closes. */
+    public static void takeHero(RunState state, int slot) {
+        state.tavern().setHeroSlot(slot, TavernSlot.EMPTY);
+    }
+
+    /** Empty a relic shelf after a purchase. */
+    public static void takeRelic(RunState state, int slot) {
+        state.tavern().setRelicSlot(slot, TavernSlot.EMPTY);
+    }
+
+    /**
+     * GDD §4.4: a level-up puts one hero of the next rank (capped at VI) in a temporary extra slot. While the
+     * roster is incomplete the pool falls back to every hero up to that rank.
+     */
+    public static void openBonusSlot(RunState state, EventLog log, ContentIndex content, GameRandom rng) {
+        Tavern tavern = state.tavern();
+        Rank next = Rank.availableAt(state.turn()).next();
+        List<HeroDefinition> pool = content.heroesOfRank(next);
+        if (pool.isEmpty()) {
+            pool = content.heroesOfRankUpTo(next);
+        }
+        TavernSlot item = TavernSlot.hero(rng.pick(pool).id(), tavern.permanentBuff());
+        tavern.openBonusSlot(item);
+        log.append(new BonusSlotOpened(0, tavern.heroSlots().size(), item));
     }
 
     public static void freeze(RunState state, EventLog log, ItemKind kind, int slot) {

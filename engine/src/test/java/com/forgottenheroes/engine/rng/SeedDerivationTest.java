@@ -34,6 +34,14 @@ class SeedDerivationTest {
     }
 
     @Test
+    void everyActionOfATurnHasItsOwnSeed() {
+        long turn = SeedDerivation.turnSeed(RUN, 3);
+        assertThat(SeedDerivation.actionSeed(turn, 4)).isNotEqualTo(SeedDerivation.actionSeed(turn, 5));
+        assertThat(SeedDerivation.actionSeed(turn, 4)).isNotEqualTo(SeedDerivation.rollSeed(turn, 4));
+        assertThatThrownBy(() -> SeedDerivation.actionSeed(turn, -1)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void badTurnsAndRollsAreRejected() {
         assertThatThrownBy(() -> SeedDerivation.turnSeed(RUN, 0)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> SeedDerivation.battleSeed(RUN, 0)).isInstanceOf(IllegalArgumentException.class);

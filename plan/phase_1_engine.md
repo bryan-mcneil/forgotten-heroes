@@ -349,6 +349,16 @@ below 0 (property-style loop over random legal actions).
 
 **Verify:** tests green; coverage of `TavernResolver` ≥ 90 % in the JaCoCo report.
 
+**As built (2026-10-14):** `Buy(slot, bandIndex)`: price from the shelf, `bandIndex ≤ band.size()`, a copy at the index
+merges (`MAX_LEVEL` guard) else `BAND_FULL` guard; events `GoldChanged → HeroBought (→ HeroesMerged, XpGained, LevelUp,
+BonusSlotOpened)`; triggers `BUY` (+ `ALLY_SUMMONED` for a new unit only). `Sell(bandIndex)`: `SELL` recorded, then
+`HeroSold → GoldChanged`. `Move(from, to)`: `HeroesReordered` with the new order; same index is `INVALID_INDEX`. `Merge(from,
+to)`: `NOT_SAME_HERO` / `MAX_LEVEL` guards, the unit at `from` is removed, `HeroesMerged(removedUnitId)`. Merge math: higher of
+each stat, XP = survivor + copy + 1 (capped at 5), +1/+1 per XP point (`UnitMutator.gainXp`), perk kept or inherited,
+higher temporary bonus kept. Bonus slot: `TavernMutator.openBonusSlot` with `actionRandom(state).fork("bonus")` and a
+new `BonusSlotOpened` event. `SeedDerivation.actionSeed`. 14 tests in `TavernEconomyTest` (190 in the module);
+`TavernResolver` and `BandMutator` 100 % lines, `UnitMutator` 50 % (its `modifyStats` path is exercised by relics in Step 15).
+
 **Commit:** `step-14: buy, sell, move, merge and leveling`
 
 **Check your understanding:** Explain in one sentence why buying a 4th copy of a level-2 hero adds +1/+1 but does not level it.

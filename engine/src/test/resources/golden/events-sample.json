@@ -95,8 +95,22 @@
     "price" : 2
   },
   {
-    "type" : "HeroBought",
+    "type" : "BonusSlotOpened",
     "seq" : 9,
+    "slot" : 3,
+    "item" : {
+      "itemId" : "shield_maiden",
+      "price" : 3,
+      "bonus" : {
+        "attack" : 0,
+        "health" : 0
+      },
+      "frozen" : false
+    }
+  },
+  {
+    "type" : "HeroBought",
+    "seq" : 10,
     "unitId" : "u1",
     "heroId" : "aoi",
     "slot" : 0,
@@ -109,7 +123,7 @@
   },
   {
     "type" : "RelicBought",
-    "seq" : 10,
+    "seq" : 11,
     "relicId" : "ration",
     "slot" : 0,
     "targetUnitId" : "u1",
@@ -117,14 +131,14 @@
   },
   {
     "type" : "RelicBought",
-    "seq" : 11,
+    "seq" : 12,
     "relicId" : "royal_decree",
     "slot" : 1,
     "price" : 3
   },
   {
     "type" : "HeroSold",
-    "seq" : 12,
+    "seq" : 13,
     "unitId" : "u2",
     "heroId" : "merchant",
     "bandIndex" : 1,
@@ -133,7 +147,7 @@
   },
   {
     "type" : "HeroesReordered",
-    "seq" : 13,
+    "seq" : 14,
     "from" : 1,
     "to" : 0,
     "order" : [
@@ -143,7 +157,7 @@
   },
   {
     "type" : "HeroesMerged",
-    "seq" : 14,
+    "seq" : 15,
     "unitId" : "u1",
     "heroId" : "aoi",
     "source" : "BAND",
@@ -159,7 +173,7 @@
   },
   {
     "type" : "XpGained",
-    "seq" : 15,
+    "seq" : 16,
     "unitId" : "u1",
     "heroId" : "aoi",
     "before" : 1,
@@ -167,14 +181,14 @@
   },
   {
     "type" : "LevelUp",
-    "seq" : 16,
+    "seq" : 17,
     "unitId" : "u1",
     "heroId" : "aoi",
     "level" : 2
   },
   {
     "type" : "StatsChanged",
-    "seq" : 17,
+    "seq" : 18,
     "unitId" : "u1",
     "heroId" : "aoi",
     "position" : "home:0",
@@ -187,7 +201,7 @@
   },
   {
     "type" : "PerkGained",
-    "seq" : 18,
+    "seq" : 19,
     "unitId" : "u1",
     "heroId" : "aoi",
     "position" : "home:0",
@@ -195,7 +209,7 @@
   },
   {
     "type" : "PerkGained",
-    "seq" : 19,
+    "seq" : 20,
     "unitId" : "u1",
     "heroId" : "aoi",
     "position" : "home:0",
@@ -204,7 +218,7 @@
   },
   {
     "type" : "PerkConsumed",
-    "seq" : 20,
+    "seq" : 21,
     "unitId" : "u1",
     "heroId" : "aoi",
     "position" : "home:0",
@@ -212,7 +226,7 @@
   },
   {
     "type" : "AbilityTriggered",
-    "seq" : 21,
+    "seq" : 22,
     "unitId" : "u1",
     "heroId" : "aoi",
     "position" : "home:0",
@@ -221,12 +235,12 @@
   },
   {
     "type" : "TurnEnded",
-    "seq" : 22,
+    "seq" : 23,
     "turn" : 1
   },
   {
     "type" : "BattleStarted",
-    "seq" : 23,
+    "seq" : 24,
     "turn" : 1,
     "playerSide" : "HOME",
     "home" : [
@@ -258,14 +272,14 @@
   },
   {
     "type" : "Clash",
-    "seq" : 24,
+    "seq" : 25,
     "number" : 1,
     "homeUnitId" : "u1",
     "awayUnitId" : "u3"
   },
   {
     "type" : "DamageDealt",
-    "seq" : 25,
+    "seq" : 26,
     "sourceUnitId" : "u3",
     "sourcePosition" : "away:0",
     "targetUnitId" : "u1",
@@ -277,7 +291,7 @@
   },
   {
     "type" : "DamageDealt",
-    "seq" : 26,
+    "seq" : 27,
     "sourceUnitId" : "u1",
     "sourcePosition" : "home:0",
     "targetUnitId" : "u3",
@@ -289,7 +303,7 @@
   },
   {
     "type" : "Knockout",
-    "seq" : 27,
+    "seq" : 28,
     "unitId" : "u1",
     "heroId" : "aoi",
     "position" : "home:0",
@@ -297,14 +311,14 @@
   },
   {
     "type" : "UnitFell",
-    "seq" : 28,
+    "seq" : 29,
     "unitId" : "u1",
     "heroId" : "aoi",
     "position" : "home:0"
   },
   {
     "type" : "UnitRevived",
-    "seq" : 29,
+    "seq" : 30,
     "unitId" : "u1",
     "heroId" : "aoi",
     "position" : "home:0",
@@ -315,7 +329,7 @@
   },
   {
     "type" : "UnitSummoned",
-    "seq" : 30,
+    "seq" : 31,
     "unitId" : "u4",
     "heroId" : "scarecrow",
     "position" : "home:1",
@@ -328,14 +342,14 @@
   },
   {
     "type" : "SummonFailed",
-    "seq" : 31,
+    "seq" : 32,
     "tokenId" : "wolf",
     "side" : "HOME",
     "summonerUnitId" : "u2"
   },
   {
     "type" : "LineShifted",
-    "seq" : 32,
+    "seq" : 33,
     "side" : "HOME",
     "order" : [
       "u1",
@@ -344,7 +358,7 @@
   },
   {
     "type" : "BattleEnded",
-    "seq" : 33,
+    "seq" : 34,
     "homeOutcome" : "WIN",
     "playerOutcome" : "WIN",
     "reason" : "ELIMINATION",
@@ -352,20 +366,20 @@
   },
   {
     "type" : "CrownsChanged",
-    "seq" : 34,
+    "seq" : 35,
     "before" : 0,
     "after" : 1
   },
   {
     "type" : "HeartsChanged",
-    "seq" : 35,
+    "seq" : 36,
     "before" : 4,
     "after" : 5,
     "reason" : "MERCY"
   },
   {
     "type" : "RunEnded",
-    "seq" : 36,
+    "seq" : 37,
     "status" : "WON",
     "turn" : 12,
     "crowns" : 10,

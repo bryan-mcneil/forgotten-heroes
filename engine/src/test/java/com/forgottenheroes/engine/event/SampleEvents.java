@@ -5,6 +5,7 @@ import com.forgottenheroes.engine.event.GameEvent.AbilityTriggered;
 import com.forgottenheroes.engine.event.GameEvent.BattleEndReason;
 import com.forgottenheroes.engine.event.GameEvent.BattleEnded;
 import com.forgottenheroes.engine.event.GameEvent.BattleStarted;
+import com.forgottenheroes.engine.event.GameEvent.BonusSlotOpened;
 import com.forgottenheroes.engine.event.GameEvent.Clash;
 import com.forgottenheroes.engine.event.GameEvent.CrownsChanged;
 import com.forgottenheroes.engine.event.GameEvent.DamageDealt;
@@ -75,6 +76,7 @@ final class SampleEvents {
         log.append(new TavernItemUnfrozen(0, ItemKind.RELIC, 0, "ration"));
         log.append(new TavernBuffed(0, new Stats(1, 1), true));
         log.append(new RelicStocked(0, "ration", 1, 2));
+        log.append(new BonusSlotOpened(0, 3, TavernSlot.hero("shield_maiden", Stats.ZERO)));
         log.append(new HeroBought(0, U1, "aoi", 0, 0, new Stats(2, 2), 3));
         log.append(new RelicBought(0, "ration", 0, U1, 3));
         log.append(new RelicBought(0, "royal_decree", 1, null, 3));
