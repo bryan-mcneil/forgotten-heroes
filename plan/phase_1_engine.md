@@ -746,6 +746,13 @@ Javadoc lines so it never drifts); run the Phase 1 review (quality doc §10): fr
 
 **Verify:** a friend (or Claude in a fresh session) can add a fake hero following the recipe in < 15 minutes.
 
+**As built (2026-10-14):** `engine/README.md` (sections: how to run, what must not live here, package map and flow,
+rules as implemented + decisions made while building, generated event catalogue, DSL reference, how to add a hero, how to
+reproduce a bug), `tools/docs/event_catalog.py` (`--write`, `--check`), `docs/reviews/phase-1.md` (fresh-clone proof,
+counts and coverage, retro, agreed changes for Phase 2, risks, sign-off prepared for Bryan's countersignature), two risk
+rows in `project_management.md` §9, root `README.md` status line, `docs/README.md` rows. Verify: the add-a-hero recipe
+followed on the fresh clone with a fake hero in about 5 minutes. Tag `phase-1-complete` on the squash commit.
+
 **Commit:** `step-24: engine documentation and phase 1 review`
 
 **Check your understanding:** In two sentences, explain to a recruiter what "deterministic, event-sourced engine" means and why it mattered here.

@@ -5,7 +5,7 @@ including six old friends from *The Forgotten Kanji* — sign up for one more ru
 **Java/Spring Boot on AWS serverless** and **React**, and to teach the author the whole stack from
 scratch, one small reviewable step at a time. A Corgi Space Cadet production.
 
-> Status: **Phase 0 (Foundations) in progress.** The plan is [`PLAN.md`](PLAN.md) (77 steps, 7 phases);
+> Status: **Phase 1 (Game Engine) complete on 2026-10-14; Phase 2 (Backend) next.** The plan is [`PLAN.md`](PLAN.md) (77 steps, 7 phases);
 > its checkbox list is the source of truth for what is done. The research and design behind it are in
 > [`knowledge/`](knowledge/). Bryan's answers to the planning questions are logged in
 > [`knowledge/open_questions.md`](knowledge/open_questions.md) and already folded into every file.
