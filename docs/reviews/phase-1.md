@@ -14,7 +14,7 @@ request (logged in the `PLAN.md` changelog on 2026-10-14) so the AWS phases arri
 | Deterministic | `GameRandom` is the only dice, every seed derives from the run seed (`SeedDerivation`); the jqwik property "same seed + same actions → byte-identical event JSON" holds for 150 random cases per build; ArchUnit fails the build on `Math.random`, `java.util.Random`, `SecureRandom`, `java.time` and system time |
 | Event-sourced | 34 `GameEvent` records with before/after values, numbered once per run; the golden file `engine/src/test/resources/golden/events-sample.json` is the contract with the frontend and is checked on every build |
 | One facade | `GameSession.start / apply / endTurn`; the simulator's ArchUnit rule proves it uses nothing from `engine.resolver` or `engine.mutator` (except `RuleViolation`) |
-| Simulator from the terminal | `scripts/sim.sh run | check | fuzz | replay`; 2,000 greedy games in 2.5 s; 200,000 fuzz actions with 0 engine exceptions; the first report is `docs/balance/2026-10-report.md` |
+| Simulator from the terminal | `scripts/sim.sh` with `run`, `check`, `fuzz` and `replay`; 2,000 greedy games in 2.5 s; 200,000 fuzz actions with 0 engine exceptions; the first report is `docs/balance/2026-10-report.md` |
 | Tests ≥ 90 % | engine 97.8 % lines / 86.9 % branches behind a 90 % JaCoCo gate; sim 93.7 % / 88.9 % behind a 70 % gate |
 | "Add a hero in under 15 minutes" | followed `engine/README.md` → "How to add a hero" on the fresh clone: one JSON row, one scenario file, one test run; the scenario passed first time and the only other guard that fired was the pinned hero count in `ContentLoaderTest` (a new hero is a roster decision, so that guard stays and the recipe says so); about 5 minutes including the build |
 
@@ -25,8 +25,7 @@ request (logged in the `PLAN.md` changelog on 2026-10-14) so the AWS phases arri
 | engine | 342 | 97.8 % | 86.9 % | 90 % lines | 59 scenario files, 5 jqwik properties, 9 ArchUnit rules, 1 golden file |
 | sim | 9 | 93.7 % | 88.9 % | 70 % lines | 1 ArchUnit rule; `fuzz` 20,000 actions inside the suite |
 
-Mutation testing (PIT, optional profile `pit`) was started once at the end of the phase; its result is recorded in the
-`PLAN.md` changelog row of Step 24 if it finished, and is otherwise a Step 70 chore.
+Mutation testing (optional profile `pit`): PIT ran once at the end of the phase in 5 min 44 s: 1,501 mutations, 1,230 killed (82 %), test strength 86 %, 77 mutations in uncovered lines; report in `engine/target/pit-reports/index.html`. The 18 % of surviving mutants are Step 70's reading list, not a gate.
 
 The sentence the learning path says Bryan can now say, built by Claude this time and ready to be studied: *"I built
 a deterministic, event-sourced rules engine with a JSON ability DSL, 90 %+ coverage, property tests for invariants
