@@ -289,3 +289,20 @@ face. The JaCoCo gate rose to 90 % with coverage at 97.9 %, and PIT waits behind
 properties, 9 engine rules, 1 sim rule), 351 across both modules. Lesson: a property can check what an example
 test realistically cannot, such as "no sequence of 150 random actions, for any seed, ever leaves a fallen unit on
 the band", because it is the generator, not the author, that thinks of the sequences.
+
+## 2026-10-14 — Step 24, engine README and Phase 1 review
+
+The hand-over document. `engine/README.md` now says what the engine does as built: the rules with the decisions the
+GDD left open, the package map and the flow of one action, the event catalogue generated from the Javadoc
+one-liners by `tools/docs/event_catalog.py` (so it cannot drift), the DSL reference with every trigger, target,
+effect, amount, limit and condition, the add-a-hero recipe and the reproduce-a-bug recipe. The Phase 1 review in
+`docs/reviews/phase-1.md` was done on a fresh clone: `./mvnw verify` green in 28 s with 342 engine tests at 97.8 %
+line coverage and 9 sim tests at 93.7 %, a 300-game simulation in 9 s, and the recipe followed with a fake hero in
+about five minutes. Retro: design the DSL before the content, one dispatcher for tavern and battle, and tests that
+write themselves (hand-calculated sequences, scenarios per id, properties, fuzz) found real bugs on their first
+runs; for Phase 2, Bryan types the files again, every step keeps its "as built" paragraph, and generated docs beat
+hand-kept lists. Lesson, for a recruiter: "deterministic" means the same seed and the same actions give the same
+events, byte for byte, on the server, in a replay and in a test, so every bug is a seed plus an action list;
+"event-sourced" means the engine's output is the ordered list of facts (a hero was bought, a unit fell), which the
+backend stores and the browser animates without ever recomputing a rule. It mattered here because it made the
+server authoritative at zero cost, the frontend a player of recordings, and every test a story you can read.

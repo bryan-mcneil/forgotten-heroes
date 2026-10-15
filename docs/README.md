@@ -12,7 +12,7 @@ the plan came from, fixed after planning) and `plan/` (the step-by-step instruct
 | [project_goal.md](project_goal.md) | The original brief. Superseded by `PLAN.md` and `knowledge/`; kept for history | Step 03 |
 | [aws-account-setup.md](aws-account-setup.md) | Console walk-through of the account hardening: root MFA, the IAM user, `aws login`, budgets | Step 06 |
 | `reviews/phase-N.md` | The phase-end review, one file per phase | end of each phase |
-| `balance/` | Simulator balance reports worth keeping | Step 70 |
+| `balance/` | Simulator balance reports worth keeping (`2026-10-report.md` is the untuned baseline) | Step 22 |
 | `adr/` | Architecture decision records, one short file each, copied from `knowledge/architecture.md` §13 | Step 69 |
 | `runbook.md`, `release.md`, `ci-cd.md`, `architecture.md` | How to operate, release and deploy; diagrams in Mermaid | Phase 5 |
 | `security.md`, `licences/`, `costs/` | Audit results, licence verification, cost receipts | Steps 74 and 77 |
