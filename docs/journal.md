@@ -233,3 +233,17 @@ applier used the caster's band for the target) and two slips in my own arithmeti
 Lesson: which hero needed a DSL feature I had not planned? None, because the DSL was written from the whole roster
 first; the surprises came from the engine's edges (which side is a target on?), which is exactly where a scenario
 per hero earns its keep.
+
+## 2026-10-14 — Step 20, GameSession facade and run lifecycle
+
+One door into the engine: `GameSession.start(runId, seed)` begins turn 1, `apply(state, action)` runs a tavern
+action and bumps the version, `endTurn(state, ghost)` fires the end-of-turn abilities, snapshots the band as this
+player's ghost, fights the given ghost (home on odd turns, away on even), applies the crown or the heart, clears the
+temporary stats, ends the run at ten crowns or zero hearts and otherwise starts the next turn, all as one contiguous
+event list. `BandSnapshot`/`UnitSnapshot` are what a ghost is: hero, the stats it fought with, XP, perk, nothing
+else. Tests: ten empty ghosts win the run, an unbeatable ghost loses it on turn 6 with the mercy heart on the way
+(4, then 4 again because the mercy heart lands in the same call as the turn-2 loss, then 3, 2, 1, 0), temporary stats vanish after the battle, the run's units are never touched
+by the battle copies, and twelve scripted turns against a mirror give the same JSON twice and never a gap in the
+numbering. 11 new tests, 320 in the module. Lesson: `endTurn` takes the ghost as a parameter because choosing an
+opponent is the backend's job (a database query with fallbacks), while fighting it is the engine's; keeping that
+line means the engine stays a pure function of state, action and seed.

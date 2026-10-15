@@ -598,6 +598,13 @@ weak ghost; a "lose at 0 hearts" test with an unbeatable ghost; temporary stats 
 
 **Verify:** tests green; `GameSession` is the only engine class the `sim` module will import (checked in Step 23).
 
+**As built (2026-10-14):** package `session`: `GameSession(content)` with `start(runId, runSeed) → ActionResult`,
+`apply(state, action) → ActionResult` (refuses `StartTurn`/`EndTurn`), `endTurn(state, ghost) → TurnResult(state, events,
+battle, outcome, ghost)`; `BandSnapshot(units)` (`of(band)`, `ofUnits`, `toBand(prefix)`, `power()`, `EMPTY`) and
+`UnitSnapshot(heroId, attack, health, xp, perk)`; `RunState.toSnapshot()`. 11 tests in `GameSessionTest` (start, apply,
+client guard, empty-ghost win, home/away alternation, ten crowns, zero hearts with the mercy heart, temporary stats
+cleared, run units untouched, twelve-turn mirror determinism, snapshot round trip), 320 in the module.
+
 **Commit:** `step-20: game session facade and run lifecycle`
 
 **Check your understanding:** Why does `endTurn` take the ghost band as a parameter instead of fetching it itself?
