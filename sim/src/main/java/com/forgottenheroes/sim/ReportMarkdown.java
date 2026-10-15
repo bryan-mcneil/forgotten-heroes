@@ -11,7 +11,7 @@ public final class ReportMarkdown {
     public static String render(Report report, String title) {
         StringBuilder md = new StringBuilder();
         md.append("# ").append(title).append("\n\n");
-        md.append(String.format(Locale.ROOT, "Bot `%s`, seed %d, %d games (+ %d random warm-up games for the ghost pool).%n%n",
+        md.append(String.format(Locale.ROOT, "Bot `%s`, seed %d, %d games (+ %d random warm-up games for the ghost pool).%n\n",
             report.bot(), report.seed(), report.games(), report.poolGames()));
         md.append("## Summary\n\n| Measure | Value | GDD §9 target |\n|---|---|---|\n");
         row(md, "Average run length (turns)", f1(report.avgTurns()), "8–12");
@@ -24,11 +24,11 @@ public final class ReportMarkdown {
         row(md, "Clash-cap draws", String.valueOf(report.clashCapDraws()), "0");
         md.append("\n## Heroes\n\nPick rate = share of games where the hero stood on the band at the end of a turn; win rate = battles won while it stood there.\n\n");
         md.append("| Hero | Rank | Pick rate | Win rate on band | Battles | Gold per game |\n|---|---|---|---|---|---|\n");
-        report.heroes().forEach((id, stats) -> md.append(String.format(Locale.ROOT, "| %s | %d | %s | %s | %d | %s |%n",
+        report.heroes().forEach((id, stats) -> md.append(String.format(Locale.ROOT, "| %s | %d | %s | %s | %d | %s |\n",
             id, stats.rank(), pct(stats.pickRate()), pct(stats.winRateOnBand()), stats.battlesOnBand(), f1(stats.goldPerGame()))));
         md.append("\n## Bands per turn\n\n| Turn | Bands | Avg size | Avg attack | Avg health |\n|---|---|---|---|---|\n");
         for (Report.TurnStats turn : report.turns()) {
-            md.append(String.format(Locale.ROOT, "| %d | %d | %s | %s | %s |%n", turn.turn(), turn.bands(), f1(turn.avgSize()),
+            md.append(String.format(Locale.ROOT, "| %d | %d | %s | %s | %s |\n", turn.turn(), turn.bands(), f1(turn.avgSize()),
                 f1(turn.avgAttack()), f1(turn.avgHealth())));
         }
         md.append("\n## Battle length\n\n| Clashes | Battles |\n|---|---|\n");

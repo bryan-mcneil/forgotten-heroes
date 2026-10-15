@@ -34,6 +34,19 @@ public final class Unit {
         return new Unit(id, definition.id(), definition.stats());
     }
 
+    /** A unit read back from storage, every field as it was saved. */
+    public static Unit restore(UnitId id, String heroId, Stats base, Stats permanentBonus, Stats temporaryBonus, Xp xp, Perk perk,
+                               Counters counters, int damageTaken) {
+        Unit unit = new Unit(id, heroId, base);
+        unit.permanentBonus = Objects.requireNonNull(permanentBonus, "permanentBonus");
+        unit.temporaryBonus = Objects.requireNonNull(temporaryBonus, "temporaryBonus");
+        unit.xp = Objects.requireNonNull(xp, "xp");
+        unit.perk = perk;
+        unit.counters = Objects.requireNonNull(counters, "counters");
+        unit.takeDamage(damageTaken);
+        return unit;
+    }
+
     /** A summoned token with the stats the summoning ability resolved. */
     public static Unit fromToken(TokenDefinition definition, UnitId id, Stats stats) {
         return new Unit(id, definition.id(), stats);

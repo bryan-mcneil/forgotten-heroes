@@ -50,6 +50,32 @@ public final class RunState {
         return state;
     }
 
+    /** A run read back from storage, every field as it was saved (the backend's job in Step 28). */
+    public static RunState restore(String runId, long runSeed, int turn, int gold, int hearts, int crowns, Band band, Tavern tavern,
+                                   boolean freeRollAvailable, int rollsThisTurn, RunStatus status, BattleSummary lastBattle,
+                                   long version, int lastEventSeq, int nextUnitNumber) {
+        RunState state = new RunState(runId, runSeed, Objects.requireNonNull(band, "band"), Objects.requireNonNull(tavern, "tavern"));
+        state.setTurn(turn);
+        state.setGold(gold);
+        state.setHearts(hearts);
+        state.setCrowns(crowns);
+        state.setFreeRollAvailable(freeRollAvailable);
+        state.setRollsThisTurn(rollsThisTurn);
+        state.setStatus(status);
+        state.setLastBattle(lastBattle);
+        if (version < 0 || nextUnitNumber < 1) {
+            throw new IllegalArgumentException("version and unit counter must be non-negative / positive");
+        }
+        state.version = version;
+        state.setLastEventSeq(lastEventSeq);
+        state.nextUnitNumber = nextUnitNumber;
+        return state;
+    }
+
+    public int nextUnitNumber() {
+        return nextUnitNumber;
+    }
+
     public String runId() {
         return runId;
     }
