@@ -134,8 +134,6 @@ public final class TavernResolver {
             "the hero costs " + item.price() + " gold, you have " + state.gold());
         require(bandIndex <= band.size(), Code.INVALID_INDEX, "band index " + bandIndex + " is beyond the band (" + band.size() + ")");
         HeroDefinition definition = content.hero(item.itemId());
-        Unit copy = Unit.fromDefinition(definition, state.nextUnitId());
-        copy.addPermanentBonus(item.bonus());
         boolean merging = bandIndex < band.size() && band.at(bandIndex).heroId().equals(definition.id());
         if (merging) {
             require(BandMutator.canStack(band.at(bandIndex)), Code.MAX_LEVEL, definition.name() + " is already level 3");
@@ -143,6 +141,9 @@ public final class TavernResolver {
             require(!band.isFull(), Code.BAND_FULL, "the band already has " + Rules.BAND_SIZE + " heroes");
         }
 
+        // Validated: from here on the state changes. A merged copy never joins the band, so it borrows the survivor's id.
+        Unit copy = Unit.fromDefinition(definition, merging ? band.at(bandIndex).id() : state.nextUnitId());
+        copy.addPermanentBonus(item.bonus());
         GoldMutator.spend(state, log, item.price(), GoldReason.BUY_HERO);
         TavernMutator.takeHero(state, slot);
         if (merging) {

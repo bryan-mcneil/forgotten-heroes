@@ -16,6 +16,16 @@ public final class Tavern {
     private Stats permanentBuff = Stats.ZERO;
     private TavernSlot bonusSlot;
 
+    /** A tavern read back from storage. */
+    public static Tavern restore(List<TavernSlot> heroSlots, List<TavernSlot> relicSlots, Stats permanentBuff, TavernSlot bonusSlot) {
+        Tavern tavern = new Tavern();
+        tavern.heroSlots.addAll(heroSlots);
+        tavern.relicSlots.addAll(relicSlots);
+        tavern.permanentBuff = Objects.requireNonNull(permanentBuff, "permanentBuff");
+        tavern.bonusSlot = bonusSlot == null || bonusSlot.isEmpty() ? null : bonusSlot;
+        return tavern;
+    }
+
     /** 3 hero slots on turns 1–4, 4 on turns 5–8, 5 from turn 9. */
     public static int heroSlotsFor(int turn) {
         requireTurn(turn);

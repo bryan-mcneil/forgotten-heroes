@@ -33,5 +33,5 @@ start engine/target/site/jacoco/index.html   # open the coverage report (Git Bas
 ```
 
 Read the `Tests run:` line, not only `BUILD SUCCESS`: a test saved outside `src/test/java/...` is silently
-skipped. The coverage gate is 60 % of lines (Step 07) and rises to 90 % in Step 23. CI runs the same
-`./mvnw -B -ntp verify` in the `java` job.
+skipped. The coverage gate is 90 % of lines (Step 23). CI runs the same `./mvnw -B -ntp verify` in the `java`
+job. Mutation testing is optional: `./mvnw -pl engine -Ppit verify` writes `engine/target/pit-reports/index.html`.

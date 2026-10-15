@@ -274,3 +274,18 @@ first report is committed under `docs/balance/`: 2,000 greedy games: average run
 thresholds, the commands end to end, fuzz, replay), 336 across both modules. Lesson: balance thresholds fail a
 nightly job and not every pull request because they measure the content, not the change; a hero rebalance in one
 PR must not block an unrelated bug fix in another, and a 2,000-game run is seconds, not milliseconds.
+
+## 2026-10-14 — Step 23, property tests, architecture rules and the 90 % gate
+
+The engine now proves its own rules and its own shape. Five jqwik properties generate seeds and action lists and
+check what must hold for all of them: the same seed and actions give byte-identical event JSON, every accepted
+action leaves the invariants true (gold 0..50, band of five at most, nobody at zero health, slot counts matching the
+turn, frozen shelves surviving a roll), a rejected action leaves the state equal to a copy, random bands with random
+perks always finish under the clash cap, and a `RunState` survives a trip through JSON unchanged, which needed the
+`RunStateJson` DTOs and `restore` factories the backend will use for storage. ArchUnit rules fail the build on a
+Spring or AWS import, a clock, a file, `Math.random`, `java.util.Random`, a second `SplittableRandom`, JSON in the
+model, or gold set outside a mutator; the simulator gets its own rule that it uses nothing but the engine's public
+face. The JaCoCo gate rose to 90 % with coverage at 97.9 %, and PIT waits behind a `pit` profile. 15 new tests (5
+properties, 9 engine rules, 1 sim rule), 351 across both modules. Lesson: a property can check what an example
+test realistically cannot, such as "no sequence of 150 random actions, for any seed, ever leaves a fallen unit on
+the band", because it is the generator, not the author, that thinks of the sequences.

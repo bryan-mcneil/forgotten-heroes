@@ -718,6 +718,12 @@ tests; fix anything they find (they will find something); raise the gate; add `m
 
 **Verify:** `./mvnw -B -ntp verify` green with coverage ≥ 90 % for engine; CI green.
 
+**As built (2026-10-14):** `EnginePropertiesTest` (jqwik 1.10.2; 5 properties, 150–200 tries) with `RandomActions`;
+`RunStateJson` (+ `RunStateDto`, `UnitDto`, `TavernDto`) and `restore` factories on `RunState`, `Unit`, `Tavern`, `Counters`;
+`ArchitectureTest` (ArchUnit 1.5.1; 9 rules) in the engine and `SimArchitectureTest` (1 rule) in `sim`; JaCoCo gate 0.90
+(coverage 97.9 % lines); profile `pit` (pitest-maven 1.30.1, junit5 plugin 1.2.3, properties and architecture tests
+excluded from the mutation run). 15 tests added, 351 across both modules; `ReportMarkdown` now writes LF line ends.
+
 **Commit:** `step-23: property tests, architecture rules and 90 % coverage gate`
 
 **Check your understanding:** Name one invariant a property test can check that an example test realistically cannot.

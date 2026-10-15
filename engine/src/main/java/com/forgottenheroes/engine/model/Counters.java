@@ -30,6 +30,17 @@ public final class Counters {
         usesThisBattle = 0;
     }
 
+    /** A counter pair read back from storage. */
+    public static Counters restore(int usesThisTurn, int usesThisBattle) {
+        if (usesThisTurn < 0 || usesThisBattle < 0) {
+            throw new IllegalArgumentException("counters cannot be negative");
+        }
+        Counters counters = new Counters();
+        counters.usesThisTurn = usesThisTurn;
+        counters.usesThisBattle = usesThisBattle;
+        return counters;
+    }
+
     public Counters copy() {
         Counters copy = new Counters();
         copy.usesThisTurn = usesThisTurn;
