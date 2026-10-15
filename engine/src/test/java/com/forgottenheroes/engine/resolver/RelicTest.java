@@ -63,7 +63,7 @@ class RelicTest {
         assertThat(result.events().of(RelicBought.class).getFirst().targetUnitId()).isEqualTo(aoi.id());
         StatsChanged changed = result.events().of(StatsChanged.class).getFirst();
         assertThat(changed).isEqualTo(new StatsChanged(changed.seq(), aoi.id(), "aoi", new Position(Side.HOME, 0), 2, 3, 2, 3, false, "ration"));
-        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.EAT_RELIC, aoi.id()));
+        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.EAT_RELIC, aoi));
         state.assertInvariants();
     }
 
@@ -103,7 +103,9 @@ class RelicTest {
         assertThat(state.gold()).isEqualTo(9);
         assertThat(state.band().units()).containsExactly(bard);
         assertThat(result.events().of(UnitFell.class).getFirst().position()).isEqualTo(new Position(Side.HOME, 0));
-        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.FALL, aoi.id()));
+        assertThat(result.events().of(com.forgottenheroes.engine.event.GameEvent.AbilityTriggered.class)).hasSize(1);
+        assertThat(bard.stats()).hasToString("3/2");
+        assertThat(result.triggers()).isEmpty();
         state.assertInvariants();
     }
 
@@ -132,7 +134,7 @@ class RelicTest {
         assertThat(aoi.stats()).hasToString("3/3");
         assertThat(result.events().of(LevelUp.class)).hasSize(1);
         assertThat(state.tavern().bonusSlot()).isPresent();
-        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.LEVEL_UP, aoi.id()), PendingTrigger.of(Trigger.EAT_RELIC, aoi.id()));
+        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.LEVEL_UP, aoi), PendingTrigger.of(Trigger.EAT_RELIC, aoi));
     }
 
     @Test

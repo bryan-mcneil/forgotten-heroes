@@ -36,16 +36,19 @@ import java.util.List;
  * The tavern rules (GDD §4.2–§4.4). {@link #apply} validates the action first, then mutates; a
  * {@link RuleViolation} always leaves the state exactly as it was. Randomness comes from the run
  * seed, the turn and the roll or action index, so the same state and action always produce the
- * same result.
+ * same result. Every action ends with a dispatch: the moments it noted (a buy, a sell, a fall) fire
+ * the abilities that answer them, in the GDD §4.6 order, cascades included.
  */
 public final class TavernResolver {
 
     private final ContentIndex content;
     private final EffectApplier effects;
+    private final TriggerDispatcher dispatcher;
 
     public TavernResolver(ContentIndex content) {
         this.content = content;
         this.effects = new EffectApplier(content);
+        this.dispatcher = new TriggerDispatcher(content);
     }
 
     public TavernResult apply(RunState state, Action action) {
@@ -65,8 +68,17 @@ public final class TavernResolver {
             case Action.Merge m -> merge(state, log, triggers, dice, m.from(), m.to());
             case Action.EndTurn e -> throw new IllegalArgumentException("EndTurn is resolved by GameSession.endTurn");
         }
+        dispatcher.dispatch(new TavernBoard(state), dice.fork("abilities"), log, triggers);
         state.setLastEventSeq(log.lastSeq());
         return new TavernResult(log, triggers);
+    }
+
+    /** Fire a moment on the band outside any action: the session's END_OF_TURN. */
+    public EventLog fire(RunState state, Trigger trigger) {
+        EventLog log = new EventLog(state.lastEventSeq());
+        dispatcher.dispatch(new TavernBoard(state), actionRandom(state).fork("abilities"), log, List.of(PendingTrigger.of(trigger)));
+        state.setLastEventSeq(log.lastSeq());
+        return log;
     }
 
     /** GDD §4.1–§4.3: next turn, 10 gold, the mercy heart, this turn's slot counts, the automatic refill. */
@@ -137,11 +149,11 @@ public final class TavernResolver {
             Unit survivor = band.at(bandIndex);
             log.append(new HeroBought(0, survivor.id(), survivor.heroId(), slot, bandIndex, copy.stats(), item.price()));
             levelUpIf(BandMutator.stack(band, log, survivor, copy, MergeSource.TAVERN, null), state, log, triggers, dice, survivor);
-            triggers.add(PendingTrigger.of(Trigger.BUY, survivor.id()));
+            triggers.add(PendingTrigger.of(Trigger.BUY, survivor));
         } else {
             BandMutator.buy(state, log, copy, bandIndex, slot, item.price());
-            triggers.add(PendingTrigger.of(Trigger.BUY, copy.id()));
-            triggers.add(PendingTrigger.of(Trigger.ALLY_SUMMONED, copy.id()));
+            triggers.add(PendingTrigger.of(Trigger.BUY, copy));
+            triggers.add(PendingTrigger.of(Trigger.ALLY_SUMMONED, copy));
         }
     }
 
@@ -172,8 +184,8 @@ public final class TavernResolver {
         for (EffectDefinition effect : relic.effects()) {
             effects.apply(effect, context);
         }
-        if (chosen != null && band.contains(chosen.id())) {
-            triggers.add(PendingTrigger.of(Trigger.EAT_RELIC, chosen.id()));
+        if (chosen != null && chosen.isAlive()) {
+            triggers.add(PendingTrigger.of(Trigger.EAT_RELIC, chosen));
         }
     }
 
@@ -185,7 +197,7 @@ public final class TavernResolver {
     private void sell(RunState state, EventLog log, List<PendingTrigger> triggers, int bandIndex) {
         requireBandIndex(state, bandIndex);
         Unit unit = state.band().at(bandIndex);
-        triggers.add(PendingTrigger.of(Trigger.SELL, unit.id()));
+        triggers.add(PendingTrigger.of(Trigger.SELL, unit));
         BandMutator.sell(state, log, bandIndex);
         GoldMutator.gain(state, log, unit.level(), GoldReason.SELL);
     }
@@ -213,7 +225,7 @@ public final class TavernResolver {
     private void levelUpIf(boolean leveled, RunState state, EventLog log, List<PendingTrigger> triggers, GameRandom dice, Unit unit) {
         if (leveled) {
             TavernMutator.openBonusSlot(state, log, content, dice.fork("bonus"));
-            triggers.add(PendingTrigger.of(Trigger.LEVEL_UP, unit.id()));
+            triggers.add(PendingTrigger.of(Trigger.LEVEL_UP, unit));
         }
     }
 

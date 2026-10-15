@@ -132,6 +132,19 @@ class UnitTest {
     }
 
     @Test
+    void tavernDamageComesOffTheBonusFirstThenTheBase() {
+        Unit unit = unit("aoi", 2, 3);
+        unit.addPermanentBonus(new Stats(0, 2));
+        unit.reduceMaxHealth(3);
+        assertThat(unit.permanentBonus()).isEqualTo(Stats.ZERO);
+        assertThat(unit.base()).isEqualTo(new Stats(2, 2));
+        unit.reduceMaxHealth(5);
+        assertThat(unit.base().health()).isZero();
+        assertThat(unit.isAlive()).isFalse();
+        assertThatThrownBy(() -> unit.reduceMaxHealth(-1)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void negativeDamageIsRejected() {
         assertThatThrownBy(() -> unit("aoi", 2, 2).takeDamage(-1)).isInstanceOf(IllegalArgumentException.class);
     }

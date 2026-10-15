@@ -14,9 +14,15 @@
       "effects": [
         {
           "type": "MODIFY_STATS",
-          "target": { "select": "RANDOM_ALLY" },
-          "attack": { "perLevel": 1 },
-          "health": { "perLevel": 1 },
+          "target": {
+            "select": "RANDOM_ALLY"
+          },
+          "attack": {
+            "perLevel": 1
+          },
+          "health": {
+            "perLevel": 1
+          },
           "untilEndOfBattle": false
         }
       ]
@@ -36,8 +42,12 @@
         {
           "type": "SUMMON",
           "tokenId": "scarecrow",
-          "attack": { "perLevel": 1 },
-          "health": { "perLevel": 1 }
+          "attack": {
+            "perLevel": 1
+          },
+          "health": {
+            "perLevel": 1
+          }
         }
       ]
     }
@@ -53,7 +63,12 @@
       "trigger": "SELL",
       "text": "Sell → gain +1 gold (×level).",
       "effects": [
-        { "type": "GAIN_GOLD", "amount": { "perLevel": 1 } }
+        {
+          "type": "GAIN_GOLD",
+          "amount": {
+            "perLevel": 1
+          }
+        }
       ]
     }
   },
@@ -70,8 +85,12 @@
       "effects": [
         {
           "type": "MODIFY_STATS",
-          "target": { "select": "TRIGGERING_UNIT" },
-          "attack": { "perLevel": 1 },
+          "target": {
+            "select": "TRIGGERING_UNIT"
+          },
+          "attack": {
+            "perLevel": 1
+          },
           "untilEndOfBattle": true
         }
       ]
@@ -90,8 +109,12 @@
       "effects": [
         {
           "type": "DEAL_DAMAGE",
-          "target": { "select": "RANDOM_ENEMY" },
-          "amount": { "perLevel": 1 }
+          "target": {
+            "select": "RANDOM_ENEMY"
+          },
+          "amount": {
+            "perLevel": 1
+          }
         }
       ]
     }
@@ -111,8 +134,160 @@
       "effects": [
         {
           "type": "MODIFY_STATS",
-          "target": { "select": "RANDOM_ALLY" },
-          "health": { "perLevel": 1 },
+          "target": {
+            "select": "RANDOM_ALLY"
+          },
+          "health": {
+            "perLevel": 1
+          },
+          "untilEndOfBattle": false
+        }
+      ]
+    }
+  },
+  {
+    "id": "shield_maiden",
+    "name": "Shield Maiden",
+    "rank": 2,
+    "attack": 2,
+    "health": 5,
+    "sprite": "sv/military1/1",
+    "ability": {
+      "trigger": "HURT",
+      "text": "Hurt → gain +4 attack (×level) until the end of battle.",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "SELF"
+          },
+          "attack": {
+            "perLevel": 4
+          },
+          "untilEndOfBattle": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "alchemist",
+    "name": "Alchemist",
+    "rank": 2,
+    "attack": 4,
+    "health": 2,
+    "sprite": "sv/set4/1",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → deal 2 damage (×level) to every unit on both sides.",
+      "effects": [
+        {
+          "type": "DEAL_DAMAGE",
+          "target": {
+            "select": "ALL_UNITS"
+          },
+          "amount": {
+            "perLevel": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "plague_rat",
+    "name": "Plague Rat",
+    "rank": 2,
+    "attack": 3,
+    "health": 6,
+    "sprite": "mon/rat",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → summon a 1/1 Dirty Rat (×level) at the front of the enemy band.",
+      "effects": [
+        {
+          "type": "SUMMON",
+          "tokenId": "dirty_rat",
+          "attack": {
+            "perLevel": 1
+          },
+          "health": {
+            "perLevel": 1
+          },
+          "side": "ENEMY",
+          "position": "FRONT"
+        }
+      ]
+    }
+  },
+  {
+    "id": "treasurer",
+    "name": "Treasurer",
+    "rank": 2,
+    "attack": 1,
+    "health": 2,
+    "sprite": "sv/set3/2",
+    "ability": {
+      "trigger": "START_OF_TURN",
+      "text": "Start of turn → gain +1 gold (×level).",
+      "effects": [
+        {
+          "type": "GAIN_GOLD",
+          "amount": {
+            "perLevel": 1
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "herbalist",
+    "name": "Herbalist",
+    "rank": 2,
+    "attack": 1,
+    "health": 3,
+    "sprite": "sv/set5/1",
+    "ability": {
+      "trigger": "START_OF_TURN",
+      "text": "Start of turn → stock a Ration in the tavern for 2 gold (level 2: 1 gold, level 3: free).",
+      "effects": [
+        {
+          "type": "STOCK_RELIC",
+          "relicId": "ration",
+          "price": {
+            "byLevel": [
+              2,
+              1,
+              0
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "standard_bearer",
+    "name": "Standard Bearer",
+    "rank": 2,
+    "attack": 3,
+    "health": 2,
+    "sprite": "sv/military2/1",
+    "ability": {
+      "trigger": "FALL",
+      "text": "Fall → the two nearest allies behind gain +1/+1 (×level).",
+      "effects": [
+        {
+          "type": "MODIFY_STATS",
+          "target": {
+            "select": "NEAREST_ALLIES_BEHIND",
+            "count": {
+              "flat": 2
+            }
+          },
+          "attack": {
+            "perLevel": 1
+          },
+          "health": {
+            "perLevel": 1
+          },
           "untilEndOfBattle": false
         }
       ]

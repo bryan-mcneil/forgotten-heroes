@@ -5,6 +5,7 @@ import com.forgottenheroes.engine.content.HeroDefinition;
 import com.forgottenheroes.engine.content.RelicDefinition;
 import com.forgottenheroes.engine.event.EventLog;
 import com.forgottenheroes.engine.event.GameEvent.BonusSlotOpened;
+import com.forgottenheroes.engine.event.GameEvent.RelicStocked;
 import com.forgottenheroes.engine.event.GameEvent.TavernBuffed;
 import com.forgottenheroes.engine.event.GameEvent.TavernItemFrozen;
 import com.forgottenheroes.engine.event.GameEvent.TavernItemUnfrozen;
@@ -83,6 +84,26 @@ public final class TavernMutator {
         TavernSlot item = TavernSlot.hero(rng.pick(pool).id(), tavern.permanentBuff());
         tavern.openBonusSlot(item);
         log.append(new BonusSlotOpened(0, tavern.heroSlots().size(), item));
+    }
+
+    /** Herbalist: put a relic on the first empty relic shelf, or on an extra shelf for this turn. */
+    public static void stockRelic(RunState state, EventLog log, String relicId, int price) {
+        Tavern tavern = state.tavern();
+        List<TavernSlot> slots = tavern.relicSlots();
+        int slot = -1;
+        for (int i = 0; i < slots.size(); i++) {
+            if (slots.get(i).isEmpty()) {
+                slot = i;
+                break;
+            }
+        }
+        if (slot < 0) {
+            tavern.addRelicSlot(TavernSlot.relic(relicId, price));
+            slot = slots.size();
+        } else {
+            tavern.setRelicSlot(slot, TavernSlot.relic(relicId, price));
+        }
+        log.append(new RelicStocked(0, relicId, slot, price));
     }
 
     /** Royal Decree: every hero on the shelves now gains the bonus; when permanent, every future one spawns with it. */

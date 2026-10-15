@@ -137,6 +137,19 @@ public final class Unit {
         damageTaken += amount;
     }
 
+    /**
+     * Damage taken in the tavern is for good: it comes off the permanent bonus first, then off the base
+     * health (never below zero). At zero maximum health the unit has fallen.
+     */
+    public void reduceMaxHealth(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount cannot be negative: " + amount);
+        }
+        int fromBonus = Math.min(amount, permanentBonus.health());
+        permanentBonus = permanentBonus.withHealth(permanentBonus.health() - fromBonus);
+        base = base.withHealth(Math.max(0, base.health() - (amount - fromBonus)));
+    }
+
     /** Back to full health: a battle copy starts this way, and Phoenix Feather returns a unit this way. */
     public void heal() {
         damageTaken = 0;

@@ -174,3 +174,21 @@ the Tome levels a hero at the threshold and opens the bonus slot. 11 new tests, 
 that buys every relic on a three-hero band. Lesson: build the interpreter before the content, and the content
 becomes rows plus one test loop; the one deviation (`untilEndOfBattle` means temporary only in the tavern, because
 a battle runs on copies anyway) is the kind of thing a DSL makes you write down.
+
+## 2026-10-14 — Step 16, trigger system and tavern triggers
+
+Abilities fire. `TriggerDispatcher.dispatch(board, dice, log, moments)` drains a queue of moments: for each it
+collects the candidates the trigger allows (the unit itself for `BUY`/`SELL`/`FALL`…, its living band mates for
+`ALLY_*`, everybody for the start of turn or battle), drops the ones whose per-turn or per-battle limit is spent,
+sorts them by the GDD §4.6 rule (attack, health, home, front), announces `AbilityTriggered` and runs
+`AbilityInterpreter → EffectApplier`. Moments caused on the way are queued, never recursed, and a guard of 1,000
+activations turns a looping content file into `ENGINE_GUARD`. After every moment a settle pass processes units
+at zero health: their Fall ability fires while they still hold their place, Fairy Charm and Phoenix Feather do
+their thing, friends' Ally-fall abilities fire, then the unit leaves and its summons take the slot. The resolver
+dispatches at the end of every action, so Merchant pays on sell, Hotaru heals on buy, Bard buffs the bought ally,
+Treasurer and Herbalist fire at the start of the turn, a poisoned Standard Bearer buffs the two allies behind, a
+poisoned Farmhand leaves a Scarecrow that Bard then buffs, and a poisoned Alchemist takes a weak ally with it whose
+own Fall still fires. Rank II heroes joined `heroes.json` early for these tests. One rule had to be decided:
+ability damage in the tavern is permanent, as in SAP's shop. 19 new tests, 220 in the module. Lesson: a cascade
+is a queue, not a recursion, and whoever removes a fallen unit must be the same code that fires its Fall, or
+position-relative abilities silently break.

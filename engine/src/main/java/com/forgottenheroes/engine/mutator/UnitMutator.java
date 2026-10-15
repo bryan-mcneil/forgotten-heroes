@@ -8,6 +8,7 @@ import com.forgottenheroes.engine.event.GameEvent.PerkConsumed;
 import com.forgottenheroes.engine.event.GameEvent.PerkGained;
 import com.forgottenheroes.engine.event.GameEvent.StatsChanged;
 import com.forgottenheroes.engine.event.GameEvent.UnitFell;
+import com.forgottenheroes.engine.event.GameEvent.UnitRevived;
 import com.forgottenheroes.engine.event.GameEvent.XpGained;
 import com.forgottenheroes.engine.model.Band;
 import com.forgottenheroes.engine.model.Perk;
@@ -22,9 +23,10 @@ public final class UnitMutator {
 
     private UnitMutator() { }
 
-    /** Where a unit stands on its band, for the event. */
+    /** Where a unit stands on its band, for the event; null once it has left the band (a sold hero). */
     public static Position positionOf(Band band, Side side, Unit unit) {
-        return new Position(side, band.indexOf(unit));
+        int index = band.indexOf(unit);
+        return index < 0 ? null : new Position(side, index);
     }
 
     /** Add stats, permanently or until the end of the battle, and say so. */
@@ -85,6 +87,40 @@ public final class UnitMutator {
         target.takeDamage(amount);
         log.append(new DamageDealt(0, sourceId, sourcePosition, target.id(), positionOf(band, side, target), amount, before,
             target.health(), kind));
+    }
+
+    /** Ability damage in the tavern: the same event, but the health is lost for good (there is no battle to heal from). */
+    public static void damagePermanently(Band band, Side side, Unit target, EventLog log, int amount, UnitId sourceId,
+                                         Position sourcePosition, DamageKind kind) {
+        int before = target.health();
+        target.reduceMaxHealth(amount);
+        log.append(new DamageDealt(0, sourceId, sourcePosition, target.id(), positionOf(band, side, target), amount, before,
+            target.health(), kind));
+    }
+
+    /** Poison Vial: the unit drops to zero health at once, without damage; the settle pass does the rest. */
+    public static void kill(Unit unit) {
+        if (unit.isAlive()) {
+            unit.takeDamage(unit.health());
+        }
+    }
+
+    /** Witch: lose part of the current health; reported as a stat change, never as damage. */
+    public static void loseHealth(Band band, Side side, Unit unit, EventLog log, int amount, String source) {
+        if (amount <= 0) {
+            return;
+        }
+        int attack = unit.attack();
+        int before = unit.stats().health();
+        unit.takeDamage(amount);
+        log.append(new StatsChanged(0, unit.id(), unit.heroId(), positionOf(band, side, unit), attack, attack, before,
+            unit.stats().health(), true, source));
+    }
+
+    /** Phoenix Feather: back in the same slot with new stats and full health. */
+    public static void revive(Band band, Side side, Unit unit, EventLog log, Stats stats) {
+        unit.resetStats(stats);
+        log.append(new UnitRevived(0, unit.id(), unit.heroId(), positionOf(band, side, unit), unit.stats()));
     }
 
     /** Announce that a unit reached zero health (or was poisoned); removal and summons follow elsewhere. */
