@@ -206,3 +206,17 @@ cap, the away player's flipped outcome, Shield Maiden growing when hurt, determi
 engine on the first run. 13 new tests, 233 in the module; `printsStory()` logs a readable battle. Lesson: compute
 both hits before applying either, and two 1/1 fronts are a draw, not a home win; and the dispatcher built for the
 tavern runs the battle's falls unchanged, which is what "one trigger system" was for.
+
+## 2026-10-14 — Step 18, battle resolver II
+
+Every battle mechanic in the GDD. `Damage` now knows all nine perks (Iron Blade, Enchanted Blade, Aegis, Ward,
+Chainmail, Venom in the numbers; Flame Oil's splash, Fairy Charm's Sprite and Phoenix Feather's return in the
+resolver and the settle pass) and `Damage.spend` reports a once-only perk before the damage lands; attacks, splashes
+and ability damage share that one path, so Archer's opener against an Aegis is 0 and spends it. Summons in battle
+needed no new code: Farmhand's Scarecrow takes its slot, a full band fails the summon, Plague Rat's Dirty Rat appears
+at the enemy front, Bard and Beastmaster buff battle summons, Druid's second Wolf fails when one slot is left.
+Rank III heroes joined for those tests (Assassin, Clay Golem, Berserker with its percent-of-attack damage, Iwao,
+Beastmaster, Druid). One rule changed: a fallen unit still answers its own Hurt, because a lethal hit is still a
+hit. Three of my hand-written expectations were wrong on the first run and the engine was right, which is the
+other thing a hand-calculated test is for. 16 new tests, 249 in the module. Lesson: route every kind of damage
+through one function, then nine perks are nine lines instead of nine special cases in three places.

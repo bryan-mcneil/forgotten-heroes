@@ -13,6 +13,7 @@ import com.forgottenheroes.engine.event.GameEvent.LineShifted;
 import com.forgottenheroes.engine.event.UnitView;
 import com.forgottenheroes.engine.model.Band;
 import com.forgottenheroes.engine.model.Outcome;
+import com.forgottenheroes.engine.model.Perk;
 import com.forgottenheroes.engine.model.Rules;
 import com.forgottenheroes.engine.model.Side;
 import com.forgottenheroes.engine.model.Unit;
@@ -79,6 +80,8 @@ public final class BattleResolver {
 
         Damage.Hit toB = Damage.attack(a, b);
         Damage.Hit toA = Damage.attack(b, a);
+        Damage.spend(toB, a, home, Side.HOME, b, away, Side.AWAY, log);
+        Damage.spend(toA, b, away, Side.AWAY, a, home, Side.HOME, log);
         UnitMutator.damage(away, Side.AWAY, b, log, toB.amount(), a.id(), UnitMutator.positionOf(home, Side.HOME, a), DamageKind.ATTACK);
         UnitMutator.damage(home, Side.HOME, a, log, toA.amount(), b.id(), UnitMutator.positionOf(away, Side.AWAY, b), DamageKind.ATTACK);
 
@@ -89,6 +92,8 @@ public final class BattleResolver {
         if (toB.amount() > 0) {
             moments.add(PendingTrigger.of(Trigger.HURT, b, Side.AWAY));
         }
+        splash(a, home, Side.HOME, away, Side.AWAY, log, moments);
+        splash(b, away, Side.AWAY, home, Side.HOME, log, moments);
         if (!b.isAlive() && toB.amount() > 0) {
             log.append(new Knockout(0, a.id(), a.heroId(), UnitMutator.positionOf(home, Side.HOME, a), b.id()));
             moments.add(PendingTrigger.of(Trigger.KNOCKOUT, a, Side.HOME));
@@ -109,6 +114,26 @@ public final class BattleResolver {
             after.add(PendingTrigger.of(Trigger.AFTER_ATTACK, b, Side.AWAY));
         }
         fire(state, rng, log, after);
+    }
+
+    /** GDD §4.8, Flame Oil: the attacker also hits the enemy behind its target, through that unit's own perks. */
+    private static void splash(Unit attacker, Band own, Side ownSide, Band enemies, Side enemySide, EventLog log,
+                               List<PendingTrigger> moments) {
+        if (!attacker.hasPerk(Perk.FLAME_OIL) || enemies.size() < 2) {
+            return;
+        }
+        Unit behind = enemies.at(1);
+        Damage.Hit hit = Damage.incoming(behind, Damage.SPLASH);
+        Damage.spend(hit, null, own, ownSide, behind, enemies, enemySide, log);
+        UnitMutator.damage(enemies, enemySide, behind, log, hit.amount(), attacker.id(),
+            UnitMutator.positionOf(own, ownSide, attacker), DamageKind.SPLASH);
+        if (hit.amount() > 0) {
+            moments.add(PendingTrigger.of(Trigger.HURT, behind, enemySide));
+            if (!behind.isAlive()) {
+                log.append(new Knockout(0, attacker.id(), attacker.heroId(), UnitMutator.positionOf(own, ownSide, attacker), behind.id()));
+                moments.add(PendingTrigger.of(Trigger.KNOCKOUT, attacker, ownSide));
+            }
+        }
     }
 
     /**
