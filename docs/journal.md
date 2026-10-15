@@ -247,3 +247,17 @@ by the battle copies, and twelve scripted turns against a mirror give the same J
 numbering. 11 new tests, 320 in the module. Lesson: `endTurn` takes the ghost as a parameter because choosing an
 opponent is the backend's job (a database query with fallbacks), while fighting it is the engine's; keeping that
 line means the engine stays a pure function of state, action and seed.
+
+## 2026-10-14 — Step 21, bots
+
+The engine's first clients. `Bot` is one method, state in and action out; `RandomBot` plays anything and ends the
+turn one time in five once gold is low, `GreedyBot` merges copies, buys the strongest affordable hero, uses a relic
+on its best fighter, keeps the toughest hero in front and rolls when nothing is worth buying. `BotRunner` drives a
+run through `GameSession` exactly as the backend will drive a human, counts refused actions instead of crashing on
+them, and has three safety valves so a run always ends; `RunSummary` records every battle with the band that fought
+it, and `GhostPool` files those bands per turn so later runs fight earlier ones, like production's ghost table.
+Greedy wins about 97 % of its battles against random-bot ghosts and every one of 200 runs; a mirror ghost, as
+expected, mostly draws. 7 new tests, 327 in the module, the whole bot suite in under two seconds. Lesson: "Greedy
+beats Random" is not about correctness but it is still a test, because it is the cheapest alarm for a rule change
+that quietly makes the game random, and because a bot that keeps proposing illegal moves is pointing at a
+confusing rule.

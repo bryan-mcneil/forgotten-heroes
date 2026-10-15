@@ -138,6 +138,9 @@
 * **Meta-test** — a test about the tests: `everyContentIdHasAScenario` fails the build when a hero, relic or token has no `<id>.json` scenario, which is how "every hero has a scenario" stays true without anyone remembering.
 * **Facade** — one class with a few methods that hides a whole subsystem: `GameSession.start`, `apply`, `endTurn`. The backend and the simulator call only these; the resolvers, dispatcher and mutators behind them can change without either noticing (Step 23's ArchUnit rule will enforce it for the simulator).
 * **Version (optimistic locking, engine side)** — `RunState.version` goes up by one on every accepted `start`, `apply` and `endTurn`. The backend will store it with the run and refuse a write whose version is stale (409 → the client reloads), so two tabs cannot both spend the same gold.
+* **Functional interface / lambda as a strategy** — an interface with one method (`GhostProvider.ghostFor`) can be written as a lambda: `(turn, state, rng) -> state.toSnapshot()` is the mirror provider. `@FunctionalInterface` makes the compiler check it stays single-method.
+* **Anonymous class** — a one-off implementation written inline (`new Bot() { ... }` in the test for a bot that only proposes illegal moves); handy in tests, rare in main code.
+* **Safety valves** — hard ceilings that keep a loop finite whatever the inputs: `MAX_VIOLATIONS_IN_A_ROW` (a bot that keeps proposing illegal moves gets its turn ended), `MAX_ACTIONS_PER_TURN`, `MAX_TURNS` (a run of draws stops at 60). The runner must finish for the simulator to be trustworthy.
 * **`Function<T, R>` / method reference** — a value that is a one-argument function; `HeroDefinition::id` is the method `id()` handed over as one, used by `ContentIndex` to index any list by its id.
 
 ## Spring Boot
@@ -248,7 +251,7 @@
 * **Token** — a unit only an ability can create (Scarecrow, Sprite, Wolf…); never for sale.
 * **Ghost** — a saved copy of another player's band used as an opponent. **Matchmaking** — picking it.
 * **Lambdalith** — one Lambda running a whole (small) app.
-* **Simulator / bot** — code that plays the game thousands of times to measure balance.
+* **Simulator / bot** — code that plays the game thousands of times to measure balance. A `Bot` maps the state to the next action (`EndTurn` included); `RandomBot` is the floor (any action, ends the turn one time in five once gold is low), `GreedyBot` the baseline (merge copies, buy the strongest affordable hero, relic on the best fighter, toughest hero in front, roll when nothing is worth buying). `BotRunner.playRun(bot, seed, ghosts)` drives a whole run through `GameSession` and returns a `RunSummary` (status, turns, crowns, hearts, actions, refusals, every battle with the band that fought it, gold earned per hero). `GhostPool` files bands per turn so bots fight bots, like production's ghost table.
 * **Scenario test** — a test written as data: starting board, what happens, expected events. Ours: a battle file has `home`/`away` unit lists (`hero`, optional `attack`/`health`/`level`/`xp`/`perk`), `expectEvents`, `expectCounts` and `expectResult`; a tavern file has `turn`, `gold`, `band`, `tavern.heroes`/`relics`, `actions` (any `Action` as JSON, plus `EndOfTurn`) and `expectState` (gold, hearts, bonus slot, tavern buff, relic slots, the band's heroes/stats/levels/perks). Expected events name units by position (`"unit": "home:1"`, `"target": "away:0"`), stat changes as `"attack": "1→2"`, summons by `token` and `stats`.
 
 * **Elements palette** — FinalBossBlues' newer, deeper colour set; all our art is converted into it so sprites match.
