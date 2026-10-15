@@ -304,6 +304,18 @@ only when hearts < 5 at turn 3.
 
 **Verify:** tests green; log the event list of a `StartTurn` in one test and read it — it should tell the story.
 
+**As built (2026-10-14):** `apply(state, action)` without an RNG parameter: the resolver derives
+`new GameRandom(rollSeed(turnSeed(runSeed, turn), rollsThisTurn)).fork("tavern")` itself, so a roll replays from the saved
+state. Returns `TavernResult(EventLog events, List<PendingTrigger> triggers)`; `START_OF_TURN` is recorded, fired in Step 16.
+`StartTurn` emits `RunStarted` (turn 1 only), `TurnStarted`, `GoldChanged`, the mercy `HeartsChanged`, then the automatic
+`TavernRolled` (roll index 0, `free: true`); it also closes the bonus slot and resets every unit's per-turn counter.
+`Freeze(ItemKind, slot)` / `Unfreeze` (`ItemKind` moved from `GameEvent` to `model`); codes `RUN_OVER`, `WRONG_PHASE`,
+`NOT_ENOUGH_GOLD`, `SLOT_EMPTY`, `INVALID_INDEX`, `ALREADY_FROZEN`, `NOT_FROZEN` (+ `BAND_FULL`, `NOT_SAME_HERO`, `MAX_LEVEL`,
+`TARGET_REQUIRED`, `TARGET_NOT_ALLOWED`, `ENGINE_GUARD` reserved). Mutators are static utility classes: `GoldMutator`
+(`set`/`spend`/`gain`, capped), `TavernMutator` (`resizeForTurn`, `fill`, `freeze`, `unfreeze`), `RunMutator` (`startRun`,
+`advanceTurn`, `endTurn`, `changeHearts`, `changeCrowns`, `endRun`). `TestFixtures.runAtTurn(seed, turn)`. 36 tests
+(`TavernResolverTest` 32 incl. two parameterized tables, `ActionTest` 2, `MutatorTest` 2), 176 in the module.
+
 **Commit:** `step-13: start turn, roll, freeze with resolver and mutators`
 
 **Check your understanding:** Why must a rejected action leave the state exactly as it was? How does the sealed `Action` help you when you add `Sell` in the next step?

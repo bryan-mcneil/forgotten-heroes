@@ -112,6 +112,11 @@
 * **Interface default method / `withSeq`** — every event record implements `withSeq(int)` by returning a copy with the number filled in; records are immutable, so "assigning" the sequence number means making a new record.
 * **Unchecked cast / `@SuppressWarnings("unchecked")`** — `(E) event.withSeq(n)` tells the compiler "trust me, this is the same type"; the annotation silences the warning on exactly that line and nowhere else.
 * **Pretty printer** — Jackson's indented output. Ours pins the line end to `\n` so the golden file is identical on Windows and Linux (the default uses the platform's line end, which made the first run fail on Windows).
+* **Validate, then apply** — a resolver first checks every rule an action could break and throws `RuleViolation` while nothing has changed yet; only then does it call mutators. That is what makes "a rejected action leaves the state exactly as it was" true without undo code.
+* **`RuleViolation` / `Code`** — the engine's "not allowed" exception: a stable `code` (`NOT_ENOUGH_GOLD`, `SLOT_EMPTY`, `INVALID_INDEX`, `WRONG_PHASE`, `RUN_OVER`, …) the API and the UI can switch on, plus a human message. `RuleViolation.require(condition, code, message)` keeps the resolver reading like the rulebook.
+* **Exhaustive `switch` over actions** — `switch (action) { case StartTurn s -> …; case Roll r -> …; }` with one case per permitted record: when `Sell` is implemented in the next step, the compiler points at this switch, and a new action can never be silently ignored.
+* **Static utility class** — a `final` class with a private constructor and only `static` methods (`GoldMutator.spend(...)`): no object to create, just named operations. The mutators are written this way because they hold no state of their own; the state is the `RunState` they are handed.
+* **`UnsupportedOperationException`** — Java's "this exists but is not implemented here": the resolver throws it for `Buy`/`Sell`/`Move`/`Merge`/`BuyRelic` until their step lands, which is honest and loud instead of a silent no-op.
 * **`Function<T, R>` / method reference** — a value that is a one-argument function; `HeroDefinition::id` is the method `id()` handed over as one, used by `ContentIndex` to index any list by its id.
 
 ## Spring Boot
@@ -196,8 +201,8 @@
   whole run; a bug report is "seed 42, turn 5".
 * **Fork** — a child generator made from a parent's *seed* plus a label (`turn.fork("battle")`). Because it ignores how many
   numbers the parent already drew, one more random call in the shop never reshuffles the battle.
-* **Action** — a player intent (Buy, Roll…). **Resolver** — applies rules. **Mutator** — one tiny
-  state change. **Event** — a fact about what happened. **Event log** — the ordered list of events;
+* **Action** — a player intent (Buy, Roll…), a record in the sealed `Action` family with a `type` in JSON. **Resolver** — validates then applies (`TavernResolver.apply(state, action)` returns a `TavernResult`: events plus the `PendingTrigger`s abilities may react to). **Mutator** — one tiny
+  state change that appends its event (`GoldMutator`, `TavernMutator`, `RunMutator`). **Event** — a fact about what happened. **Event log** — the ordered list of events;
   the client animates it. **Event sourcing** — storing/transmitting events rather than only final state.
 * **Trigger** — the moment an ability fires (Fall, Hurt…). **Target** — who it affects. **Effect** — what it does.
 * **DSL (Domain-Specific Language)** — our small JSON vocabulary for abilities: a **trigger** (when), **effects** (what; each has a `type`), **targets** (who; `select` + `count`), **amounts** (how much; `flat`, `perLevel`, `byLevel`, `percentOfAttack`), an optional **limit** (how often) and **condition** (a multiplier against a rank). Adding a hero is data plus a scenario test; the interpreter (Step 16) never changes.
@@ -205,6 +210,8 @@
 * **Unit / band / tavern / run state** — the engine's board model (Step 11). A `Unit` keeps base stats, a permanent bonus, a temporary bonus and the damage taken this battle; what you see is derived (`attack()`, `health()`). A `Band` is the ordered list of up to five units, index 0 in front, no gaps. The `Tavern` holds hero and relic slots (`TavernSlot`: item id, price, bonus, frozen), the permanent buff future heroes spawn with, and the level-up bonus slot. `RunState` ties them to gold, hearts, crowns, turn, status and version.
 * **Temporary vs permanent stats** — a tavern buff (Ration, XP) is permanent; a battle buff and Battle Brew are temporary and vanish after the battle (`clearTemporary()`). Kept apart so the UI can colour them and the engine can drop one without touching the other.
 * **Event catalogue** — the 33 facts the engine can emit (Step 12): run and turn (`RunStarted`, `TurnStarted`, `TurnEnded`, `GoldChanged`), tavern (`TavernRolled`, `TavernItemFrozen`/`Unfrozen`, `TavernBuffed`, `RelicStocked`, `HeroBought`, `RelicBought`, `HeroSold`, `HeroesReordered`, `HeroesMerged`, `XpGained`, `LevelUp`), units (`StatsChanged`, `PerkGained`, `PerkConsumed`, `AbilityTriggered`), battle (`BattleStarted`, `Clash`, `DamageDealt`, `Knockout`, `UnitFell`, `UnitRevived`, `UnitSummoned`, `SummonFailed`, `LineShifted`, `BattleEnded`) and progress (`HeartsChanged`, `CrownsChanged`, `RunEnded`). Each carries `seq`, a `type`, and before/after values where they matter. Unit ids are `"u7"`, positions `"home:0"`, ranks numbers.
+* **Start of turn (as implemented)** — `StartTurn` is engine-internal: `RunStarted` on turn 1, then `TurnStarted` (turn, gold, rank, slot counts), `GoldChanged` to 10, the mercy `HeartsChanged` on turn 3 when a heart is missing, the slot tables applied, the bonus slot closed, every unit's per-turn ability counter reset, and the automatic `TavernRolled` (roll index 0, free). After it the player still has one free `Roll`.
+* **Roll seed** — the shelves of the n-th roll of a turn come from `rollSeed(turnSeed(runSeed, turn), n)` forked as `"tavern"`; the resolver derives it from the state alone, so the same run seed, turn and roll index always offer the same heroes.
 * **Token** — a unit only an ability can create (Scarecrow, Sprite, Wolf…); never for sale.
 * **Ghost** — a saved copy of another player's band used as an opponent. **Matchmaking** — picking it.
 * **Lambdalith** — one Lambda running a whole (small) app.

@@ -39,6 +39,15 @@ public final class Tavern {
         return List.copyOf(relicSlots);
     }
 
+    /** The hero shelves as the player sees them: the regular slots, then the bonus slot when it is open. */
+    public List<TavernSlot> allHeroSlots() {
+        List<TavernSlot> all = new ArrayList<>(heroSlots);
+        if (bonusSlot != null) {
+            all.add(bonusSlot);
+        }
+        return List.copyOf(all);
+    }
+
     /** Hero slots including the bonus slot, which sits at index {@code heroSlots().size()} when open. */
     public int heroSlotCount() {
         return heroSlots.size() + (bonusSlot == null ? 0 : 1);

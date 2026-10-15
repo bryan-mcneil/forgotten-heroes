@@ -3,6 +3,7 @@ package com.forgottenheroes.engine.event;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.forgottenheroes.engine.content.Trigger;
+import com.forgottenheroes.engine.model.ItemKind;
 import com.forgottenheroes.engine.model.Outcome;
 import com.forgottenheroes.engine.model.Perk;
 import com.forgottenheroes.engine.model.Position;
@@ -253,8 +254,6 @@ public sealed interface GameEvent {
     // ----- small vocabularies -------------------------------------------------------------------
 
     enum GoldReason { TURN_START, ROLL, BUY_HERO, BUY_RELIC, SELL, ABILITY }
-
-    enum ItemKind { HERO, RELIC }
 
     enum MergeSource { TAVERN, BAND }
 
