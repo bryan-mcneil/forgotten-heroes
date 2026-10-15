@@ -65,5 +65,150 @@
     "effects": [
       { "type": "KILL", "target": { "select": "CHOSEN" } }
     ]
+  },
+  {
+    "id": "chainmail",
+    "name": "Chainmail",
+    "rank": 3,
+    "price": 3,
+    "text": "Perk: this hero takes 2 less damage (never below 1).",
+    "sprite": "icons/armor/chainmail",
+    "effects": [
+      { "type": "GIVE_PERK", "target": { "select": "CHOSEN" }, "perk": "CHAINMAIL" }
+    ]
+  },
+  {
+    "id": "feast",
+    "name": "Feast",
+    "rank": 3,
+    "price": 3,
+    "text": "Two random heroes gain +1/+1.",
+    "sprite": "icons/food/roast",
+    "effects": [
+      {
+        "type": "MODIFY_STATS",
+        "target": { "select": "RANDOM_ALLY", "count": { "flat": 2 } },
+        "attack": { "flat": 1 },
+        "health": { "flat": 1 },
+        "untilEndOfBattle": false
+      }
+    ]
+  },
+  {
+    "id": "royal_decree",
+    "name": "Royal Decree",
+    "rank": 4,
+    "price": 3,
+    "text": "Every hero in the tavern, now and in the future, gains +1/+1.",
+    "sprite": "icons/misc/scroll",
+    "effects": [
+      { "type": "BUFF_TAVERN", "attack": { "flat": 1 }, "health": { "flat": 1 }, "permanent": true }
+    ]
+  },
+  {
+    "id": "elixir",
+    "name": "Elixir",
+    "rank": 4,
+    "price": 3,
+    "text": "Give one hero +2/+2.",
+    "sprite": "icons/potions/blue",
+    "effects": [
+      {
+        "type": "MODIFY_STATS",
+        "target": { "select": "CHOSEN" },
+        "attack": { "flat": 2 },
+        "health": { "flat": 2 },
+        "untilEndOfBattle": false
+      }
+    ]
+  },
+  {
+    "id": "flame_oil",
+    "name": "Flame Oil",
+    "rank": 5,
+    "price": 3,
+    "text": "Perk: this hero's attacks also hit the enemy behind the target for 5.",
+    "sprite": "icons/potions/orange",
+    "effects": [
+      { "type": "GIVE_PERK", "target": { "select": "CHOSEN" }, "perk": "FLAME_OIL" }
+    ]
+  },
+  {
+    "id": "tome_of_experience",
+    "name": "Tome of Experience",
+    "rank": 5,
+    "price": 3,
+    "text": "Give one hero +1 experience.",
+    "sprite": "icons/misc/book",
+    "effects": [
+      { "type": "GIVE_XP", "target": { "select": "CHOSEN" }, "amount": { "flat": 1 } }
+    ]
+  },
+  {
+    "id": "banquet",
+    "name": "Banquet",
+    "rank": 5,
+    "price": 3,
+    "text": "Three random heroes gain +1/+1.",
+    "sprite": "icons/food/banquet",
+    "effects": [
+      {
+        "type": "MODIFY_STATS",
+        "target": { "select": "RANDOM_ALLY", "count": { "flat": 3 } },
+        "attack": { "flat": 1 },
+        "health": { "flat": 1 },
+        "untilEndOfBattle": false
+      }
+    ]
+  },
+  {
+    "id": "ward",
+    "name": "Ward",
+    "rank": 6,
+    "price": 3,
+    "text": "Perk: this hero takes 20 less damage, once.",
+    "sprite": "icons/armor/shield",
+    "effects": [
+      { "type": "GIVE_PERK", "target": { "select": "CHOSEN" }, "perk": "WARD" }
+    ]
+  },
+  {
+    "id": "phoenix_feather",
+    "name": "Phoenix Feather",
+    "rank": 6,
+    "price": 3,
+    "text": "Perk: when this hero falls, it returns as a 1/1, once.",
+    "sprite": "icons/misc/feather",
+    "effects": [
+      { "type": "GIVE_PERK", "target": { "select": "CHOSEN" }, "perk": "PHOENIX_FEATHER" }
+    ]
+  },
+  {
+    "id": "enchanted_blade",
+    "name": "Enchanted Blade",
+    "rank": 6,
+    "price": 3,
+    "text": "Perk: this hero's next attack deals +20 damage.",
+    "sprite": "icons/weapons/enchanted_sword",
+    "effects": [
+      { "type": "GIVE_PERK", "target": { "select": "CHOSEN" }, "perk": "ENCHANTED_BLADE" }
+    ]
+  },
+  {
+    "id": "grand_feast",
+    "name": "Grand Feast",
+    "rank": 6,
+    "price": 3,
+    "text": "Two random heroes gain +2/+2.",
+    "sprite": "icons/food/grand_feast",
+    "effects": [
+      {
+        "type": "MODIFY_STATS",
+        "target": { "select": "RANDOM_ALLY", "count": { "flat": 2 } },
+        "attack": { "flat": 2 },
+        "health": { "flat": 2 },
+        "untilEndOfBattle": false
+      }
+    ]
   }
 ]

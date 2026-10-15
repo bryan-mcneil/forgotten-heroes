@@ -160,3 +160,17 @@ anything but a roll come from `actionSeed(turnSeed, lastEventSeq)`. 14 new tests
 that checks gold and invariants after every accepted or rejected action), 190 in the module; `TavernResolver` at
 100 % lines. Lesson: write the general rule ("every XP point is +1/+1") and let the single-copy case fall out of it,
 instead of coding the example from the plan and discovering two level-2s later.
+
+## 2026-10-14 — Step 15, relics
+
+All 16 relics as data, and the first interpreter: `EffectApplier.apply(effect, context)` switches over the sealed
+effect types, resolves amounts, asks `Targeting` for the units (`SELF`, `CHOSEN`, `TRIGGERING_UNIT`, `ALL_ALLIES`,
+`RANDOM_ALLY` with a seeded shuffle) and calls the mutators; `EffectContext` carries the moment (state, band, chosen
+hero, level, dice, log, pending triggers). `BuyRelic(slot, bandIndex?)` validates the shape of the request (a
+"one hero" relic needs an index, a self-targeting one refuses it), pays, empties the shelf and runs the effects.
+Ration is permanent, Battle Brew temporary (cleared with the battle buffs), a second perk replaces the first,
+Poison Vial costs 1 and makes a hero fall in the tavern, Royal Decree buffs the shelves now and every future hero,
+the Tome levels a hero at the threshold and opens the bonus slot. 11 new tests, 201 in the module, including a loop
+that buys every relic on a three-hero band. Lesson: build the interpreter before the content, and the content
+becomes rows plus one test loop; the one deviation (`untilEndOfBattle` means temporary only in the tavern, because
+a battle runs on copies anyway) is the kind of thing a DSL makes you write down.

@@ -5,12 +5,14 @@ import com.forgottenheroes.engine.content.HeroDefinition;
 import com.forgottenheroes.engine.content.RelicDefinition;
 import com.forgottenheroes.engine.event.EventLog;
 import com.forgottenheroes.engine.event.GameEvent.BonusSlotOpened;
+import com.forgottenheroes.engine.event.GameEvent.TavernBuffed;
 import com.forgottenheroes.engine.event.GameEvent.TavernItemFrozen;
 import com.forgottenheroes.engine.event.GameEvent.TavernItemUnfrozen;
 import com.forgottenheroes.engine.event.GameEvent.TavernRolled;
 import com.forgottenheroes.engine.model.ItemKind;
 import com.forgottenheroes.engine.model.Rank;
 import com.forgottenheroes.engine.model.RunState;
+import com.forgottenheroes.engine.model.Stats;
 import com.forgottenheroes.engine.model.Tavern;
 import com.forgottenheroes.engine.model.TavernSlot;
 import com.forgottenheroes.engine.rng.GameRandom;
@@ -81,6 +83,21 @@ public final class TavernMutator {
         TavernSlot item = TavernSlot.hero(rng.pick(pool).id(), tavern.permanentBuff());
         tavern.openBonusSlot(item);
         log.append(new BonusSlotOpened(0, tavern.heroSlots().size(), item));
+    }
+
+    /** Royal Decree: every hero on the shelves now gains the bonus; when permanent, every future one spawns with it. */
+    public static void buff(RunState state, EventLog log, Stats bonus, boolean permanent) {
+        Tavern tavern = state.tavern();
+        for (int i = 0; i < tavern.heroSlotCount(); i++) {
+            TavernSlot slot = tavern.heroSlot(i);
+            if (!slot.isEmpty()) {
+                tavern.setHeroSlot(i, slot.withBonus(slot.bonus().plus(bonus)));
+            }
+        }
+        if (permanent) {
+            tavern.addPermanentBuff(bonus);
+        }
+        log.append(new TavernBuffed(0, bonus, permanent));
     }
 
     public static void freeze(RunState state, EventLog log, ItemKind kind, int slot) {

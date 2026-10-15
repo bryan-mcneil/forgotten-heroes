@@ -1,14 +1,21 @@
 package com.forgottenheroes.engine.mutator;
 
 import com.forgottenheroes.engine.event.EventLog;
+import com.forgottenheroes.engine.event.GameEvent.DamageDealt;
+import com.forgottenheroes.engine.event.GameEvent.DamageKind;
 import com.forgottenheroes.engine.event.GameEvent.LevelUp;
+import com.forgottenheroes.engine.event.GameEvent.PerkConsumed;
+import com.forgottenheroes.engine.event.GameEvent.PerkGained;
 import com.forgottenheroes.engine.event.GameEvent.StatsChanged;
+import com.forgottenheroes.engine.event.GameEvent.UnitFell;
 import com.forgottenheroes.engine.event.GameEvent.XpGained;
 import com.forgottenheroes.engine.model.Band;
+import com.forgottenheroes.engine.model.Perk;
 import com.forgottenheroes.engine.model.Position;
 import com.forgottenheroes.engine.model.Side;
 import com.forgottenheroes.engine.model.Stats;
 import com.forgottenheroes.engine.model.Unit;
+import com.forgottenheroes.engine.model.UnitId;
 
 /** Changes to one unit: stats, experience, perks, damage. Each one appends the event that describes it. */
 public final class UnitMutator {
@@ -55,5 +62,33 @@ public final class UnitMutator {
             log.append(new LevelUp(0, unit.id(), unit.heroId(), unit.level()));
         }
         return leveled;
+    }
+
+    /** GDD §4.8: a hero holds one perk; a new one replaces it. */
+    public static void givePerk(Band band, Side side, Unit unit, EventLog log, Perk perk) {
+        Perk replaced = unit.perk().orElse(null);
+        unit.setPerk(perk);
+        log.append(new PerkGained(0, unit.id(), unit.heroId(), positionOf(band, side, unit), perk, replaced));
+    }
+
+    /** A once-only perk did its job. */
+    public static void consumePerk(Band band, Side side, Unit unit, EventLog log) {
+        Perk perk = unit.perk().orElseThrow(() -> new IllegalStateException(unit + " has no perk to consume"));
+        unit.removePerk();
+        log.append(new PerkConsumed(0, unit.id(), unit.heroId(), positionOf(band, side, unit), perk));
+    }
+
+    /** Take damage and report it with the health before and after; whether the unit falls is the caller's business. */
+    public static void damage(Band band, Side side, Unit target, EventLog log, int amount, UnitId sourceId, Position sourcePosition,
+                              DamageKind kind) {
+        int before = target.health();
+        target.takeDamage(amount);
+        log.append(new DamageDealt(0, sourceId, sourcePosition, target.id(), positionOf(band, side, target), amount, before,
+            target.health(), kind));
+    }
+
+    /** Announce that a unit reached zero health (or was poisoned); removal and summons follow elsewhere. */
+    public static void fell(Band band, Side side, Unit unit, EventLog log) {
+        log.append(new UnitFell(0, unit.id(), unit.heroId(), positionOf(band, side, unit)));
     }
 }

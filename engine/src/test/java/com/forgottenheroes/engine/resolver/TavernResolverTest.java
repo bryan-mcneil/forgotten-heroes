@@ -220,7 +220,7 @@ class TavernResolverTest {
     void laterActionsAreNotThereYet() {
         RunState state = runAtTurn(1, 1);
         
-        assertThatThrownBy(() -> resolver().apply(state, new Action.BuyRelic(0, 0))).isInstanceOf(UnsupportedOperationException.class);
+        
         
         
         
