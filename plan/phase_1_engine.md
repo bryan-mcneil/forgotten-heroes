@@ -632,6 +632,14 @@ unit to front; roll if nothing good; end turn), `BotRunner.playRun(bot, seed, gh
 
 **Verify:** tests green in < 10 s (bots are fast; if not, profile).
 
+**As built (2026-10-14):** package `bot`: `Bot` (`name()`, `next(state, content, rng)`, `EndTurn` ends the turn),
+`RandomBot`, `GreedyBot` (merge → buy best → sell weakest for a clearly better hero → relic on the strongest, never Poison
+Vial → toughest in front → roll while a hero stays affordable → end), `GhostProvider` (`mirror()`, `nobody()`), `GhostPool`
+(per-turn bands, nearest earlier turn, mirror fallback), `BotRunner.playRun(bot, seed, ghosts)` with the three valves,
+`RunSummary` + `TurnRecord`. 7 tests in `BotTest` (50 runs each bot against a growing pool, greedy ≥ 70 % battle wins vs
+random ghosts (≈ 97 %), determinism, the stubborn bot is cut off, economy heroes credited, pool fallbacks, mirror draws),
+327 in the module, ≈ 1.5 s.
+
 **Commit:** `step-21: random and greedy bots`
 
 **Check your understanding:** Why is "GreedyBot beats RandomBot" a useful test even though it is about game feel, not correctness?
