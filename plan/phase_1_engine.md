@@ -50,7 +50,8 @@ a band is an ordered list with no gaps (empty slots are only a UI concept).
    `org.assertj:assertj-core` (versions from the BOM); JaCoCo `prepare-agent`, `report`, and a
    `check` rule `LINE COVEREDRATIO ≥ 0.60` (raised to 0.90 in Step 23).
 4. `SmokeTest`: `assertThat(1 + 1).isEqualTo(2)`. A `package-info.java` with a Javadoc describing the engine's purpose.
-5. Add `backend-test` placeholder job to `ci.yml`? Not yet — add job `java` that runs `./mvnw -B -ntp verify` with `actions/setup-java@v4` (`distribution: corretto`, `java-version: 25`, `cache: maven`).
+5. Add job `java` to `ci.yml`: `actions/checkout@v7`, `actions/setup-java@v6` (`distribution: corretto`, `java-version: 25`, `cache: maven`), then `./mvnw -B -ntp verify`. Add `"java"` to the required checks in `infra/github/branch-protection.json` and re-apply it (`gh api -X PUT repos/:owner/:repo/branches/main/protection --input infra/github/branch-protection.json`).
+6. Windows has no execute bit: after `git add mvnw`, run `git update-index --chmod=+x mvnw` or CI fails with `Permission denied`.
 
 **Verify**
 ```bash
@@ -58,7 +59,7 @@ a band is an ordered list with no gaps (empty slots are only a UI concept).
 start engine/target/site/jacoco/index.html   # opens the coverage report in your browser
 ```
 
-**Review checklist:** [ ] `java -version` in CI log shows 25 · [ ] wrapper files committed (`.mvn/wrapper/maven-wrapper.properties`) · [ ] no Spring *dependency* (only the BOM import) in `engine/pom.xml`.
+**Review checklist:** [ ] `java -version` in CI log shows 25 · [ ] wrapper files committed (`.mvn/wrapper/maven-wrapper.properties`, `mvnw` with mode 100755) · [ ] no Spring *dependency* (only the BOM import) in `engine/pom.xml` · [ ] `Tests run: 1` in the CI log, not only `BUILD SUCCESS` · [ ] `java` is a required check on `main`.
 
 **Commit:** `step-07: maven parent, wrapper and engine module`
 

@@ -5,7 +5,7 @@
 - `ISSUE_TEMPLATE/` (Step 04): three issue forms, `step.yml`, `bug.yml`, `idea.yml`, plus `config.yml`, which
   turns blank issues off and links to `PLAN.md`. GitHub shows them as a chooser when you click *New issue*.
 - `pull_request_template.md` (Step 04): pre-fills every PR body with the checklist and the *What I learned* line.
-- `workflows/`: `ci.yml` (Step 05, completed in Step 63), `deploy-dev.yml` (Step 64), `deploy-prod.yml`
+- `workflows/`: `ci.yml` (Step 05; `java` job Step 07; completed in Step 63), `deploy-dev.yml` (Step 64), `deploy-prod.yml`
   (Step 65) and a weekly `security.yml`.
 - `dependabot.yml` (Step 05).
 
@@ -23,11 +23,12 @@ issues they refer to are created by `scripts/create-labels.sh`, `scripts/create-
 
 `workflows/ci.yml` runs by itself on every pull request and every push to `main`. From the terminal,
 `gh pr checks` shows the result on the current PR, and `gh run list` / `gh run watch` follow a run.
-The same two commands run locally:
+It has two jobs, `docs` and `java`, and both are required checks on `main`. The same commands run locally:
 
 ```bash
 npx markdownlint-cli2 "**/*.md" "#node_modules"
 npx markdown-link-check --config .markdown-link-check.json README.md PLAN.md
+./mvnw -B -ntp verify
 ```
 
 Branch protection on `main` (Step 05) is applied from `infra/github/branch-protection.json`:

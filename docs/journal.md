@@ -60,3 +60,13 @@ Phase 0 closed: machine verified, public repo with six squash commits, 77 cards 
 `main`, AWS account hardened and budgeted. The review is `docs/reviews/phase-0.md`. The three changes for Phase 1
 came from Bryan: he writes the files himself from now on, messages stay short and say how things connect, and
 every step keeps its teaching moment.
+
+## 2026-10-14 — Step 07, Maven parent, wrapper and engine module
+
+Built the Java skeleton: the Maven Wrapper (no global Maven; `./mvnw` downloads 3.9.16 once into `~/.m2`), a
+root `pom.xml` that pins Java 25 and every plugin version and imports Spring Boot's BOM for library versions
+only, an `engine` module with JUnit and AssertJ behind a 60 % JaCoCo gate, and a smoke test. Saved the two Java
+files one folder too shallow at first: the build stayed green with zero tests, which is why the `Tests run:`
+line matters more than `BUILD SUCCESS`. Broke the test on purpose and read `expected: 3 / but was: 2`. CI
+gained a `java` job on Corretto 25, now a required check beside `docs`. What I learned: how Maven uses the
+pom to manage dependencies, and how `./mvnw verify` runs the tests.
