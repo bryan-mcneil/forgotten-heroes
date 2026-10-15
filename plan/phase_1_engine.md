@@ -439,6 +439,16 @@ different attack (higher attack resolves first — assert event order).
 
 **Verify:** tests green; a deliberately infinite cascade (test-only content) stops at a guard of 1,000 trigger activations with a `RuleViolation(ENGINE_GUARD)`.
 
+**As built (2026-10-14):** `Board` (+ `TavernBoard`), `PendingTrigger(trigger, Unit, Side)`, `TriggerDispatcher.dispatch(board,
+rng, log, moments)` with a per-dispatch `Run` (queue, activation count, `settle()`, `processFall()`), `ordering()` comparator,
+limits via `Counters`, guard `MAX_ACTIVATIONS = 1000` → `RuleViolation(ENGINE_GUARD)`; `AbilityInterpreter.run(...)`
+announces and builds the `EffectContext` (now carrying the board, `summonIndex` and `deferredSummons`); `Targeting` v2 with
+every selector; `EffectApplier` handles all ten effects (`SUMMON` incl. enemy side / front / deferred-in-fall, `STOCK_RELIC`,
+`SET_HEALTH_PERCENT` as a stat change, `KILL` as "drop to zero", tavern `DEAL_DAMAGE` as permanent loss). `TavernResolver`
+dispatches at the end of every action and offers `fire(state, trigger)` for `END_OF_TURN`. Content: rank II heroes (Shield
+Maiden, Alchemist, Plague Rat, Treasurer, Herbalist, Standard Bearer) and the Dirty Rat token. 18 tests
+(`TriggerDispatcherTest` 13, `TargetingTest` 5, `UnitTest` 1), 220 in the module; `TwoSidedBoard` test helper previews the battle board.
+
 **Commit:** `step-16: trigger dispatcher, ability interpreter and tavern triggers`
 
 **Check your understanding:** Why process cascades with a queue instead of recursion? What would a stack overflow mean for a server?

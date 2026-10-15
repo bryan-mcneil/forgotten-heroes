@@ -68,7 +68,7 @@ class TavernEconomyTest {
         assertThat(result.events().of(HeroBought.class).getFirst())
             .isEqualTo(new HeroBought(0, merchant.id(), "merchant", 0, 0, new Stats(4, 1), 3).withSeq(result.events().lastSeq()));
         assertThat(result.triggers()).containsExactly(
-            PendingTrigger.of(Trigger.BUY, merchant.id()), PendingTrigger.of(Trigger.ALLY_SUMMONED, merchant.id()));
+            PendingTrigger.of(Trigger.BUY, merchant), PendingTrigger.of(Trigger.ALLY_SUMMONED, merchant));
         state.assertInvariants();
     }
 
@@ -131,7 +131,7 @@ class TavernEconomyTest {
         assertThat(result.events().of(HeroesMerged.class).getFirst().after()).isEqualTo(new Stats(3, 3));
         assertThat(result.events().of(XpGained.class).getFirst().after()).isEqualTo(1);
         assertThat(result.events().of(LevelUp.class)).isEmpty();
-        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.BUY, aoi.id()));
+        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.BUY, aoi));
     }
 
     @Test
@@ -150,7 +150,7 @@ class TavernEconomyTest {
         assertThat(state.tavern().bonusSlot()).contains(opened.item());
         assertThat(content().hero(opened.item().itemId()).rank()).isLessThanOrEqualTo(Rank.II);
         assertThat(result.triggers()).containsExactly(
-            PendingTrigger.of(Trigger.LEVEL_UP, aoi.id()), PendingTrigger.of(Trigger.BUY, aoi.id()));
+            PendingTrigger.of(Trigger.LEVEL_UP, aoi), PendingTrigger.of(Trigger.BUY, aoi));
         state.assertInvariants();
     }
 
@@ -201,7 +201,7 @@ class TavernEconomyTest {
         assertThat(merged.source()).isEqualTo(MergeSource.BAND);
         assertThat(merged.removedUnitId()).isEqualTo(copy.id());
         assertThat(result.events().of(XpGained.class).getFirst()).isEqualTo(new XpGained(0, survivor.id(), "aoi", 2, 5).withSeq(result.events().of(XpGained.class).getFirst().seq()));
-        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.LEVEL_UP, survivor.id()));
+        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.LEVEL_UP, survivor));
         assertThat(state.tavern().bonusSlot()).isPresent();
         assertThat(state.gold()).isEqualTo(7);
     }
@@ -233,10 +233,11 @@ class TavernEconomyTest {
         assertThat(state.band().units()).containsExactly(one, three);
         assertThat(result.events().events()).extracting(GameEvent::getClass).containsExactly(HeroSold.class, GoldChanged.class);
         assertThat(result.events().of(HeroSold.class).getFirst().gold()).isEqualTo(2);
-        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.SELL, two.id()));
+        assertThat(result.triggers()).containsExactly(PendingTrigger.of(Trigger.SELL, two));
         resolver().apply(state, new Action.Sell(1));
-        resolver().apply(state, new Action.Sell(0));
-        assertThat(state.gold()).isEqualTo(6);
+        TavernResult merchantSold = resolver().apply(state, new Action.Sell(0));
+        assertThat(merchantSold.events().of(com.forgottenheroes.engine.event.GameEvent.AbilityTriggered.class)).hasSize(1);
+        assertThat(state.gold()).isEqualTo(7);
         assertThat(state.band().isEmpty()).isTrue();
         assertThat(violation(state, new Action.Sell(0)).code()).isEqualTo(Code.INVALID_INDEX);
     }

@@ -10,23 +10,43 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Everything an effect needs to know about the moment it runs in. In the tavern {@code state} is the
- * run and {@code band} the player's band; {@code self} is the unit whose ability fires (null for a
- * relic), {@code chosen} the hero the player picked for a relic, {@code triggering} the unit that
- * caused the trigger (the summoned ally, the fallen friend). {@code level} and {@code attack} resolve
- * the DSL amounts.
+ * Everything an effect needs to know about the moment it runs in: the board and the side it acts
+ * from, {@code self} (the unit whose ability fires; null for a relic), {@code chosen} (the hero the
+ * player picked for a relic), {@code triggering} (the unit that caused the moment: the summoned ally,
+ * the fallen friend), the level and attack that resolve the DSL amounts, the dice, the log, the
+ * queue of moments to fire next, and where a "HERE" summon lands ({@code summonIndex}); during a
+ * fall, summons are collected in {@code deferredSummons} and placed once the fallen unit is gone.
  */
-public record EffectContext(RunState state, Band band, Side side, Band enemies, Unit self, Unit chosen, Unit triggering,
-                            int level, int attack, GameRandom rng, EventLog log, List<PendingTrigger> triggers, String source) {
+public record EffectContext(Board board, Side side, Unit self, Unit chosen, Unit triggering, int level, int attack,
+                            GameRandom rng, EventLog log, List<PendingTrigger> triggers, String source, int summonIndex,
+                            List<Unit> deferredSummons) {
 
     /** The tavern moment for a relic the player just bought. */
     public static EffectContext forRelic(RunState state, Unit chosen, GameRandom rng, EventLog log, List<PendingTrigger> triggers,
                                          String relicId) {
-        return new EffectContext(state, state.band(), Side.HOME, null, null, chosen, null, 1, 0, rng, log, triggers, relicId);
+        Band band = state.band();
+        return new EffectContext(new TavernBoard(state), Side.HOME, null, chosen, null, 1, 0, rng, log, triggers, relicId,
+            band.size(), null);
+    }
+
+    public RunState state() {
+        return board.state();
+    }
+
+    public Band band() {
+        return board.band(side);
+    }
+
+    public boolean hasEnemies() {
+        return board.hasSide(side.opposite());
+    }
+
+    public Band enemies() {
+        return board.band(side.opposite());
     }
 
     public boolean inTavern() {
-        return state != null;
+        return board.inTavern();
     }
 
     public Optional<Unit> selfUnit() {

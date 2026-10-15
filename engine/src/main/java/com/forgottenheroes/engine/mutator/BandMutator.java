@@ -6,8 +6,11 @@ import com.forgottenheroes.engine.event.GameEvent.HeroSold;
 import com.forgottenheroes.engine.event.GameEvent.HeroesMerged;
 import com.forgottenheroes.engine.event.GameEvent.HeroesReordered;
 import com.forgottenheroes.engine.event.GameEvent.MergeSource;
+import com.forgottenheroes.engine.event.GameEvent.UnitSummoned;
 import com.forgottenheroes.engine.model.Band;
+import com.forgottenheroes.engine.model.Position;
 import com.forgottenheroes.engine.model.RunState;
+import com.forgottenheroes.engine.model.Side;
 import com.forgottenheroes.engine.model.Stats;
 import com.forgottenheroes.engine.model.Unit;
 import com.forgottenheroes.engine.model.UnitId;
@@ -29,6 +32,13 @@ public final class BandMutator {
         Unit unit = state.band().remove(bandIndex);
         log.append(new HeroSold(0, unit.id(), unit.heroId(), bandIndex, unit.level(), unit.level()));
         return unit;
+    }
+
+    /** A token appears on a band at an index; the caller has checked there is room. */
+    public static void summon(Band band, Side side, int index, Unit unit, EventLog log, UnitId summonerId) {
+        band.insert(index, unit);
+        log.append(new UnitSummoned(0, unit.id(), unit.heroId(), new Position(side, index), unit.stats(), unit.level(),
+            unit.perk().orElse(null), summonerId));
     }
 
     public static void move(Band band, EventLog log, int from, int to) {
