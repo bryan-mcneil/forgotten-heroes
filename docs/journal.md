@@ -134,3 +134,16 @@ the contract with the frontend. Three things bit on the first run: a nested reco
 writes `isEmpty()` as `"empty": true` unless told not to. 11 new tests, 140 in the module. Lesson: a golden file
 turns "did the JSON change?" from a code review guess into a build failure with a diff, which is exactly what a
 contract between two code bases needs.
+
+## 2026-10-14 — Step 13, tavern actions I
+
+The first real rules. Package `action` holds the sealed `Action` family (ten records, JSON `type`), `resolver` holds
+`RuleViolation` (a `Code` enum plus `require`) and `TavernResolver`, whose `apply(state, action)` validates everything
+first and only then calls the mutators in package `mutator` (`GoldMutator`, `TavernMutator`, `RunMutator`, each
+appending its event). `StartTurn` reads like GDD §4.2: next turn, 10 gold, mercy heart on turn 3, slot counts from
+the table, bonus slot closed, automatic refill with dice derived from `rollSeed(turnSeed, 0)`; `Roll` is free once
+and then 1 gold; `Freeze`/`Unfreeze` keep or release a shelf item, bonus slot included. A rejected roll with no gold
+leaves the state equal to a copy taken before it. 36 new tests, 176 in the module; the first turn's story reads
+`RunStarted → TurnStarted → GoldChanged → TavernRolled`. Lesson: validate everything before mutating anything, and
+derive the dice from the saved state, and "rejected action, state unchanged" and "same seed, same shelves" both
+come for free.
