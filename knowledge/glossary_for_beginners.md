@@ -72,6 +72,15 @@
 * **Lambda** — a small piece of code handed over to run later, written `() -> new Stats(-1, 3)`; AssertJ runs it and catches the exception.
 * **Ternary `a ? b : c`** — reads "if a then b, else c" in one expression (`this == VI ? VI : values()[ordinal() + 1]`).
 * **Parameterized test** — one test method run once per row of a table: `@ParameterizedTest` + `@CsvSource({"3, II", …})`; JUnit converts `"3"` to an `int` and `"II"` to `Rank.II`. The GDD's turn and XP tables are tests this way.
+* **Hash / mixer** — a function that turns any input into a fixed-size number that looks random, where the same input always gives the same output (`Hash64.of(runSeed, turn)`). Ours is *splitmix64*: shift, XOR, multiply, repeat; the same mixer `SplittableRandom` uses inside.
+* **`long` and hex literals** — `long` is a 64-bit whole number (`int` is 32). `0x9E3779B97F4A7C15L` is one written in hex (base 16); the trailing `L` says "this is a long". An `int` passed where a `long` is expected is widened for free; the other way round does not compile.
+* **Bit operators** — `x >>> 30` slides the bits of `x` 30 places to the right; `x ^ y` is XOR (a bit is 1 where exactly one input bit is 1). Only the mixer uses them.
+* **Varargs `long... parts`** — a parameter that accepts any number of values (`Hash64.of(42)`, `Hash64.of(42, 5, 7)`); inside the method it is an array, walked with `for (long part : parts)`.
+* **Generics `<T>`** — a placeholder type: `<T> T pick(List<T> items)` picks from a list of heroes or of relics and returns that same type, no casting. `List<Integer>` reads "a list of integers".
+* **`List` / `ArrayList` / `List.copyOf`** — `List` is Java's ordered collection; `new ArrayList<>(items)` is a growable copy you may change; `List.copyOf(copy)` and `List.of(1, 2, 3)` are lists nobody can change. `Collections.shuffle` mutates the list it is given, so shuffle a copy.
+* **Test helper** — a private method inside a test class that several tests share (`draw(random, 1000)` pulls a list of numbers so two sequences can be compared with one `isEqualTo`).
+* **Known-answer test** — a test that compares against a value published elsewhere: `Hash64.of(0)` must equal `0xE220A8397B1DCDAF`, splitmix64's first output for seed 0, and `new SplittableRandom(0).nextLong()`. Three sources agreeing rules out a typo in the constants.
+* **jshell** — the JDK's interactive Java prompt: it compiles and runs lines as you type them, no class or `main` needed. `jshell -q --class-path engine/target/classes -` reads a script from stdin against the classes Maven just built.
 * **Sealed interface** — an interface with a fixed, listed set of implementations; lets the compiler
   check we handled every `Action`/`GameEvent` type (`switch` exhaustiveness).
 * **JUnit 5 / AssertJ** — test framework / readable assertions (`assertThat(gold).isEqualTo(7)`).
@@ -154,7 +163,14 @@
 ## Game & engine
 * **Auto-battler** — you build a team; the fight resolves automatically.
 * **Deterministic** — same inputs → same outputs, always. **Seed** — the number that makes random
-  choices reproducible. **RNG** — random number generator.
+  choices reproducible. **RNG** — random number generator. **`GameRandom`** — the engine's only dice:
+  `new GameRandom(seed)` hands out the same numbers in the same order every time (`nextInt`, `chance`, `pick`,
+  `shuffled`); it wraps the JDK's `SplittableRandom`.
+* **Seed derivation** — computing every seed from one stored run seed instead of drawing new ones: `turnSeed(runSeed, turn)`,
+  `battleSeed(runSeed, turn)` (same inputs plus the label "battle"), `rollSeed(turnSeed, rollIndex)`. One number replays a
+  whole run; a bug report is "seed 42, turn 5".
+* **Fork** — a child generator made from a parent's *seed* plus a label (`turn.fork("battle")`). Because it ignores how many
+  numbers the parent already drew, one more random call in the shop never reshuffles the battle.
 * **Action** — a player intent (Buy, Roll…). **Resolver** — applies rules. **Mutator** — one tiny
   state change. **Event** — a fact about what happened. **Event log** — the ordered list of events;
   the client animates it. **Event sourcing** — storing/transmitting events rather than only final state.

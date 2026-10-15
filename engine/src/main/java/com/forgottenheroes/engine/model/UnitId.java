@@ -9,7 +9,7 @@ public record UnitId(String value) {
         }
     }
 
-    /** Hands out u1, u2, u3 ... in order. Replaced by a seeded factory in Step 09. */
+    /** Hands out u1, u2, u3 ... in order. Lives in RunState from Step 11, so a reloaded run keeps counting. */
     public static final class Sequence {
 
         private int next = 1;

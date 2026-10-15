@@ -107,10 +107,11 @@ start engine/target/site/jacoco/index.html   # opens the coverage report in your
 
 **Goal:** randomness you can replay.
 
-**You will have (package `rng`):** `GameRandom` (wraps `SplittableRandom`; `nextInt(bound)`,
-`chance(percent)`, `<T> T pick(List<T>)`, `<T> List<T> shuffled(List<T>)`, `fork(String label)`),
-`SeedDerivation` (`long turnSeed(long runSeed, int turn)`, `long battleSeed(long runSeed, int turn)`,
-`long rollSeed(long turnSeed, int rollIndex)` using a splitmix64-style mixer), tests.
+**You will have (package `rng`):** `Hash64` (`mix(long)` = the splitmix64 finaliser, `of(long...)` hashes parts
+in order, `ofString(String)` hashes a label), `SeedDerivation` (`long turnSeed(long runSeed, int turn)`,
+`long battleSeed(long runSeed, int turn)`, `long rollSeed(long turnSeed, int rollIndex)`), `GameRandom` (wraps
+`SplittableRandom`; `seed()`, `nextInt(bound)`, `chance(percent)`, `<T> T pick(List<T>)`,
+`<T> List<T> shuffled(List<T>)`, `fork(String label)`), `package-info.java`, three test classes (18 tests).
 
 **Sensei notes**
 - *What:* a seeded generator produces the same sequence every time. **Forking** derives independent
@@ -120,11 +121,19 @@ start engine/target/site/jacoco/index.html   # opens the coverage report in your
 - *How:* `new SplittableRandom(seed)`; never touch `Math.random()`/`new Random()`; no time-based seeds in the engine.
 - *Where:* `engine/.../rng/`.
 
-**Do this:** implement; tests: same seed → identical 1,000-number sequences; different labels →
-different sequences; `pick` on a single-element list returns it; `shuffled` returns a permutation.
-Add a `Hash64` helper (public, reused by matchmaking later).
+**Do this:** implement `Hash64` first (public, reused by matchmaking later) and prove it against the JDK:
+`Hash64.of(0) == new SplittableRandom(0).nextLong() == 0xE220A8397B1DCDAFL`. Then `SeedDerivation`, then
+`GameRandom`. `fork` must derive from the *stored seed* plus the label, never from the generator's position.
+Tests: same seed → identical 1,000-number sequences; different labels → different sequences; a fork after
+50 draws equals a fork after none; `pick` on a single-element list returns it; `shuffled` returns a
+permutation and leaves its input alone; `chance(0)` is never true and `chance(100)` always is. Keep
+`UnitId.Sequence` (random ids can collide; the counter moves into `RunState` in Step 11).
 
-**Verify:** tests green; a `main`-less sanity check: run the same test twice, compare outputs.
+**Verify:** `./mvnw -pl engine -B -ntp verify` → `Tests run: 59`, `Analyzed bundle 'engine' with 11 classes`,
+BUILD SUCCESS. Replay by hand, twice, and compare: `jshell -q --class-path engine/target/classes -` fed
+`new GameRandom(SeedDerivation.battleSeed(42, 5))` printing three `nextInt(100)` → the same numbers both
+times. Break it: build the fork from `random.nextLong()` instead of `seed` and watch
+`forkDependsOnTheSeedAndLabelOnly` fail; put it back.
 
 **Commit:** `step-09: seeded, forkable game random`
 
