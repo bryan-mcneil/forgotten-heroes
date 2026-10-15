@@ -192,3 +192,17 @@ own Fall still fires. Rank II heroes joined `heroes.json` early for these tests.
 ability damage in the tavern is permanent, as in SAP's shop. 19 new tests, 220 in the module. Lesson: a cascade
 is a queue, not a recursion, and whoever removes a fallen unit must be the same code that fires its Fall, or
 position-relative abilities silently break.
+
+## 2026-10-14 — Step 17, battle resolver I
+
+Two bands fight. `BattleResolver` copies both bands into a `BattleState`, announces the line-ups, fires
+`START_OF_BATTLE`, and loops: `Clash`, `BEFORE_ATTACK`, both hits computed from the pre-hit stats and applied
+together, `HURT` and `KNOCKOUT` moments, the dispatcher's settle pass (falls, Fall abilities, summons), `LineShifted`
+for each side that closed up, then `AFTER_ATTACK` and `ALLY_AHEAD_ATTACKS` for attackers still standing; after 300
+clashes it is a draw by `CLASH_CAP`. `Damage` knows Iron Blade (+3) and Chainmail (−2, never below 1) and already
+reports which once-only perk a hit would spend, for Step 18. The tests were written by hand first (1v1, an opener
+that ends the battle before any clash, Aoi's fall buffing Farmhand, a trade that draws, two unkillable units at the
+cap, the away player's flipped outcome, Shield Maiden growing when hurt, determinism of the JSON) and matched the
+engine on the first run. 13 new tests, 233 in the module; `printsStory()` logs a readable battle. Lesson: compute
+both hits before applying either, and two 1/1 fronts are a draw, not a home win; and the dispatcher built for the
+tavern runs the battle's falls unchanged, which is what "one trigger system" was for.
