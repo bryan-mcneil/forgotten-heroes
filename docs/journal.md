@@ -121,3 +121,16 @@ counts that do not match the turn. Every class has a deep `copy()` and a hand-wr
 prove a rejected action changed nothing. 45 new tests, 129 in the module, plus `TestFixtures` for one-line units
 and bands. Lesson: keep base, permanent and temporary stats apart and derive the number the player sees, because
 "clear the battle buffs" is then one line that cannot accidentally erase a Ration.
+
+## 2026-10-14 — Step 12, events
+
+The vocabulary of facts: a sealed `GameEvent` with 33 nested records (one Javadoc line each, for the README), every
+one carrying `seq`, before/after values and ids the client can draw with (`"u7"`, `"home:0"`). `EventLog.append`
+stamps the next number and can continue from where the previous log ended, so a whole run is one contiguous
+sequence; `EventJson` is the mapper configured once (`type` = the record's simple name, no nulls, is-getters off,
+`\n` line ends), and `src/test/resources/golden/events-sample.json` holds one of every event, pretty-printed, as
+the contract with the frontend. Three things bit on the first run: a nested record's default type id is
+`GameEvent$PerkGained`, a `List<GameEvent>` written without a typed writer loses every `type` field, and Jackson
+writes `isEmpty()` as `"empty": true` unless told not to. 11 new tests, 140 in the module. Lesson: a golden file
+turns "did the JSON change?" from a code review guess into a build failure with a diff, which is exactly what a
+contract between two code bases needs.

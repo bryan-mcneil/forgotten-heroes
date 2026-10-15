@@ -1,0 +1,374 @@
+[
+  {
+    "type" : "RunStarted",
+    "seq" : 1,
+    "runId" : "run-42"
+  },
+  {
+    "type" : "TurnStarted",
+    "seq" : 2,
+    "turn" : 1,
+    "gold" : 10,
+    "rank" : 1,
+    "heroSlots" : 3,
+    "relicSlots" : 1
+  },
+  {
+    "type" : "GoldChanged",
+    "seq" : 3,
+    "before" : 0,
+    "after" : 10,
+    "reason" : "TURN_START"
+  },
+  {
+    "type" : "TavernRolled",
+    "seq" : 4,
+    "free" : true,
+    "heroes" : [
+      {
+        "itemId" : "aoi",
+        "price" : 3,
+        "bonus" : {
+          "attack" : 0,
+          "health" : 0
+        },
+        "frozen" : false
+      },
+      {
+        "itemId" : "bard",
+        "price" : 3,
+        "bonus" : {
+          "attack" : 1,
+          "health" : 1
+        },
+        "frozen" : true
+      },
+      {
+        "price" : 0,
+        "bonus" : {
+          "attack" : 0,
+          "health" : 0
+        },
+        "frozen" : false
+      }
+    ],
+    "relics" : [
+      {
+        "itemId" : "ration",
+        "price" : 3,
+        "bonus" : {
+          "attack" : 0,
+          "health" : 0
+        },
+        "frozen" : false
+      }
+    ]
+  },
+  {
+    "type" : "TavernItemFrozen",
+    "seq" : 5,
+    "kind" : "HERO",
+    "slot" : 1,
+    "itemId" : "bard"
+  },
+  {
+    "type" : "TavernItemUnfrozen",
+    "seq" : 6,
+    "kind" : "RELIC",
+    "slot" : 0,
+    "itemId" : "ration"
+  },
+  {
+    "type" : "TavernBuffed",
+    "seq" : 7,
+    "bonus" : {
+      "attack" : 1,
+      "health" : 1
+    },
+    "permanent" : true
+  },
+  {
+    "type" : "RelicStocked",
+    "seq" : 8,
+    "relicId" : "ration",
+    "slot" : 1,
+    "price" : 2
+  },
+  {
+    "type" : "HeroBought",
+    "seq" : 9,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "slot" : 0,
+    "bandIndex" : 0,
+    "stats" : {
+      "attack" : 2,
+      "health" : 2
+    },
+    "price" : 3
+  },
+  {
+    "type" : "RelicBought",
+    "seq" : 10,
+    "relicId" : "ration",
+    "slot" : 0,
+    "targetUnitId" : "u1",
+    "price" : 3
+  },
+  {
+    "type" : "RelicBought",
+    "seq" : 11,
+    "relicId" : "royal_decree",
+    "slot" : 1,
+    "price" : 3
+  },
+  {
+    "type" : "HeroSold",
+    "seq" : 12,
+    "unitId" : "u2",
+    "heroId" : "merchant",
+    "bandIndex" : 1,
+    "level" : 2,
+    "gold" : 2
+  },
+  {
+    "type" : "HeroesReordered",
+    "seq" : 13,
+    "from" : 1,
+    "to" : 0,
+    "order" : [
+      "u2",
+      "u1"
+    ]
+  },
+  {
+    "type" : "HeroesMerged",
+    "seq" : 14,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "source" : "BAND",
+    "removedUnitId" : "u3",
+    "before" : {
+      "attack" : 2,
+      "health" : 2
+    },
+    "after" : {
+      "attack" : 3,
+      "health" : 3
+    }
+  },
+  {
+    "type" : "XpGained",
+    "seq" : 15,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "before" : 1,
+    "after" : 2
+  },
+  {
+    "type" : "LevelUp",
+    "seq" : 16,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "level" : 2
+  },
+  {
+    "type" : "StatsChanged",
+    "seq" : 17,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "position" : "home:0",
+    "attackBefore" : 2,
+    "attackAfter" : 3,
+    "healthBefore" : 2,
+    "healthAfter" : 3,
+    "temporary" : false,
+    "source" : "ration"
+  },
+  {
+    "type" : "PerkGained",
+    "seq" : 18,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "position" : "home:0",
+    "perk" : "IRON_BLADE"
+  },
+  {
+    "type" : "PerkGained",
+    "seq" : 19,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "position" : "home:0",
+    "perk" : "WARD",
+    "replaced" : "IRON_BLADE"
+  },
+  {
+    "type" : "PerkConsumed",
+    "seq" : 20,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "position" : "home:0",
+    "perk" : "WARD"
+  },
+  {
+    "type" : "AbilityTriggered",
+    "seq" : 21,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "position" : "home:0",
+    "trigger" : "FALL",
+    "level" : 2
+  },
+  {
+    "type" : "TurnEnded",
+    "seq" : 22,
+    "turn" : 1
+  },
+  {
+    "type" : "BattleStarted",
+    "seq" : 23,
+    "turn" : 1,
+    "playerSide" : "HOME",
+    "home" : [
+      {
+        "unitId" : "u1",
+        "heroId" : "aoi",
+        "attack" : 3,
+        "health" : 3,
+        "level" : 2,
+        "perk" : "WARD"
+      },
+      {
+        "unitId" : "u2",
+        "heroId" : "farmhand",
+        "attack" : 1,
+        "health" : 3,
+        "level" : 1
+      }
+    ],
+    "away" : [
+      {
+        "unitId" : "u3",
+        "heroId" : "merchant",
+        "attack" : 4,
+        "health" : 1,
+        "level" : 1
+      }
+    ]
+  },
+  {
+    "type" : "Clash",
+    "seq" : 24,
+    "number" : 1,
+    "homeUnitId" : "u1",
+    "awayUnitId" : "u3"
+  },
+  {
+    "type" : "DamageDealt",
+    "seq" : 25,
+    "sourceUnitId" : "u3",
+    "sourcePosition" : "away:0",
+    "targetUnitId" : "u1",
+    "targetPosition" : "home:0",
+    "amount" : 4,
+    "healthBefore" : 3,
+    "healthAfter" : -1,
+    "kind" : "ATTACK"
+  },
+  {
+    "type" : "DamageDealt",
+    "seq" : 26,
+    "sourceUnitId" : "u1",
+    "sourcePosition" : "home:0",
+    "targetUnitId" : "u3",
+    "targetPosition" : "away:0",
+    "amount" : 3,
+    "healthBefore" : 1,
+    "healthAfter" : -2,
+    "kind" : "ABILITY"
+  },
+  {
+    "type" : "Knockout",
+    "seq" : 27,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "position" : "home:0",
+    "targetUnitId" : "u3"
+  },
+  {
+    "type" : "UnitFell",
+    "seq" : 28,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "position" : "home:0"
+  },
+  {
+    "type" : "UnitRevived",
+    "seq" : 29,
+    "unitId" : "u1",
+    "heroId" : "aoi",
+    "position" : "home:0",
+    "stats" : {
+      "attack" : 1,
+      "health" : 1
+    }
+  },
+  {
+    "type" : "UnitSummoned",
+    "seq" : 30,
+    "unitId" : "u4",
+    "heroId" : "scarecrow",
+    "position" : "home:1",
+    "stats" : {
+      "attack" : 1,
+      "health" : 1
+    },
+    "level" : 1,
+    "summonerUnitId" : "u2"
+  },
+  {
+    "type" : "SummonFailed",
+    "seq" : 31,
+    "tokenId" : "wolf",
+    "side" : "HOME",
+    "summonerUnitId" : "u2"
+  },
+  {
+    "type" : "LineShifted",
+    "seq" : 32,
+    "side" : "HOME",
+    "order" : [
+      "u1",
+      "u4"
+    ]
+  },
+  {
+    "type" : "BattleEnded",
+    "seq" : 33,
+    "homeOutcome" : "WIN",
+    "playerOutcome" : "WIN",
+    "reason" : "ELIMINATION",
+    "clashes" : 3
+  },
+  {
+    "type" : "CrownsChanged",
+    "seq" : 34,
+    "before" : 0,
+    "after" : 1
+  },
+  {
+    "type" : "HeartsChanged",
+    "seq" : 35,
+    "before" : 4,
+    "after" : 5,
+    "reason" : "MERCY"
+  },
+  {
+    "type" : "RunEnded",
+    "seq" : 36,
+    "status" : "WON",
+    "turn" : 12,
+    "crowns" : 10,
+    "hearts" : 3
+  }
+]

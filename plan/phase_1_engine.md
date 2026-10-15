@@ -258,6 +258,15 @@ Document each event in Javadoc with one line — Step 24 copies these into the R
 
 **Verify:** tests green; golden file reviewed by eye once (it is the frontend's contract).
 
+**As built (2026-10-14):** 33 records nested in `GameEvent` (`UnitHurt` dropped: `DamageDealt` carries the same facts;
+`TurnEnded`, `TavernBuffed`, `RelicStocked`, `UnitRevived` added), each with `seq` first and a one-line Javadoc;
+`@JsonTypeInfo(use = SIMPLE_NAME)`; small enums `GoldReason`, `ItemKind`, `MergeSource`, `DamageKind`,
+`BattleEndReason`, `HeartsReason`; `UnitView` for `BattleStarted`. `EventLog(lastSeq)`, `append` (returns the numbered
+copy), `appendAll` (renumbers), `since`, `of(type)`, `story()`. `EventJson` writes lists through `writerFor(TypeReference)`
+and pins the pretty printer to `\n`. Shared `com.forgottenheroes.engine.json.EngineJsonModule` (rank, unit id, position)
+used by `ContentLoader` too; both mappers turn is-getter auto-detection off. `Position.parse("home:0")`. The golden file
+is rewritten with `-Dgolden.update=true`. 11 tests, 140 in the module.
+
 **Commit:** `step-12: game events and JSON contract`
 
 **Check your understanding:** Why include "before" values in `StatsChanged` when the client could track them itself?

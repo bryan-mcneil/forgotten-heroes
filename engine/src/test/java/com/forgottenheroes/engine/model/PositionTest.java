@@ -23,4 +23,13 @@ class PositionTest {
     void printsLikeAScenarioFile() {
         assertThat(new Position(Side.AWAY, 2)).hasToString("away:2");
     }
+
+    @Test
+    void parseReadsItBack() {
+        assertThat(Position.parse("away:2")).isEqualTo(new Position(Side.AWAY, 2));
+        assertThat(Position.parse("HOME:0")).isEqualTo(new Position(Side.HOME, 0));
+        assertThatThrownBy(() -> Position.parse("nowhere")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Position.parse(null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Position.parse("home:9")).isInstanceOf(IllegalArgumentException.class);
+    }
 }

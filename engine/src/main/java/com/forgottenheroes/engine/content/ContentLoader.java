@@ -1,6 +1,7 @@
 package com.forgottenheroes.engine.content;
 
-import com.forgottenheroes.engine.model.Rank;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.forgottenheroes.engine.json.EngineJsonModule;
 import com.networknt.schema.Error;
 import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaRegistry;
@@ -10,17 +11,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import tools.jackson.core.JacksonException;
-import tools.jackson.core.JsonGenerator;
-import tools.jackson.core.JsonParser;
-import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.SerializationContext;
-import tools.jackson.databind.ValueDeserializer;
-import tools.jackson.databind.ValueSerializer;
 import tools.jackson.databind.json.JsonMapper;
-import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.ObjectNode;
 
 /**
@@ -36,9 +30,8 @@ public final class ContentLoader {
     private static final String SCHEMA = "content/content.schema.json";
     private static final ObjectMapper MAPPER = JsonMapper.builder()
         .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        .addModule(new SimpleModule("content")
-            .addDeserializer(Rank.class, new RankFromNumber())
-            .addSerializer(Rank.class, new RankToNumber()))
+        .changeDefaultVisibility(visibility -> visibility.withIsGetterVisibility(JsonAutoDetect.Visibility.NONE))
+        .addModule(new EngineJsonModule())
         .build();
 
     private ContentLoader() { }
@@ -115,20 +108,5 @@ public final class ContentLoader {
             throw new ContentException("missing classpath resource " + resource);
         }
         return in;
-    }
-
-    /** The files write a rank as the number 1..6; the records hold the enum. */
-    private static final class RankFromNumber extends ValueDeserializer<Rank> {
-        @Override
-        public Rank deserialize(JsonParser parser, DeserializationContext context) {
-            return Rank.of(parser.getIntValue());
-        }
-    }
-
-    private static final class RankToNumber extends ValueSerializer<Rank> {
-        @Override
-        public void serialize(Rank rank, JsonGenerator generator, SerializationContext context) {
-            generator.writeNumber(rank.number());
-        }
     }
 }
