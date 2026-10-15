@@ -165,6 +165,11 @@ public final class RunState {
         lastEventSeq = seq;
     }
 
+    /** The band as a ghost for other players: hero ids, stats, levels, perks and nothing else. */
+    public com.forgottenheroes.engine.session.BandSnapshot toSnapshot() {
+        return com.forgottenheroes.engine.session.BandSnapshot.of(band);
+    }
+
     /** The next unit id for this run: u1, u2, u3 ... a reloaded run keeps counting. */
     public UnitId nextUnitId() {
         return new UnitId("u" + nextUnitNumber++);
