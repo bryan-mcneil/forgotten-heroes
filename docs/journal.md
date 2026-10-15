@@ -70,3 +70,12 @@ files one folder too shallow at first: the build stayed green with zero tests, w
 line matters more than `BUILD SUCCESS`. Broke the test on purpose and read `expected: 3 / but was: 2`. CI
 gained a `java` job on Corretto 25, now a required check beside `docs`. What I learned: how Maven uses the
 pom to manage dependencies, and how `./mvnw verify` runs the tests.
+
+## 2026-10-14 — Step 08, core value types
+
+First real Java in the engine: package `model` with `Rules` (every rulebook number in one holder), the records
+`Stats`, `Xp`, `Position` and `UnitId`, and the enums `Rank`, `Side` and `Perk`, all immutable and validated
+in compact constructors. Seven test classes, 41 tests; the GDD's turn and XP tables became parameterized
+tests. Gotcha: VS Code auto-imported a wrong package because it had not yet seen the poms; delete the import
+and reload the window once. What I learned: how to set up model types with their tests, and about Java types
+like enums and records.
