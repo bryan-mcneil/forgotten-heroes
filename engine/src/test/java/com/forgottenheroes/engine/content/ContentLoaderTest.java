@@ -15,7 +15,7 @@ class ContentLoaderTest {
     @Test
     void theRealContentLoadsAndPrintsItsSummary() {
         System.out.println("content: " + CONTENT.summary());
-        assertThat(CONTENT.summary()).startsWith("heroes 6 (I=6");
+        assertThat(CONTENT.summary()).startsWith("heroes 6 (I=6").endsWith("relics 16 (I=2 II=3 III=2 IV=2 V=3 VI=4)");
     }
 
     @Test

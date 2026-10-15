@@ -4,13 +4,16 @@ import static com.forgottenheroes.engine.resolver.RuleViolation.require;
 
 import com.forgottenheroes.engine.action.Action;
 import com.forgottenheroes.engine.content.ContentIndex;
+import com.forgottenheroes.engine.content.EffectDefinition;
 import com.forgottenheroes.engine.content.HeroDefinition;
+import com.forgottenheroes.engine.content.RelicDefinition;
 import com.forgottenheroes.engine.content.Trigger;
 import com.forgottenheroes.engine.event.EventLog;
 import com.forgottenheroes.engine.event.GameEvent.GoldReason;
 import com.forgottenheroes.engine.event.GameEvent.HeartsReason;
 import com.forgottenheroes.engine.event.GameEvent.HeroBought;
 import com.forgottenheroes.engine.event.GameEvent.MergeSource;
+import com.forgottenheroes.engine.event.GameEvent.RelicBought;
 import com.forgottenheroes.engine.model.Band;
 import com.forgottenheroes.engine.model.ItemKind;
 import com.forgottenheroes.engine.model.RunState;
@@ -38,9 +41,11 @@ import java.util.List;
 public final class TavernResolver {
 
     private final ContentIndex content;
+    private final EffectApplier effects;
 
     public TavernResolver(ContentIndex content) {
         this.content = content;
+        this.effects = new EffectApplier(content);
     }
 
     public TavernResult apply(RunState state, Action action) {
@@ -54,7 +59,7 @@ public final class TavernResolver {
             case Action.Freeze f -> freeze(state, log, f.kind(), f.slot());
             case Action.Unfreeze u -> unfreeze(state, log, u.kind(), u.slot());
             case Action.Buy b -> buy(state, log, triggers, dice, b.slot(), b.bandIndex());
-            case Action.BuyRelic b -> throw new UnsupportedOperationException("BuyRelic arrives in Step 15");
+            case Action.BuyRelic b -> buyRelic(state, log, triggers, dice, b.slot(), b.bandIndex());
             case Action.Sell s -> sell(state, log, triggers, s.bandIndex());
             case Action.Move m -> move(state, log, m.from(), m.to());
             case Action.Merge m -> merge(state, log, triggers, dice, m.from(), m.to());
@@ -138,6 +143,42 @@ public final class TavernResolver {
             triggers.add(PendingTrigger.of(Trigger.BUY, copy.id()));
             triggers.add(PendingTrigger.of(Trigger.ALLY_SUMMONED, copy.id()));
         }
+    }
+
+    /**
+     * GDD §6: a relic is paid, taken off the shelf and used at once. Relics that act on "one hero" need
+     * the band index of that hero; the others pick their own targets and refuse an index.
+     */
+    private void buyRelic(RunState state, EventLog log, List<PendingTrigger> triggers, GameRandom dice, int slot, Integer bandIndex) {
+        TavernSlot item = requireItem(state, ItemKind.RELIC, slot);
+        RelicDefinition relic = content.relic(item.itemId());
+        Band band = state.band();
+        require(state.gold() >= item.price(), Code.NOT_ENOUGH_GOLD,
+            relic.name() + " costs " + item.price() + " gold, you have " + state.gold());
+        if (relic.needsChosenTarget()) {
+            require(bandIndex != null, Code.TARGET_REQUIRED, relic.name() + " needs a hero to use it on");
+            require(bandIndex < band.size(), Code.INVALID_INDEX,
+                "band index " + bandIndex + " does not exist (" + band.size() + " heroes)");
+        } else {
+            require(bandIndex == null, Code.TARGET_NOT_ALLOWED, relic.name() + " picks its own targets");
+            require(!band.isEmpty() || !targetsUnits(relic), Code.TARGET_REQUIRED, relic.name() + " needs a hero on the band");
+        }
+        Unit chosen = bandIndex == null ? null : band.at(bandIndex);
+
+        GoldMutator.spend(state, log, item.price(), GoldReason.BUY_RELIC);
+        TavernMutator.takeRelic(state, slot);
+        log.append(new RelicBought(0, relic.id(), slot, chosen == null ? null : chosen.id(), item.price()));
+        EffectContext context = EffectContext.forRelic(state, chosen, dice.fork("relic"), log, triggers, relic.id());
+        for (EffectDefinition effect : relic.effects()) {
+            effects.apply(effect, context);
+        }
+        if (chosen != null && band.contains(chosen.id())) {
+            triggers.add(PendingTrigger.of(Trigger.EAT_RELIC, chosen.id()));
+        }
+    }
+
+    private static boolean targetsUnits(RelicDefinition relic) {
+        return relic.effects().stream().anyMatch(effect -> effect.target() != null);
     }
 
     /** GDD §4.3: a hero sells for gold equal to its level; selling is not a Fall. */

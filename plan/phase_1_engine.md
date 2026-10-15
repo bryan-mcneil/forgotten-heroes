@@ -392,6 +392,15 @@ targets use `rng.fork("relic")`.
 
 **Verify:** tests green; `relics.json` validates; 16 relics listed by `ContentIndex.summary()`.
 
+**As built (2026-10-14):** `EffectApplier(content).apply(effect, EffectContext)` handles `MODIFY_STATS` (temporary when
+`untilEndOfBattle` in the tavern; always temporary in a battle), `GIVE_PERK`, `GIVE_XP` (+1/+1 per point, bonus slot and
+`LEVEL_UP` on a level-up), `BUFF_TAVERN`, `KILL`, `DEAL_DAMAGE` (with the rank condition) and `GAIN_GOLD`; `SUMMON`,
+`STOCK_RELIC`, `SET_HEALTH_PERCENT` throw until Steps 16/18. `Targeting.select(spec, context)` v1. `EffectContext.forRelic`.
+`BuyRelic`: `TARGET_REQUIRED` / `TARGET_NOT_ALLOWED` / `NOT_ENOUGH_GOLD` / `SLOT_EMPTY` / `INVALID_INDEX`; events
+`GoldChanged → RelicBought → effects…`; triggers `EAT_RELIC` (chosen hero still on the band), `FALL` (Poison Vial), `LEVEL_UP`
+(Tome). `TavernMutator.buff`, `UnitMutator.givePerk/consumePerk/damage/fell`. `relics.json`: the 16 rows of GDD §6
+(`ContentIndex.summary()` ends with `relics 16 (I=2 II=3 III=2 IV=2 V=3 VI=4)`). 11 tests in `RelicTest`, 201 in the module.
+
 **Commit:** `step-15: relics, perks and effect applier`
 
 **Check your understanding:** Why does Battle Brew need the "temporary" flag while Ration does not, if both are bought in the tavern?
