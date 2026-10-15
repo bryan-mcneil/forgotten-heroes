@@ -219,6 +219,14 @@ helpers like `unit("aoi", 2, 2)` and `band(...)` — you will use it everywhere.
 
 **Verify:** tests green; `assertInvariants` throws on a 6-unit band in a test.
 
+**As built (2026-10-14):** `Unit` as described plus `maxHealth()`, `statsBeforeDamage()` (what a merge compares and a ghost
+keeps), `setPermanentStats(total)` (the merge rule), `resetStats` (Phoenix Feather), `fromToken`, `copy()`; `health()` may
+be negative during a battle, `stats()` floors it at 0. `Band` refuses a duplicate id. `TavernSlot` is a record with the
+`EMPTY` sentinel (no nulls); the bonus slot is addressed as hero slot index `heroSlots().size()`; `addRelicSlot` holds a
+stocked relic when no relic slot is empty. `RunState` adds `rollsThisTurn`, `lastEventSeq`, `nextUnitId()` (the counter
+from `UnitId.Sequence`, now deleted) and `Rules.MAX_GOLD = 50`. New enums `RunStatus`, `Outcome`; record
+`BattleSummary`; class `Counters`. `TestFixtures` lives in `engine/src/test/java/.../testing/`. 45 tests, 129 in the module.
+
 **Commit:** `step-11: unit, band, tavern and run state`
 
 **Check your understanding:** Why does `Unit` keep *base*, *permanent* and *temporary* stats separately instead of one number?
