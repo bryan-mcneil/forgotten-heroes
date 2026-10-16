@@ -70,6 +70,10 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.16.0</version>
+          <configuration>
+            <!-- keep method parameter names in the class files: Spring reads @PathVariable names from them (Step 26) -->
+            <parameters>true</parameters>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

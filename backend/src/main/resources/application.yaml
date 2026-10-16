@@ -1,6 +1,9 @@
 spring:
   application:
     name: forgotten-heroes-backend
+  jackson:
+    # absent values are left out of the JSON instead of written as null (same as the engine's EventJson)
+    default-property-inclusion: non_null
 
 server:
   port: 8080
