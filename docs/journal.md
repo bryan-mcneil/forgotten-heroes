@@ -365,3 +365,32 @@ actions and events as `oneOf` with a `type` discriminator and the validation ann
 375 tests across three modules (engine 342, sim 9, backend 24). Lesson: 400 means "I could not read or validate your
 request", 422 means "I read it fine and the rules say no"; a DTO is the wire shape and the engine record is the truth,
 and keeping them apart is what lets the engine change without breaking a client that was generated from the contract.
+
+## 2026-10-16 — Step 27, services and in-memory repositories
+
+Built by Claude at Bryan's request, right after Step 26 merged. The API now plays: `RunService` is the use-case layer
+("load → engine → save") and knows storage only through four interfaces in `repo/` (`RunRepository`,
+`GhostRepository`, `BattleLogRepository`, `ProfileRepository`), each with an `InMemory*` map behind it. The run
+repository stores JSON text through the engine's `RunStateJson`, so every read hands back a fresh object exactly as
+DynamoDB will in Step 28, and a bug that mutates state after saving would show up today. `CurrentUser` is an interface
+whose stub answers `"dev"`; controllers pass the id down and services never see a request. `SeedSource` draws one
+`SecureRandom` number per run (the engine itself never draws randomness) and a test hands in `() -> 42L` to replay the
+same shop. Matchmaking is an interface too; `InMemoryGhostPool` returns the mirror and Step 30 adds ghosts and bots.
+Three decisions logged in the PLAN changelog: the in-memory beans are plain `@Repository` rather than
+`@Profile("local") @Primary`, because a profile-gated set leaves the default run with no beans until the DynamoDB ones
+exist; the `expectedVersion` check moved into the service now (409 `VERSION_CONFLICT`) with Step 29 keeping the
+conditional write as the storage guard; and the engine gained `GameSession.abandon`, since only the engine may end a
+run. `EndTurnResponse` grew an `events` list (the whole turn for the playback engine) beside `battle` (the battle alone,
+cut between `BattleStarted` and `BattleEnded`, the same shape the replay route returns), and the OpenAPI snapshot was
+refreshed on purpose, which is exactly the review the snapshot test exists for. Tests: `RunServiceTest` with no Spring
+and no mocks plays three turns against the mirror and checks hearts and crowns against the outcomes, ghosts saved per
+turn, replay equal to the live battle, stale version refused before the engine runs, a rule violation leaving the saved
+run untouched, owner isolation, abandon freeing the profile; `ApiHappyPathTest` boots Tomcat on a random port and
+drives start → buy → stale 409 → end turn → replay over real HTTP with `TestRestTemplate`, which in Spring Boot 4 needs
+`spring-boot-starter-restclient` beside `spring-boot-resttestclient`. One detour worth remembering: a 500 "parameter
+name information not available" came back although Step 26 had added `-parameters`; `javap` showed no
+`MethodParameters` in any class, a clean compile brought them back, and the cause was the VS Code Java extension
+rebuilding `target/classes` with its own compiler while files were being written, after which Maven saw the classes as
+up to date. 386 tests across three modules (engine 343, sim 9, backend 34). Lesson: inject the interface, not the
+class, because the service must not change when the storage does, and because a test can then build the whole service
+by hand with maps and a fixed seed.

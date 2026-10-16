@@ -906,6 +906,115 @@
           "battle" : {
             "$ref" : "#/components/schemas/BattleDto"
           },
+          "events" : {
+            "type" : "array",
+            "items" : {
+              "oneOf" : [
+                {
+                  "$ref" : "#/components/schemas/AbilityTriggered"
+                },
+                {
+                  "$ref" : "#/components/schemas/BattleEnded"
+                },
+                {
+                  "$ref" : "#/components/schemas/BattleStarted"
+                },
+                {
+                  "$ref" : "#/components/schemas/BonusSlotOpened"
+                },
+                {
+                  "$ref" : "#/components/schemas/Clash"
+                },
+                {
+                  "$ref" : "#/components/schemas/CrownsChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/DamageDealt"
+                },
+                {
+                  "$ref" : "#/components/schemas/GoldChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeartsChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroBought"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroSold"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroesMerged"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroesReordered"
+                },
+                {
+                  "$ref" : "#/components/schemas/Knockout"
+                },
+                {
+                  "$ref" : "#/components/schemas/LevelUp"
+                },
+                {
+                  "$ref" : "#/components/schemas/LineShifted"
+                },
+                {
+                  "$ref" : "#/components/schemas/PerkConsumed"
+                },
+                {
+                  "$ref" : "#/components/schemas/PerkGained"
+                },
+                {
+                  "$ref" : "#/components/schemas/RelicBought"
+                },
+                {
+                  "$ref" : "#/components/schemas/RelicStocked"
+                },
+                {
+                  "$ref" : "#/components/schemas/RunEnded"
+                },
+                {
+                  "$ref" : "#/components/schemas/RunStarted"
+                },
+                {
+                  "$ref" : "#/components/schemas/StatsChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/SummonFailed"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernBuffed"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernItemFrozen"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernItemUnfrozen"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernRolled"
+                },
+                {
+                  "$ref" : "#/components/schemas/TurnEnded"
+                },
+                {
+                  "$ref" : "#/components/schemas/TurnStarted"
+                },
+                {
+                  "$ref" : "#/components/schemas/UnitFell"
+                },
+                {
+                  "$ref" : "#/components/schemas/UnitRevived"
+                },
+                {
+                  "$ref" : "#/components/schemas/UnitSummoned"
+                },
+                {
+                  "$ref" : "#/components/schemas/XpGained"
+                }
+              ]
+            }
+          },
           "state" : {
             "$ref" : "#/components/schemas/RunStateDto"
           }

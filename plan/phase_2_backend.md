@@ -149,6 +149,29 @@ now use `@MockitoBean` services or a `@SpringBootTest` slice with in-memory repo
 
 **Check your understanding:** Why do we inject interfaces rather than concrete classes into `RunService`?
 
+**As built (2026-10-16):** `repo/` holds four interfaces (`RunRepository`, `GhostRepository`, `BattleLogRepository`,
+`ProfileRepository`), the stored records (`Profile`, `Ghost`, `BattleLog`) and the `InMemory*` implementations; the run
+repository stores JSON text through `RunStateJson`, exactly as DynamoDB will, so a caller always gets a fresh object
+back. **Deviation:** the in-memory beans are plain `@Repository`, not `@Profile("local") @Primary`: with the profile
+condition the default run (`spring-boot:run` without a profile, `@SpringBootTest`) would have no repositories at all
+until Step 28 supplies the DynamoDB ones; Step 28 decides which profile each set belongs to. `MatchmakingService` is an
+interface and `InMemoryGhostPool` returns the mirror only (name `"Mirror"`); `RunService` saves the player's ghost
+itself from `TurnResult.ghost()`. `security/CurrentUser` is an interface with `DevCurrentUser` answering `"dev"`;
+controllers pass `user.id()` down, services never see a request. `SeedSource` (interface, `SecureSeedSource` bean) draws
+the run seed so tests can replay a fixed one. `RunService` checks `expectedVersion` against the saved version before the
+engine runs (409 `VERSION_CONFLICT`); Step 29 keeps the DynamoDB conditional write as the guard against two writers.
+`POST /runs` while a run is in progress is 409 `RUN_ALREADY_ACTIVE` with `activeRunId`. The engine gained
+`GameSession.abandon(state)` (one `RunEnded`, status `ABANDONED`, version bump; refused once over), since only the
+engine may end a run. `EndTurnResponse` now carries `battle` (the battle's events, the same shape the replay route
+returns, cut from the turn's events between `BattleStarted` and `BattleEnded`), `events` (the whole turn in order for
+the playback engine) and `state`; the OpenAPI snapshot was refreshed on purpose. Leaderboard stays 501 until Step 32.
+Tests: `RunServiceTest` (plain JUnit, real engine, in-memory repos: three turns against the mirror, stale version, rule
+violation leaves the saved run untouched, owner isolation, abandon, same seed = same shop), `ApiHappyPathTest`
+(`@SpringBootTest(RANDOM_PORT)` + `TestRestTemplate`, which in Boot 4 needs `spring-boot-starter-restclient` in test
+scope), controller tests with a mocked `CurrentUser`. **Gotcha:** with VS Code open, its Java extension rebuilt
+`target/classes` without `-parameters`, Maven then saw the classes as up to date and `@PathVariable` failed with a 500;
+`./mvnw -pl backend -am clean test` fixes it. 34 backend tests, 386 in all.
+
 ---
 
 ## Step 28 — DynamoDB repositories, Testcontainers, local profile

@@ -64,6 +64,16 @@ public final class GameSession {
         return new ActionResult(state, events);
     }
 
+    /** The player gives up: the run ends {@code ABANDONED} with one {@code RunEnded} event; no battle, no next turn. */
+    public ActionResult abandon(RunState state) {
+        require(!state.status().isOver(), Code.RUN_OVER, "the run is " + state.status());
+        EventLog log = new EventLog(state.lastEventSeq());
+        RunMutator.endRun(state, log, RunStatus.ABANDONED);
+        state.setLastEventSeq(log.lastSeq());
+        state.bumpVersion();
+        return new ActionResult(state, log.events());
+    }
+
     /**
      * GDD §4.2 step 3 and architecture §6: end-of-turn abilities, the band saved as this player's
      * ghost, the battle against the given ghost (the player is home on odd turns), the result

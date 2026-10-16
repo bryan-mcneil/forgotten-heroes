@@ -46,6 +46,12 @@
       <artifactId>spring-boot-starter-webmvc-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- RestTemplateBuilder, which TestRestTemplate needs for the real-HTTP happy-path test (Step 27) -->
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-restclient</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
