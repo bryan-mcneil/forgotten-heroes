@@ -82,6 +82,8 @@ that are mostly configuration, good for low-energy days) · `blocked`.
   and still ships a complete game (Q7: keep it simple, ship fast).
 
 ## 7. Teaching format (every step uses it)
+* **How each part is delivered: `teaching_method.md`** (from Step 28): map → model → worked example with labels →
+  predict/run → fade → break → say it; one chunk per message; three recall questions open a session.
 * **Sensei notes — What**: the concept in two sentences.
 * **Why**: the problem it solves here, in this game.
 * **How**: the mechanics, with the exact commands/files.

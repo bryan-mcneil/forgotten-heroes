@@ -16,6 +16,8 @@
    one thing and predict what happens *before* running it.
 4. **Say it back.** The PR's "What I learned" sentence is the exit ticket.
 5. **Glossary, not jargon.** Every new word is in `glossary_for_beginners.md`.
+6. **The loop (from Step 28).** `teaching_method.md`: map, model, worked example, predict and run, fade, break,
+   say it. One chunk per message, three recall questions at the start of a session.
 
 ---
 
