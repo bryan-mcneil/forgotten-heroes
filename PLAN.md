@@ -36,16 +36,16 @@ Phase 6  Balance & Launch ◄── Phase 5  Infra & CI/CD ◄── Phase 4  St
 | 0 Foundations | 01–06 | tooling verified, public repo with CI, board with all 77 issues, hardened AWS account with budgets | 8 | [plan/phase_0_foundations.md](plan/phase_0_foundations.md) |
 | 1 Game Engine | 07–24 | a complete, tested, deterministic rules engine + simulator you can run from the terminal — **done 2026-10-14**, review in [docs/reviews/phase-1.md](docs/reviews/phase-1.md) | 55 | [plan/phase_1_engine.md](plan/phase_1_engine.md) |
 | 2 Backend | 25–36 | the API running on Lambda in `dev`, saving runs to DynamoDB, protected by Cognito | 40 | [plan/phase_2_backend.md](plan/phase_2_backend.md) |
-| 3 Frontend | 37–56 | the playable game in the browser against the dev API, with sound, keyboard, tests | 75 | [plan/phase_3_frontend.md](plan/phase_3_frontend.md) |
+| 3 Frontend | 37–56 | the playable game in the browser against the dev API, with sound, keyboard, tests | 77 | [plan/phase_3_frontend.md](plan/phase_3_frontend.md) |
 | 4 Studio | 57–60 | Corgi Space Cadet intro, landing page at `corgi.bryanmcneil.pro`, PWA/meta — **deferred until the corgi art arrives (Q14); may follow launch** | 10 | [plan/phase_4_studio.md](plan/phase_4_studio.md) |
 | 5 Infra & CI/CD | 61–69 | push-to-deploy dev, tag-to-deploy prod with approval, `heroes.bryanmcneil.pro`, US-only edge, cost kill switch, alarms, teardown, runbook | 26 | [plan/phase_5_infra_cicd.md](plan/phase_5_infra_cicd.md) |
 | 6 Balance & Launch | 70–77 | tuned content, perf/security/a11y audits, recruiter README, **v1.0.0 live** | 25 | [plan/phase_6_launch.md](plan/phase_6_launch.md) |
-| | | **Total** | **≈ 240 h** (≈ 210 h without `[opt]` steps) — at your 6–7 h/week ≈ 9 months; fastest path ≈ 7–8 months | |
+| | | **Total** | **≈ 242 h** (≈ 212 h without `[opt]` steps) — at your 6–7 h/week ≈ 9 months; fastest path ≈ 7–8 months | |
 
 ---
 
 **Fastest path to live** (Q7 — keep it simple, ship fast): Phases 0–3, 5 and 6 without the ten `[opt]`
-steps; Phase 4 waits for the corgi art (Q14) and can ship as 1.1 after launch. ≈ 210 h ≈ 7–8 months at
+steps; Phase 4 waits for the corgi art (Q14) and can ship as 1.1 after launch. ≈ 212 h ≈ 7–8 months at
 your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged in `knowledge/open_questions.md`.
 
 ## Phase 0 — Foundations
@@ -93,6 +93,7 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 ## Phase 3 — Frontend (React 19, Vite 8, TypeScript)
 - [ ] **37** Vite + React + TS scaffold; ESLint/Prettier; Vitest + RTL; folder structure; `/api` proxy — est 2h
 - [ ] **38** Theme: Tailwind v4 tokens, fonts, pixel utilities, app shell, dark tavern look — est 3h
+- [ ] **38a** Kanji layer (Q33, GDD §12): final relic → kanji map, `kanji`/`reading`/`meaning` content fields + schema, pixel kanji font, glyph check on `/dev/ui`; decide how merging grows the kanji — est 2h
 - [ ] **39** Asset pipeline I (Python): inventory + extract SV heroes, monsters, icons, FX → normalized frames — est 4h
 - [ ] **40** `Sprite` component + `/dev/gallery`; confirm every hero's art pick; update GDD art column — est 3h
 - [ ] **41** Asset pipeline II: atlas packing, manifest with hashes, private S3 bucket publish/pull scripts — est 3h
@@ -185,6 +186,7 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 | 2026-10-14 | Step 08: `Position(Side, int index)` is in (the PLAN row names it, the step body did not; index 0 = front, `toString` prints `home:0` like the scenario files); `MAX_STAT` lives in `Rules`, not `Stats`; `Xp` gains `MAX` and `ZERO`; the counter factory is the nested `UnitId.Sequence` (one per run, replaced by a seeded one in Step 09). VS Code gotcha: the Java extension auto-imported `main.java.com.…` because the folder was opened before any pom existed — delete the import and *Developer: Reload Window* once | every rulebook number in one holder; a nested sequence keeps the factory on `UnitId` as the plan implies |
 | 2026-10-14 | Step 07: the `java` CI job (`./mvnw -B -ntp verify` on Corretto 25 via `actions/setup-java@v6` with the Maven cache) is a **required** check beside `docs` from this step on (`infra/github/branch-protection.json`); versions pinned at the latest on Maven Central that day (Spring Boot BOM 4.1.1, compiler 3.16.0, surefire 3.6.0, JaCoCo 0.8.15, enforcer 3.6.3, wrapper 3.3.4, Maven 3.9.16); the wrapper was set up before the poms so `./mvnw -v` is the first moment | rule 2 says Verify must pass in CI, so a green engine build must gate every merge from the first test on; `setup-java@v4` in the plan is two majors behind |
 | 2026-10-14 | Step 06: IAM Identity Center and `aws configure sso` replaced by an IAM user `bryan` (MFA, **no access keys**) and `aws login` (AWS CLI ≥ 2.32: browser sign-in, temporary credentials, 12 h) until the Paid-plan upgrade; Identity Center joins the Step 77 upgrade checklist; the template's budgets are named `forgotten-heroes-5` / `forgotten-heroes-20`; `check-env.sh` now requires AWS CLI ≥ 2.32 | Q32 — enabling Identity Center creates an AWS Organization, and AWS states that doing so on a Free-plan account upgrades it to Paid and expires the credits immediately; the smaller *account instance* cannot hand out CLI credentials |
+| 2026-10-15 | **Step 38a — Kanji layer** inserted after Step 38 (Phase 3 est 75 → 77 h; the numbering 01–77 stays, so "77 steps" elsewhere means the numbered ones): relics drawn as kanji whose meaning is the effect, Japanese numerals for ranks and levels, merging grows the kanji (木 → 林 → 森; compounds such as 田 + 力 = 男), a "kanji you met" run-over card; the design lives in GDD §12 and Step 38a closes its open points; rendering hooks added to Steps 40, 46, 47 and 52; `create-issues.sh` accepts a letter suffix so 38a gets an issue | Q33 — *The Forgotten Kanji* teaches Japanese and Forgotten Heroes can teach a little too, as presentation + content data only: no rule change, no localisation, $0 |
 
 ## Where the thinking lives
 `knowledge/` — research & design: SAP deep dive, tech stack, costs, GDD, architecture, assets, UX/sound, testing, PM, environment, glossary, learning path, open questions.

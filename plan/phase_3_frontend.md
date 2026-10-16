@@ -4,7 +4,7 @@
 the game is playable in a browser against the dev API — tavern, drag & drop, keyboard, battle
 playback with sound — with unit, component, end-to-end and accessibility tests.
 
-Design spec: `knowledge/ux_visual_sound_design.md`. Contract: the OpenAPI file from Step 26 and
+Design spec: `knowledge/ux_visual_sound_design.md`; kanji layer: GDD §12 (Step 38a). Contract: the OpenAPI file from Step 26 and
 the event catalogue from Step 24. Folder map: `knowledge/architecture.md` §8. Local loop:
 `docker compose up -d` · backend on `:8080` (`local` profile) · `npm run dev` on `:5173`.
 
@@ -74,6 +74,54 @@ check text contrast with the browser's accessibility panel (≥ 4.5:1).
 
 ---
 
+## Step 38a — Kanji layer: design, content fields and pixel font
+**Branch:** `step-38a-kanji-layer` · **est 2h** · *inserted 2026-10-15 (Q33, GDD §12)*
+
+**Goal:** every kanji the game will ever show exists as data and renders pixel-crisp, and the design
+questions are closed before any card is drawn.
+
+**You will have:** GDD §12 finalised (the relic → kanji table, which heroes carry a kanji, and how
+merging grows it — triples on the level badge, compounds on hero + perk, or compounds kept as a v2
+door); optional `kanji`, `reading`, `meaning` strings on `HeroDefinition` and `RelicDefinition`, in
+`content.schema.json`, and filled in `heroes.json`/`relics.json`; one loader test that every relic has
+all three; the backend's content DTO and `openapi.json` updated if Step 26's DTOs list fields by hand;
+a pixel kanji font (Misaki or PixelMplus — free licences, licence file committed next to the font) as
+`--font-kanji` in `tokens.css` with a `.kanji` utility and a `unicode-range` so only kanji use it; a
+"Kanji" section on `/dev/ui` showing the 16 relic glyphs, 一〜六 and 木 林 森 at 1×, 2×, 3×; if a
+decision changes the design (for example readings exported from the Forgotten Kanji toolkit), an ADR row
+in `architecture.md` §13.
+
+**Sensei notes**
+- *What:* a **content field** is data the engine carries but never uses in a rule — exactly like
+  `sprite`. The frontend reads it; resolvers and mutators do not know it exists.
+- *Why now:* Step 38 just created the font tokens and Step 40 is where you judge art by eye, so the
+  glyphs must exist to be judged. Doing the data first means Steps 46, 47 and 52 only draw.
+- *How:* a Java record takes the new fields as `String`s that may be `null` (the compact constructor
+  leaves them unchecked); the schema lists them under `properties`, not `required`; `@font-face` with
+  `font-display: swap` and `unicode-range: U+3000-30FF, U+4E00-9FFF` (kana and kanji) so Latin text
+  keeps Pixelify Sans; a 3× glyph of an 8 × 8 font is `font-size: 24px` — integer multiples only, as
+  with sprites.
+- *Where:* `engine/src/main/java/com/forgottenheroes/engine/content/{Hero,Relic}Definition.java`,
+  `engine/src/main/resources/content/` (schema + JSON), `frontend/public/fonts/`,
+  `frontend/src/styles/tokens.css`, `frontend/src/dev/`, `knowledge/game_design_document.md` §12.
+
+**Do this:** read GDD §12 together and write the answers to its open points into the section; add the
+fields and values (Bryan types the JSON; the kanji in GDD §12 are copy-paste-safe); add the font, the
+token and the `/dev/ui` section; note the font licence for Step 74's `CREDITS.md`.
+
+**Verify:** `./mvnw -pl engine -B -ntp verify` (schema accepts the fields; the loader test passes;
+nothing else changed — the golden event file is untouched); `/dev/ui` "Kanji" section shows 16 relic
+glyphs, 一〜六 and 木 林 森 pixel-crisp at 3× with no empty boxes; `npm run build` keeps the Step 38 CSS
+budget and the font file is ≤ 100 KB (a kanji subset of Misaki is far smaller); if the backend DTO
+changed, `./mvnw -pl backend -B -ntp verify` regenerates `backend/target/openapi.json` and its diff shows
+only the three new fields.
+
+**Commit:** `step-38a: kanji layer design, content fields and pixel font`
+
+**Check your understanding:** 1) Why may the engine *carry* `kanji` but never *read* it in a resolver? 2) What does `unicode-range` do, and why is it better than wrapping every kanji in a `<span class="kanji">`? 3) Which rule stops "田 + 力 = 男" from being a real merge of two different heroes, and where is that door written down?
+
+---
+
 ## Step 39 — Asset pipeline I: inventory and frame extraction (Python)
 **Branch:** `step-39-asset-extract` · **est 4h**
 
@@ -130,7 +178,7 @@ monster battlers, 1,023 icons exist; we convert only what the GDD lists); run `b
 generated per frame count, or swaps `src` via `requestAnimationFrame` for `<img>` — choose CSS
 steps on a horizontal strip for performance), `useFrames(key, anim)` reading
 `frontend/public/assets/frames/…` directly for now (atlases come in Step 41), `/dev/gallery`
-route listing every hero/token with idle/attack/hit/fall animations side by side, the GDD art
+route listing every hero/token with idle/attack/hit/fall animations side by side (each cameo's kanji and every relic glyph beside the sprite, in the Step 38a font), the GDD art
 column updated with final picks (remove every *(verify)*).
 
 **Sensei notes**
@@ -297,8 +345,8 @@ screen's click is the browser's audio-unlock gesture (Step 50 relies on it).
 **You will have:** `TavernScreen` composed of `Hud` (hearts, crowns, turn, rank, gold, End Turn),
 `BandRow` (5 slots, empty slot placeholders, front/back labels), `TavernRow` (hero slots + relic
 slots, frozen overlay, prices, Roll/Freeze buttons), `HeroCard` (sprite, name, attack/health
-badges, level pips, rank pips, perk badge, temporary-stat styling, "can't afford" state),
-`RelicCard`, `InfoBar` (ability text of the hovered/focused card), fixtures in
+badges, level and rank as kanji numerals 一〜六 (GDD §12), perk badge, temporary-stat styling, "can't afford" state),
+`RelicCard` (the kanji glyph is the icon), `InfoBar` (ability text of the hovered/focused card, plus the kanji's reading and meaning), fixtures in
 `src/test/fixtures/tavern.json`; `/dev/tavern-static` route rendering the fixture.
 
 **Sensei notes**
@@ -327,7 +375,8 @@ relics, band heroes) and droppables (band slots, band heroes for merge/target, s
 fallback (select → valid targets glow → click to act → Esc cancels); `Roll`, `Freeze`, `End Turn`
 buttons → actions; optimistic **pending** state (card shimmer; inputs locked for that card only);
 server `422` → shake + info-bar message; `409` → silent reload + toast "Synced"; End Turn →
-`endTurn()` → navigate to `/battle`.
+`endTurn()` → navigate to `/battle`; after a merge or a perk relic the hero's badge shows the grown kanji
+as decided in Step 38a (木 → 林 → 森; 田 + 力 = 男 — GDD §12).
 
 **Sensei notes**
 - *What:* drag & drop is just "which draggable ended over which droppable → which action".
@@ -466,7 +515,8 @@ tasks > 50 ms during playback at 4×.
 **You will have:** `ResultBanner` (VICTORY/DEFEAT/DRAW with hearts/crowns ticking),
 "Continue" → store applies the returned post-battle state → `/tavern` for turn + 1;
 `RunOverScreen` (`/results`): WON (10 crowns) or LOST (0 hearts) with run stats (turns, heroes
-used, best battle), "Play again" (`startRun`) and "Home"; `/home` Continue works mid-run; page
+used, best battle) and a "Kanji you met this run" card (every glyph seen in the run with reading and
+meaning, link to *The Forgotten Kanji* — GDD §12), "Play again" (`startRun`) and "Home"; `/home` Continue works mid-run; page
 refresh during battle reloads the battle log; `abandon` with confirm dialog in the settings drawer.
 
 **Verify:** play a full run against bot ghosts on dev to a WON or LOST screen; refresh at every screen → state restored.

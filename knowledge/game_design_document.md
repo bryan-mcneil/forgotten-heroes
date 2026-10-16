@@ -344,7 +344,7 @@ see "no opponent found".
 ## 10. Out of scope for v1.0 (write it down so it stops nagging)
 8-player Versus · live rooms · daily seeds · cosmetics · achievements · in-app purchases · mobile apps ·
 localization beyond English · chat/social · spectating live · more than 36 heroes (Q7: keep it simple,
-ship fast).
+ship fast) · the kanji-layer doors in §12.2 (job kanji, battle captions, cross-app seeding).
 
 ---
 
@@ -360,3 +360,97 @@ Beat sheet for the ~5-second skippable intro (Phase 4):
 You will supply the corgi art later (Q14) — Phase 4 is deferred until it arrives and may follow the
 launch; a placeholder sprite lets the code be built and tested whenever you get to it. The studio also
 gets a one-page site on Hostinger at `corgi.bryanmcneil.pro` (logo, game link, GitHub link).
+
+---
+
+## 12. Kanji layer (Q33 — idea recorded 2026-10-15, designed in Step 38a)
+
+*The Forgotten Kanji* teaches Japanese, and its six heroes already carry their name kanji here (§5). This
+section holds the ideas we agreed to pursue so the tavern can teach a little too. Ground rules: it is
+**presentation and content data only** — the engine carries the fields but no resolver or mutator reads
+them, no rule changes, the event log is untouched, no localisation (§10 stands: kanji are flavour on an
+English UI), and it costs $0.
+
+### 12.1 Adopted as v1 candidates (Step 38a makes the final call)
+
+**1. Relics are kanji.** The shop icon *is* the glyph, drawn in a free pixel kanji font so it sits beside the
+Time Fantasy sprites, and the relic's effect is the kanji's meaning — the game is the mnemonic. Hover or
+focus shows reading and meaning in the info bar. First pass (Step 38a may swap a row for a more common kanji):
+
+| Relic | Kanji | Reading | Meaning |
+|---|---|---|---|
+| Ration | 食 | shoku | eat |
+| Fairy Charm | 精 | sei | spirit |
+| Battle Brew | 酒 | sake | alcohol |
+| Iron Blade | 力 | chikara | power |
+| Poison Vial | 毒 | doku | poison |
+| Chainmail | 守 | mamoru | protect |
+| Feast | 飯 | meshi | meal |
+| Royal Decree | 王 | ō | king |
+| Elixir | 薬 | kusuri | medicine |
+| Flame Oil | 火 | hi | fire |
+| Tome of Experience | 学 | gaku | study |
+| Banquet | 宴 | utage | banquet |
+| Ward | 盾 | tate | shield |
+| Phoenix Feather | 生 | sei | life |
+| Enchanted Blade | 魔 | ma | magic |
+| Grand Feast | 祭 | matsuri | festival |
+
+The food ladder 食 → 飯 → 宴 → 祭 climbs with rank, so the shop teaches a tiny vocabulary progression
+without saying so.
+
+**2. Numerals.** Ranks 一 二 三 四 五 六 and levels 一 二 三 replace the pips; the HUD may use 金 (gold),
+命 (hearts) and 勝 (crowns). Zero art, no rule, and every player absorbs Japanese numbers by turn six.
+
+**3. Merging grows the kanji.** The badge shows a kanji *composing* as copies merge:
+
+* *Same part three times* — 木 → 林 → 森 (tree, grove, forest) for a hero whose kanji has a natural triple
+  (Kashi the oak, the Druid); 馬 → 驫 for the Stable Master's level-3 stampede.
+* *Compounds* (Bryan's addition) — two different parts make a new kanji: **田 (rice field) + 力 (power) = 男
+  (man)**. Other common pairs: 日 + 月 = 明 (bright), 人 + 木 = 休 (rest), 女 + 子 = 好 (like), 日 + 生 = 星
+  (star), 木 + 寸 = 村 (village), 田 + 心 = 思 (think), 力 + 口 = 加 (add), 山 + 石 = 岩 (rock), 火 + 田 = 畑
+  (field), 火 + 火 = 炎 (flame). Happy accident: **Iwao 岩男** is (山 + 石) + (田 + 力) — his own name is two
+  compounds.
+
+Open points for Step 38a (defaults in italics, like `open_questions.md`):
+
+* §4 says a merge is a copy of the **same** hero, so a compound needs a home that is not a new rule.
+  *Default: triples ride on the level badge; compounds ride on **hero + perk** — a hero carries one perk at
+  a time, so a hero whose kanji is 田 wearing Iron Blade's 力 shows 男 on its nameplate (and 畑 with Flame
+  Oil's 火; 日 + Phoenix Feather's 生 = 星). The pairs whose second part is a perk relic's kanji are the ones
+  that work. A true "merge two different heroes" rule is a v2 door (engine change, Q7).*
+* Which of the 30 non-cameo heroes carry a kanji, and which pairs compose (the job kanji in §12.2 feed this).
+  *Default: in v1 only heroes that take part in a triple or a compound get one.*
+* The font. *Default: Misaki (美咲, 8 × 8) or PixelMplus (10/12 px), both free licences; the licence text is
+  verified in Step 74 like every asset. A font is text, not Time Fantasy art, so ADR-13 does not forbid it in
+  the repo; it is loaded through `unicode-range` so only kanji use it and Latin text keeps Pixelify Sans.*
+* The data. *Default: optional `kanji`, `reading`, `meaning` strings on heroes and relics in the content JSON
+  (schema + records); `GET /api/content` serves them untouched. The Forgotten Kanji toolkit already owns the
+  palette conversion (ADR-14) and could export readings and meanings too — one source of truth for both games.*
+
+**4. Run-over card: "Kanji you met this run".** Every glyph that appeared in the run, with reading and
+meaning, and a link to practise them in *The Forgotten Kanji*. Shareable, and it ties the two portfolio
+pieces together on screen.
+
+### 12.2 Doors (not v1)
+
+* **Job kanji** for the other 30 heroes on the nameplate: Farmhand 田, Merchant 商, Bard 歌, Treasurer 金,
+  Herbalist 草, Druid 森, Stable Master 馬, Drill Sergeant 兵, Necromancer 死 … 36 kanji per roster.
+* **Battle-verb captions** behind a "Japanese hints" toggle: Attack 攻, Fall 倒, Summon 召, Buy 買, Sell 売,
+  Freeze 凍. The ~30 event types are a closed set, so this is one small dictionary in the playback engine
+  (Step 49) plus a settings switch (Step 45).
+* **Your forgotten kanji seed a run.** *The Forgotten Kanji* knows which kanji you keep forgetting; a run could
+  draw its relics and heroes from them — the heroes you forgot come back to be remembered. Needs shared
+  identity across the two apps, so post-launch; pairs with the daily seed (§3).
+* **Daily seed named by a kanji of the day** ("I beat the 猫 run") when the daily seed arrives (Q11).
+
+### 12.3 Where it lands
+
+| Step | What |
+|---|---|
+| 38a | this section finalised; content fields + schema + values; pixel kanji font; glyph check on `/dev/ui` |
+| 40 | the gallery shows each cameo's kanji and every relic glyph beside its sprite |
+| 46 | `RelicCard` glyph, reading + meaning in `InfoBar`; numerals in `Hud` and `HeroCard` |
+| 47 | after a merge or a perk relic, the badge shows the grown kanji |
+| 52 | "Kanji you met this run" on the run-over screen |
+| 74 | font licence in `CREDITS.md` |

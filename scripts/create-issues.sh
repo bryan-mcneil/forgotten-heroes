@@ -6,7 +6,7 @@
 #
 # Idempotent: a step whose issue already exists (same title) is not created again, but
 # its labels, milestone and board card are still checked. Running the script twice, or
-# after adding a step 78 to PLAN.md, always ends in the same state: one issue per row.
+# after adding a step 78 or a split step 38a to PLAN.md, always ends in the same state: one issue per row.
 #
 # Needs: gh logged in with the board scopes (gh auth refresh -s project,read:project),
 # the labels (create-labels.sh), the milestones (create-milestones.sh) and the board
@@ -62,7 +62,7 @@ skipped=0
 # The plan is read on file descriptor 3 so that gh (which may read stdin) cannot eat the lines.
 while IFS= read -r -u 3 line; do
   if [[ "$line" =~ ^##\ Phase\ ([0-6]) ]]; then phase="${BASH_REMATCH[1]}"; continue; fi
-  [[ "$line" =~ ^-\ \[[\ x~]\]\ \*\*([0-9]{2})\*\*\ (.*)\ —\ est\ (.*)$ ]] || continue
+  [[ "$line" =~ ^-\ \[[\ x~]\]\ \*\*([0-9]{2}[a-z]?)\*\*\ (.*)\ —\ est\ (.*)$ ]] || continue
   num="${BASH_REMATCH[1]}"; summary="${BASH_REMATCH[2]}"; est="${BASH_REMATCH[3]}"
 
   phase_file=$(ls plan/phase_"$phase"_*.md)
