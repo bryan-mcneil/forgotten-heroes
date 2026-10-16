@@ -29,7 +29,11 @@ Tests: `./mvnw -pl backend -am verify` (a `@WebMvcTest` slice for the controller
 
 - Routes live in `web/` (`RunController`, `ProfileController`, `LeaderboardController`, `ContentController`,
   `HealthController`); wire shapes in `web/dto/`; `DtoMapper` copies engine state out and turns an `ActionRequest`
-  into an engine `Action`. The services in `service/` are stubs answering 501 until Step 27.
+  into an engine `Action`. The services in `service/` are the use-cases (Step 27): `RunService` (start, get, act,
+  end turn, battle replay, abandon) drives the engine through `GameSession`; `ProfileService` creates a profile on the
+  first `/me`; `ContentService` serves the loaded content; `LeaderboardService` stays 501 until Step 32.
+- `repo/`: four interfaces (`RunRepository`, `GhostRepository`, `BattleLogRepository`, `ProfileRepository`) with
+  `InMemory*` implementations until Step 28. `security/CurrentUser` says who is calling (`"dev"` until Step 31).
 - Every error is an RFC 9457 `ProblemDetail` with a `code` (`GlobalExceptionHandler`): 422 rule violation (the
   engine's code), 400 `VALIDATION_FAILED` / `MALFORMED_JSON`, 404 `NOT_FOUND`, 409 `VERSION_CONFLICT`, 501
   `NOT_IMPLEMENTED`, 500 `INTERNAL_ERROR`. Never 403 (CloudFront owns it).
@@ -40,3 +44,6 @@ Tests: `./mvnw -pl backend -am verify` (a `@WebMvcTest` slice for the controller
   `./mvnw -pl backend -am -Dtest=OpenApiContractTest -Dopenapi.snapshot.update=true test`, then review and commit
   the snapshot diff. Step 42 generates the frontend's TypeScript types from this file.
 TODO Step 28: `docker compose up -d && ./mvnw -pl backend -am verify` for the DynamoDB-backed tests.
+
+If a route answers 500 with "Name for argument … not specified … '-parameters'" on your laptop, the VS Code Java extension
+rebuilt `target/classes` without that flag; `./mvnw -pl backend -am clean test` restores Maven's compile.

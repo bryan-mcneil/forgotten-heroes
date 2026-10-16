@@ -232,6 +232,27 @@
   change to the contract is a deliberate, reviewed diff rather than an accident.
 * **`JacksonModule` bean** — a Jackson module declared as a Spring bean is added to Spring's JSON mapper automatically;
   `ApiJsonModule` hands the engine's module to Spring that way.
+* **Service layer** — the classes that hold use-cases ("start a run", "end a turn"): each one is load → engine → save.
+  A controller calls a service; a service calls the engine and the repositories; nothing skips a layer.
+* **Repository interface** — `RunRepository` says *what* storage must do (`find`, `save`) and nothing about *how*. The
+  service depends on the interface; `InMemoryRunRepository` today and the DynamoDB one in Step 28 both implement it, so
+  the service does not change when the storage does. That is why we inject interfaces, not concrete classes.
+* **Constructor injection** — all collaborators arrive as constructor parameters into `final` fields; no `@Autowired`
+  on fields. A test can build the service by hand with in-memory repositories and a fixed seed, no Spring needed.
+* **`@Repository`** — the bean marker for the storage layer (the same as `@Component` with a role name, like
+  `@Service`). Spring finds one implementation per interface and injects it.
+* **In-memory repository** — a `ConcurrentHashMap` behind the interface: gone when the app stops, fast forever in tests.
+  Ours stores runs as JSON text so a caller gets a fresh copy back, exactly like a database would.
+* **`CurrentUser`** — the bean that answers "who is calling"; controllers pass its `id()` down so services never read
+  a request. A stub says `"dev"` until Step 31 reads the Cognito token.
+* **`SecureRandom`** — Java's unpredictable random numbers, used once per run for the seed. The engine itself never
+  draws randomness (ADR-4); the backend draws one number and the engine derives everything from it.
+* **`UUID.randomUUID()`** — a 128-bit random id (`3f2a…`), unique without a counter or a database round trip.
+* **`@SpringBootTest(webEnvironment = RANDOM_PORT)`** — boot the whole app on a real port that is free right now, so
+  the test speaks genuine HTTP. **`TestRestTemplate`** is the HTTP client made for it (relative URLs, no exceptions on
+  4xx/5xx). In Spring Boot 4 it lives in `spring-boot-resttestclient` and needs `spring-boot-starter-restclient` too.
+* **Optimistic locking, step one** — the client sends `expectedVersion`; the service compares it with the saved
+  version and answers 409 if they differ. Step 29 adds the second half: the database refuses the write itself.
 
 ## AWS
 * **Region** — a geographic datacenter group; we use **us-east-1** (N. Virginia).
