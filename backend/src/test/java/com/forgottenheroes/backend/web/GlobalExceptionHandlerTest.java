@@ -116,6 +116,14 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void unknownRoutesAre404WithACode() {
+        assertThat(mvc.get().uri("/api/nothing"))
+            .hasStatus(404)
+            .bodyJson()
+            .isLenientlyEqualTo("{\"status\":404,\"code\":\"NOT_FOUND\",\"type\":\"https://heroes.bryanmcneil.pro/errors/not-found\"}");
+    }
+
+    @Test
     void unexpectedErrorsAre500WithoutAStackTrace() {
         given(runs.get("run-1")).willThrow(new IllegalStateException("secret internals"));
 

@@ -10,3 +10,9 @@ spring:
 
 server:
   port: 8080
+
+springdoc:
+  # describe the game API only, not Actuator; /v3/api-docs and /swagger-ui.html are the defaults
+  paths-to-match: /api/**
+  # every response is JSON; without this the contract says "*/*"
+  default-produces-media-type: application/json

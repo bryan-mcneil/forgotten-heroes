@@ -1,0 +1,2861 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "Forgotten Heroes API",
+    "description" : "Server-authoritative API of the auto-battler. Every rule runs in the engine; errors are RFC 9457 ProblemDetail bodies with a stable `code`.",
+    "version" : "v1"
+  },
+  "servers" : [
+    {
+      "url" : "http://localhost",
+      "description" : "Generated server url"
+    }
+  ],
+  "paths" : {
+    "/api/runs" : {
+      "post" : {
+        "tags" : [
+          "run-controller"
+        ],
+        "operationId" : "start",
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RunStateDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{runId}/end-turn" : {
+      "post" : {
+        "tags" : [
+          "run-controller"
+        ],
+        "operationId" : "endTurn",
+        "parameters" : [
+          {
+            "name" : "runId",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/EndTurnRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EndTurnResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{runId}/actions" : {
+      "post" : {
+        "tags" : [
+          "run-controller"
+        ],
+        "operationId" : "act",
+        "parameters" : [
+          {
+            "name" : "runId",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "oneOf" : [
+                  {
+                    "$ref" : "#/components/schemas/Buy"
+                  },
+                  {
+                    "$ref" : "#/components/schemas/BuyRelic"
+                  },
+                  {
+                    "$ref" : "#/components/schemas/Freeze"
+                  },
+                  {
+                    "$ref" : "#/components/schemas/Merge"
+                  },
+                  {
+                    "$ref" : "#/components/schemas/Move"
+                  },
+                  {
+                    "$ref" : "#/components/schemas/Roll"
+                  },
+                  {
+                    "$ref" : "#/components/schemas/Sell"
+                  },
+                  {
+                    "$ref" : "#/components/schemas/Unfreeze"
+                  }
+                ]
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ActionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{runId}/abandon" : {
+      "post" : {
+        "tags" : [
+          "run-controller"
+        ],
+        "operationId" : "abandon",
+        "parameters" : [
+          {
+            "name" : "runId",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RunStateDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{runId}" : {
+      "get" : {
+        "tags" : [
+          "run-controller"
+        ],
+        "operationId" : "get",
+        "parameters" : [
+          {
+            "name" : "runId",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RunStateDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{runId}/battles/{turn}" : {
+      "get" : {
+        "tags" : [
+          "run-controller"
+        ],
+        "operationId" : "battle",
+        "parameters" : [
+          {
+            "name" : "runId",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "string"
+            }
+          },
+          {
+            "name" : "turn",
+            "in" : "path",
+            "required" : true,
+            "schema" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          }
+        ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BattleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me" : {
+      "get" : {
+        "tags" : [
+          "profile-controller"
+        ],
+        "operationId" : "me",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/leaderboard" : {
+      "get" : {
+        "tags" : [
+          "leaderboard-controller"
+        ],
+        "operationId" : "top",
+        "parameters" : [
+          {
+            "name" : "season",
+            "in" : "query",
+            "required" : false,
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/LeaderboardEntryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health" : {
+      "get" : {
+        "tags" : [
+          "health-controller"
+        ],
+        "operationId" : "health",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content" : {
+      "get" : {
+        "tags" : [
+          "content-controller"
+        ],
+        "operationId" : "content",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ContentDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "BandDto" : {
+        "type" : "object",
+        "properties" : {
+          "units" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UnitDto"
+            }
+          }
+        }
+      },
+      "BattleSummaryDto" : {
+        "type" : "object",
+        "properties" : {
+          "turn" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "outcome" : {
+            "type" : "string",
+            "enum" : [
+              "WIN",
+              "LOSS",
+              "DRAW"
+            ]
+          },
+          "clashes" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "RunStateDto" : {
+        "type" : "object",
+        "properties" : {
+          "runId" : {
+            "type" : "string"
+          },
+          "turn" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "gold" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "hearts" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "crowns" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "status" : {
+            "type" : "string",
+            "enum" : [
+              "IN_PROGRESS",
+              "WON",
+              "LOST",
+              "ABANDONED"
+            ]
+          },
+          "freeRollAvailable" : {
+            "type" : "boolean"
+          },
+          "band" : {
+            "$ref" : "#/components/schemas/BandDto"
+          },
+          "tavern" : {
+            "$ref" : "#/components/schemas/TavernDto"
+          },
+          "lastBattle" : {
+            "$ref" : "#/components/schemas/BattleSummaryDto"
+          },
+          "version" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "lastEventSeq" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "TavernDto" : {
+        "type" : "object",
+        "properties" : {
+          "heroes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TavernSlotDto"
+            }
+          },
+          "relics" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TavernSlotDto"
+            }
+          },
+          "bonusSlot" : {
+            "$ref" : "#/components/schemas/TavernSlotDto"
+          }
+        }
+      },
+      "TavernSlotDto" : {
+        "type" : "object",
+        "properties" : {
+          "itemId" : {
+            "type" : "string"
+          },
+          "price" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "bonusAttack" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "bonusHealth" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "frozen" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "UnitDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "heroId" : {
+            "type" : "string"
+          },
+          "attack" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "health" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "level" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "xp" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "perk" : {
+            "type" : "string",
+            "enum" : [
+              "FAIRY_CHARM",
+              "IRON_BLADE",
+              "CHAINMAIL",
+              "FLAME_OIL",
+              "WARD",
+              "PHOENIX_FEATHER",
+              "ENCHANTED_BLADE",
+              "AEGIS",
+              "VENOM"
+            ]
+          }
+        }
+      },
+      "EndTurnRequest" : {
+        "type" : "object",
+        "properties" : {
+          "expectedVersion" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [
+          "expectedVersion"
+        ]
+      },
+      "AbilityTriggered" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "position" : {
+                "type" : "string",
+                "example" : "home:0"
+              },
+              "trigger" : {
+                "type" : "string",
+                "enum" : [
+                  "START_OF_TURN",
+                  "END_OF_TURN",
+                  "BUY",
+                  "SELL",
+                  "LEVEL_UP",
+                  "ALLY_SUMMONED",
+                  "EAT_RELIC",
+                  "START_OF_BATTLE",
+                  "BEFORE_ATTACK",
+                  "AFTER_ATTACK",
+                  "HURT",
+                  "FALL",
+                  "ALLY_FALL",
+                  "ALLY_AHEAD_FALLS",
+                  "ALLY_AHEAD_ATTACKS",
+                  "KNOCKOUT",
+                  "SUMMONED"
+                ]
+              },
+              "level" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "BattleDto" : {
+        "type" : "object",
+        "properties" : {
+          "opponentName" : {
+            "type" : "string"
+          },
+          "events" : {
+            "type" : "array",
+            "items" : {
+              "oneOf" : [
+                {
+                  "$ref" : "#/components/schemas/AbilityTriggered"
+                },
+                {
+                  "$ref" : "#/components/schemas/BattleEnded"
+                },
+                {
+                  "$ref" : "#/components/schemas/BattleStarted"
+                },
+                {
+                  "$ref" : "#/components/schemas/BonusSlotOpened"
+                },
+                {
+                  "$ref" : "#/components/schemas/Clash"
+                },
+                {
+                  "$ref" : "#/components/schemas/CrownsChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/DamageDealt"
+                },
+                {
+                  "$ref" : "#/components/schemas/GoldChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeartsChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroBought"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroSold"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroesMerged"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroesReordered"
+                },
+                {
+                  "$ref" : "#/components/schemas/Knockout"
+                },
+                {
+                  "$ref" : "#/components/schemas/LevelUp"
+                },
+                {
+                  "$ref" : "#/components/schemas/LineShifted"
+                },
+                {
+                  "$ref" : "#/components/schemas/PerkConsumed"
+                },
+                {
+                  "$ref" : "#/components/schemas/PerkGained"
+                },
+                {
+                  "$ref" : "#/components/schemas/RelicBought"
+                },
+                {
+                  "$ref" : "#/components/schemas/RelicStocked"
+                },
+                {
+                  "$ref" : "#/components/schemas/RunEnded"
+                },
+                {
+                  "$ref" : "#/components/schemas/RunStarted"
+                },
+                {
+                  "$ref" : "#/components/schemas/StatsChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/SummonFailed"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernBuffed"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernItemFrozen"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernItemUnfrozen"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernRolled"
+                },
+                {
+                  "$ref" : "#/components/schemas/TurnEnded"
+                },
+                {
+                  "$ref" : "#/components/schemas/TurnStarted"
+                },
+                {
+                  "$ref" : "#/components/schemas/UnitFell"
+                },
+                {
+                  "$ref" : "#/components/schemas/UnitRevived"
+                },
+                {
+                  "$ref" : "#/components/schemas/UnitSummoned"
+                },
+                {
+                  "$ref" : "#/components/schemas/XpGained"
+                }
+              ]
+            }
+          },
+          "result" : {
+            "type" : "string",
+            "enum" : [
+              "WIN",
+              "LOSS",
+              "DRAW"
+            ]
+          }
+        }
+      },
+      "BattleEnded" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "homeOutcome" : {
+                "type" : "string",
+                "enum" : [
+                  "WIN",
+                  "LOSS",
+                  "DRAW"
+                ]
+              },
+              "playerOutcome" : {
+                "type" : "string",
+                "enum" : [
+                  "WIN",
+                  "LOSS",
+                  "DRAW"
+                ]
+              },
+              "reason" : {
+                "type" : "string",
+                "enum" : [
+                  "ELIMINATION",
+                  "CLASH_CAP"
+                ]
+              },
+              "clashes" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "BattleStarted" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "turn" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "playerSide" : {
+                "type" : "string",
+                "enum" : [
+                  "HOME",
+                  "AWAY"
+                ]
+              },
+              "home" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/UnitView"
+                }
+              },
+              "away" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/UnitView"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "BonusSlotOpened" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "item" : {
+                "$ref" : "#/components/schemas/TavernSlot"
+              }
+            }
+          }
+        ]
+      },
+      "Clash" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "number" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "homeUnitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "awayUnitId" : {
+                "type" : "string",
+                "example" : "u7"
+              }
+            }
+          }
+        ]
+      },
+      "CrownsChanged" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "before" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "after" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "DamageDealt" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "sourceUnitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "sourcePosition" : {
+                "type" : "string",
+                "example" : "home:0"
+              },
+              "targetUnitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "targetPosition" : {
+                "type" : "string",
+                "example" : "home:0"
+              },
+              "amount" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "healthBefore" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "healthAfter" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "kind" : {
+                "type" : "string",
+                "enum" : [
+                  "ATTACK",
+                  "SPLASH",
+                  "ABILITY"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "EndTurnResponse" : {
+        "type" : "object",
+        "properties" : {
+          "battle" : {
+            "$ref" : "#/components/schemas/BattleDto"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/RunStateDto"
+          }
+        }
+      },
+      "GameEvent" : {
+        "discriminator" : {
+          "propertyName" : "type"
+        },
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          }
+        },
+        "required" : [
+          "type"
+        ]
+      },
+      "GoldChanged" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "before" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "after" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "reason" : {
+                "type" : "string",
+                "enum" : [
+                  "TURN_START",
+                  "ROLL",
+                  "BUY_HERO",
+                  "BUY_RELIC",
+                  "SELL",
+                  "ABILITY"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "HeartsChanged" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "before" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "after" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "reason" : {
+                "type" : "string",
+                "enum" : [
+                  "BATTLE_LOST",
+                  "MERCY"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "HeroBought" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "bandIndex" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "stats" : {
+                "$ref" : "#/components/schemas/Stats"
+              },
+              "price" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "HeroSold" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "bandIndex" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "level" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "gold" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "HeroesMerged" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "source" : {
+                "type" : "string",
+                "enum" : [
+                  "TAVERN",
+                  "BAND"
+                ]
+              },
+              "removedUnitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "before" : {
+                "$ref" : "#/components/schemas/Stats"
+              },
+              "after" : {
+                "$ref" : "#/components/schemas/Stats"
+              }
+            }
+          }
+        ]
+      },
+      "HeroesReordered" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "from" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "to" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "order" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string",
+                  "example" : "u7"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Knockout" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "position" : {
+                "type" : "string",
+                "example" : "home:0"
+              },
+              "targetUnitId" : {
+                "type" : "string",
+                "example" : "u7"
+              }
+            }
+          }
+        ]
+      },
+      "LevelUp" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "level" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "LineShifted" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "side" : {
+                "type" : "string",
+                "enum" : [
+                  "HOME",
+                  "AWAY"
+                ]
+              },
+              "order" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string",
+                  "example" : "u7"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "PerkConsumed" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "position" : {
+                "type" : "string",
+                "example" : "home:0"
+              },
+              "perk" : {
+                "type" : "string",
+                "enum" : [
+                  "FAIRY_CHARM",
+                  "IRON_BLADE",
+                  "CHAINMAIL",
+                  "FLAME_OIL",
+                  "WARD",
+                  "PHOENIX_FEATHER",
+                  "ENCHANTED_BLADE",
+                  "AEGIS",
+                  "VENOM"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "PerkGained" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "position" : {
+                "type" : "string",
+                "example" : "home:0"
+              },
+              "perk" : {
+                "type" : "string",
+                "enum" : [
+                  "FAIRY_CHARM",
+                  "IRON_BLADE",
+                  "CHAINMAIL",
+                  "FLAME_OIL",
+                  "WARD",
+                  "PHOENIX_FEATHER",
+                  "ENCHANTED_BLADE",
+                  "AEGIS",
+                  "VENOM"
+                ]
+              },
+              "replaced" : {
+                "type" : "string",
+                "enum" : [
+                  "FAIRY_CHARM",
+                  "IRON_BLADE",
+                  "CHAINMAIL",
+                  "FLAME_OIL",
+                  "WARD",
+                  "PHOENIX_FEATHER",
+                  "ENCHANTED_BLADE",
+                  "AEGIS",
+                  "VENOM"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "RelicBought" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "relicId" : {
+                "type" : "string"
+              },
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "targetUnitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "price" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "RelicStocked" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "relicId" : {
+                "type" : "string"
+              },
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "price" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "RunEnded" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "status" : {
+                "type" : "string",
+                "enum" : [
+                  "IN_PROGRESS",
+                  "WON",
+                  "LOST",
+                  "ABANDONED"
+                ]
+              },
+              "turn" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "crowns" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "hearts" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "RunStarted" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "runId" : {
+                "type" : "string"
+              }
+            }
+          }
+        ]
+      },
+      "Stats" : {
+        "type" : "object",
+        "properties" : {
+          "attack" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "health" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "zero" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "StatsChanged" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "position" : {
+                "type" : "string",
+                "example" : "home:0"
+              },
+              "attackBefore" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "attackAfter" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "healthBefore" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "healthAfter" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "temporary" : {
+                "type" : "boolean"
+              },
+              "source" : {
+                "type" : "string"
+              }
+            }
+          }
+        ]
+      },
+      "SummonFailed" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "tokenId" : {
+                "type" : "string"
+              },
+              "side" : {
+                "type" : "string",
+                "enum" : [
+                  "HOME",
+                  "AWAY"
+                ]
+              },
+              "summonerUnitId" : {
+                "type" : "string",
+                "example" : "u7"
+              }
+            }
+          }
+        ]
+      },
+      "TavernBuffed" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "bonus" : {
+                "$ref" : "#/components/schemas/Stats"
+              },
+              "permanent" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "TavernItemFrozen" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "kind" : {
+                "type" : "string",
+                "enum" : [
+                  "HERO",
+                  "RELIC"
+                ]
+              },
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "itemId" : {
+                "type" : "string"
+              }
+            }
+          }
+        ]
+      },
+      "TavernItemUnfrozen" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "kind" : {
+                "type" : "string",
+                "enum" : [
+                  "HERO",
+                  "RELIC"
+                ]
+              },
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "itemId" : {
+                "type" : "string"
+              }
+            }
+          }
+        ]
+      },
+      "TavernRolled" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "free" : {
+                "type" : "boolean"
+              },
+              "heroes" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/TavernSlot"
+                }
+              },
+              "relics" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/TavernSlot"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TavernSlot" : {
+        "type" : "object",
+        "properties" : {
+          "itemId" : {
+            "type" : "string"
+          },
+          "price" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "bonus" : {
+            "$ref" : "#/components/schemas/Stats"
+          },
+          "frozen" : {
+            "type" : "boolean"
+          },
+          "empty" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "TurnEnded" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "turn" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "TurnStarted" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "turn" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "gold" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "rank" : {
+                "type" : "integer",
+                "format" : "int32",
+                "example" : 3
+              },
+              "heroSlots" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "relicSlots" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "UnitFell" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "position" : {
+                "type" : "string",
+                "example" : "home:0"
+              }
+            }
+          }
+        ]
+      },
+      "UnitRevived" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "position" : {
+                "type" : "string",
+                "example" : "home:0"
+              },
+              "stats" : {
+                "$ref" : "#/components/schemas/Stats"
+              }
+            }
+          }
+        ]
+      },
+      "UnitSummoned" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "position" : {
+                "type" : "string",
+                "example" : "home:0"
+              },
+              "stats" : {
+                "$ref" : "#/components/schemas/Stats"
+              },
+              "level" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "perk" : {
+                "type" : "string",
+                "enum" : [
+                  "FAIRY_CHARM",
+                  "IRON_BLADE",
+                  "CHAINMAIL",
+                  "FLAME_OIL",
+                  "WARD",
+                  "PHOENIX_FEATHER",
+                  "ENCHANTED_BLADE",
+                  "AEGIS",
+                  "VENOM"
+                ]
+              },
+              "summonerUnitId" : {
+                "type" : "string",
+                "example" : "u7"
+              }
+            }
+          }
+        ]
+      },
+      "UnitView" : {
+        "type" : "object",
+        "properties" : {
+          "unitId" : {
+            "type" : "string",
+            "example" : "u7"
+          },
+          "heroId" : {
+            "type" : "string"
+          },
+          "attack" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "health" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "level" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "perk" : {
+            "type" : "string",
+            "enum" : [
+              "FAIRY_CHARM",
+              "IRON_BLADE",
+              "CHAINMAIL",
+              "FLAME_OIL",
+              "WARD",
+              "PHOENIX_FEATHER",
+              "ENCHANTED_BLADE",
+              "AEGIS",
+              "VENOM"
+            ]
+          }
+        }
+      },
+      "XpGained" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/GameEvent"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "seq" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "unitId" : {
+                "type" : "string",
+                "example" : "u7"
+              },
+              "heroId" : {
+                "type" : "string"
+              },
+              "before" : {
+                "type" : "integer",
+                "format" : "int32"
+              },
+              "after" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        ]
+      },
+      "ActionRequest" : {
+        "discriminator" : {
+          "propertyName" : "type"
+        },
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          }
+        },
+        "required" : [
+          "type"
+        ]
+      },
+      "Buy" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/ActionRequest"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "bandIndex" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "expectedVersion" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        ],
+        "required" : [
+          "bandIndex",
+          "expectedVersion",
+          "slot"
+        ]
+      },
+      "BuyRelic" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/ActionRequest"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "bandIndex" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "expectedVersion" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        ],
+        "required" : [
+          "expectedVersion",
+          "slot"
+        ]
+      },
+      "Freeze" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/ActionRequest"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "kind" : {
+                "type" : "string",
+                "enum" : [
+                  "HERO",
+                  "RELIC"
+                ]
+              },
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "expectedVersion" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        ],
+        "required" : [
+          "expectedVersion",
+          "kind",
+          "slot"
+        ]
+      },
+      "Merge" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/ActionRequest"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "from" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "to" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "expectedVersion" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        ],
+        "required" : [
+          "expectedVersion",
+          "from",
+          "to"
+        ]
+      },
+      "Move" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/ActionRequest"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "from" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "to" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "expectedVersion" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        ],
+        "required" : [
+          "expectedVersion",
+          "from",
+          "to"
+        ]
+      },
+      "Roll" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/ActionRequest"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "expectedVersion" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        ],
+        "required" : [
+          "expectedVersion"
+        ]
+      },
+      "Sell" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/ActionRequest"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "bandIndex" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "expectedVersion" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        ],
+        "required" : [
+          "bandIndex",
+          "expectedVersion"
+        ]
+      },
+      "Unfreeze" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/ActionRequest"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "kind" : {
+                "type" : "string",
+                "enum" : [
+                  "HERO",
+                  "RELIC"
+                ]
+              },
+              "slot" : {
+                "type" : "integer",
+                "format" : "int32",
+                "minimum" : 0
+              },
+              "expectedVersion" : {
+                "type" : "integer",
+                "format" : "int64"
+              }
+            }
+          }
+        ],
+        "required" : [
+          "expectedVersion",
+          "kind",
+          "slot"
+        ]
+      },
+      "ActionResponse" : {
+        "type" : "object",
+        "properties" : {
+          "state" : {
+            "$ref" : "#/components/schemas/RunStateDto"
+          },
+          "events" : {
+            "type" : "array",
+            "items" : {
+              "oneOf" : [
+                {
+                  "$ref" : "#/components/schemas/AbilityTriggered"
+                },
+                {
+                  "$ref" : "#/components/schemas/BattleEnded"
+                },
+                {
+                  "$ref" : "#/components/schemas/BattleStarted"
+                },
+                {
+                  "$ref" : "#/components/schemas/BonusSlotOpened"
+                },
+                {
+                  "$ref" : "#/components/schemas/Clash"
+                },
+                {
+                  "$ref" : "#/components/schemas/CrownsChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/DamageDealt"
+                },
+                {
+                  "$ref" : "#/components/schemas/GoldChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeartsChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroBought"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroSold"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroesMerged"
+                },
+                {
+                  "$ref" : "#/components/schemas/HeroesReordered"
+                },
+                {
+                  "$ref" : "#/components/schemas/Knockout"
+                },
+                {
+                  "$ref" : "#/components/schemas/LevelUp"
+                },
+                {
+                  "$ref" : "#/components/schemas/LineShifted"
+                },
+                {
+                  "$ref" : "#/components/schemas/PerkConsumed"
+                },
+                {
+                  "$ref" : "#/components/schemas/PerkGained"
+                },
+                {
+                  "$ref" : "#/components/schemas/RelicBought"
+                },
+                {
+                  "$ref" : "#/components/schemas/RelicStocked"
+                },
+                {
+                  "$ref" : "#/components/schemas/RunEnded"
+                },
+                {
+                  "$ref" : "#/components/schemas/RunStarted"
+                },
+                {
+                  "$ref" : "#/components/schemas/StatsChanged"
+                },
+                {
+                  "$ref" : "#/components/schemas/SummonFailed"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernBuffed"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernItemFrozen"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernItemUnfrozen"
+                },
+                {
+                  "$ref" : "#/components/schemas/TavernRolled"
+                },
+                {
+                  "$ref" : "#/components/schemas/TurnEnded"
+                },
+                {
+                  "$ref" : "#/components/schemas/TurnStarted"
+                },
+                {
+                  "$ref" : "#/components/schemas/UnitFell"
+                },
+                {
+                  "$ref" : "#/components/schemas/UnitRevived"
+                },
+                {
+                  "$ref" : "#/components/schemas/UnitSummoned"
+                },
+                {
+                  "$ref" : "#/components/schemas/XpGained"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "ProfileDto" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string"
+          },
+          "bestCrowns" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "runsPlayed" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "activeRunId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "LeaderboardEntryDto" : {
+        "type" : "object",
+        "properties" : {
+          "rank" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "crowns" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "turns" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "finishedAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "HealthResponse" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "string"
+          }
+        }
+      },
+      "AbilityDefinition" : {
+        "type" : "object",
+        "properties" : {
+          "trigger" : {
+            "type" : "string",
+            "enum" : [
+              "START_OF_TURN",
+              "END_OF_TURN",
+              "BUY",
+              "SELL",
+              "LEVEL_UP",
+              "ALLY_SUMMONED",
+              "EAT_RELIC",
+              "START_OF_BATTLE",
+              "BEFORE_ATTACK",
+              "AFTER_ATTACK",
+              "HURT",
+              "FALL",
+              "ALLY_FALL",
+              "ALLY_AHEAD_FALLS",
+              "ALLY_AHEAD_ATTACKS",
+              "KNOCKOUT",
+              "SUMMONED"
+            ]
+          },
+          "text" : {
+            "type" : "string"
+          },
+          "effects" : {
+            "type" : "array",
+            "items" : {
+              "oneOf" : [
+                {
+                  "$ref" : "#/components/schemas/BuffTavern"
+                },
+                {
+                  "$ref" : "#/components/schemas/DealDamage"
+                },
+                {
+                  "$ref" : "#/components/schemas/GainGold"
+                },
+                {
+                  "$ref" : "#/components/schemas/GivePerk"
+                },
+                {
+                  "$ref" : "#/components/schemas/GiveXp"
+                },
+                {
+                  "$ref" : "#/components/schemas/Kill"
+                },
+                {
+                  "$ref" : "#/components/schemas/ModifyStats"
+                },
+                {
+                  "$ref" : "#/components/schemas/SetHealthPercent"
+                },
+                {
+                  "$ref" : "#/components/schemas/StockRelic"
+                },
+                {
+                  "$ref" : "#/components/schemas/Summon"
+                }
+              ]
+            }
+          },
+          "limit" : {
+            "$ref" : "#/components/schemas/Limit"
+          }
+        }
+      },
+      "Amount" : {
+        "type" : "object",
+        "properties" : {
+          "flat" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "perLevel" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "byLevel" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          },
+          "percentOfAttack" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "BuffTavern" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "attack" : {
+                "$ref" : "#/components/schemas/Amount"
+              },
+              "health" : {
+                "$ref" : "#/components/schemas/Amount"
+              },
+              "permanent" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "Condition" : {
+        "type" : "object",
+        "properties" : {
+          "ifTargetRank" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "multiplier" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "ContentDto" : {
+        "type" : "object",
+        "properties" : {
+          "heroes" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/HeroDefinition"
+            }
+          },
+          "relics" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RelicDefinition"
+            }
+          },
+          "tokens" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TokenDefinition"
+            }
+          }
+        }
+      },
+      "DealDamage" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "target" : {
+                "$ref" : "#/components/schemas/TargetSpec"
+              },
+              "amount" : {
+                "$ref" : "#/components/schemas/Amount"
+              },
+              "condition" : {
+                "$ref" : "#/components/schemas/Condition"
+              }
+            }
+          }
+        ]
+      },
+      "EffectDefinition" : {
+        "discriminator" : {
+          "propertyName" : "type"
+        },
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          }
+        },
+        "required" : [
+          "type"
+        ]
+      },
+      "GainGold" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "amount" : {
+                "$ref" : "#/components/schemas/Amount"
+              }
+            }
+          }
+        ]
+      },
+      "GivePerk" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "target" : {
+                "$ref" : "#/components/schemas/TargetSpec"
+              },
+              "perk" : {
+                "type" : "string",
+                "enum" : [
+                  "FAIRY_CHARM",
+                  "IRON_BLADE",
+                  "CHAINMAIL",
+                  "FLAME_OIL",
+                  "WARD",
+                  "PHOENIX_FEATHER",
+                  "ENCHANTED_BLADE",
+                  "AEGIS",
+                  "VENOM"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "GiveXp" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "target" : {
+                "$ref" : "#/components/schemas/TargetSpec"
+              },
+              "amount" : {
+                "$ref" : "#/components/schemas/Amount"
+              }
+            }
+          }
+        ]
+      },
+      "HeroDefinition" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "kanji" : {
+            "type" : "string"
+          },
+          "rank" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 3
+          },
+          "attack" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "health" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sprite" : {
+            "type" : "string"
+          },
+          "ability" : {
+            "$ref" : "#/components/schemas/AbilityDefinition"
+          }
+        }
+      },
+      "Kill" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "target" : {
+                "$ref" : "#/components/schemas/TargetSpec"
+              }
+            }
+          }
+        ]
+      },
+      "Limit" : {
+        "type" : "object",
+        "properties" : {
+          "perTurn" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "perBattle" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "unlimited" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "ModifyStats" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "target" : {
+                "$ref" : "#/components/schemas/TargetSpec"
+              },
+              "attack" : {
+                "$ref" : "#/components/schemas/Amount"
+              },
+              "health" : {
+                "$ref" : "#/components/schemas/Amount"
+              },
+              "untilEndOfBattle" : {
+                "type" : "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "RelicDefinition" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "rank" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 3
+          },
+          "price" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "text" : {
+            "type" : "string"
+          },
+          "sprite" : {
+            "type" : "string"
+          },
+          "effects" : {
+            "type" : "array",
+            "items" : {
+              "oneOf" : [
+                {
+                  "$ref" : "#/components/schemas/BuffTavern"
+                },
+                {
+                  "$ref" : "#/components/schemas/DealDamage"
+                },
+                {
+                  "$ref" : "#/components/schemas/GainGold"
+                },
+                {
+                  "$ref" : "#/components/schemas/GivePerk"
+                },
+                {
+                  "$ref" : "#/components/schemas/GiveXp"
+                },
+                {
+                  "$ref" : "#/components/schemas/Kill"
+                },
+                {
+                  "$ref" : "#/components/schemas/ModifyStats"
+                },
+                {
+                  "$ref" : "#/components/schemas/SetHealthPercent"
+                },
+                {
+                  "$ref" : "#/components/schemas/StockRelic"
+                },
+                {
+                  "$ref" : "#/components/schemas/Summon"
+                }
+              ]
+            }
+          },
+          "perk" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "SetHealthPercent" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "target" : {
+                "$ref" : "#/components/schemas/TargetSpec"
+              },
+              "percent" : {
+                "$ref" : "#/components/schemas/Amount"
+              }
+            }
+          }
+        ]
+      },
+      "StockRelic" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "relicId" : {
+                "type" : "string"
+              },
+              "price" : {
+                "$ref" : "#/components/schemas/Amount"
+              }
+            }
+          }
+        ]
+      },
+      "Summon" : {
+        "allOf" : [
+          {
+            "$ref" : "#/components/schemas/EffectDefinition"
+          },
+          {
+            "type" : "object",
+            "properties" : {
+              "tokenId" : {
+                "type" : "string"
+              },
+              "count" : {
+                "$ref" : "#/components/schemas/Amount"
+              },
+              "attack" : {
+                "$ref" : "#/components/schemas/Amount"
+              },
+              "health" : {
+                "$ref" : "#/components/schemas/Amount"
+              },
+              "perk" : {
+                "type" : "string",
+                "enum" : [
+                  "FAIRY_CHARM",
+                  "IRON_BLADE",
+                  "CHAINMAIL",
+                  "FLAME_OIL",
+                  "WARD",
+                  "PHOENIX_FEATHER",
+                  "ENCHANTED_BLADE",
+                  "AEGIS",
+                  "VENOM"
+                ]
+              },
+              "side" : {
+                "type" : "string",
+                "enum" : [
+                  "ALLY",
+                  "ENEMY"
+                ]
+              },
+              "position" : {
+                "type" : "string",
+                "enum" : [
+                  "HERE",
+                  "FRONT"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "TargetSpec" : {
+        "type" : "object",
+        "properties" : {
+          "select" : {
+            "type" : "string",
+            "enum" : [
+              "SELF",
+              "CHOSEN",
+              "RANDOM_ALLY",
+              "RANDOM_ENEMY",
+              "ALL_ALLIES",
+              "ALL_ENEMIES",
+              "ALL_UNITS",
+              "ADJACENT",
+              "NEAREST_ALLIES_BEHIND",
+              "NEAREST_ALLIES_AHEAD",
+              "FIRST_ENEMY",
+              "LAST_ENEMY",
+              "LOWEST_HEALTH_ENEMY",
+              "HIGHEST_HEALTH_ENEMY",
+              "TRIGGERING_UNIT",
+              "FRONT_ALLY",
+              "LEVEL_2_PLUS_ALLIES",
+              "TAVERN_HEROES"
+            ]
+          },
+          "count" : {
+            "$ref" : "#/components/schemas/Amount"
+          }
+        }
+      },
+      "TokenDefinition" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "attack" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "health" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sprite" : {
+            "type" : "string"
+          }
+        }
+      }
+    }
+  }
+}

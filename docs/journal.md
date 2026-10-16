@@ -326,3 +326,42 @@ the whole app in CI. 353 tests across three modules; backend coverage 75 % repor
 auto-configuration is Spring Boot looking at the classpath and creating the beans you would have written anyway; the
 conditions report (`--debug`) is where you look to see what it decided, and dependency injection is simply asking for a
 bean in a constructor instead of writing `new`.
+
+## 2026-10-16 — Step 26, the API contract
+
+The step started in the dictation format and changed shape halfway. Bryan typed the first commit himself: fourteen
+DTO records in `web/dto` (`TavernSlotDto`, `UnitDto`, `BandDto`, `TavernDto`, `BattleSummaryDto`, `RunStateDto`, the
+sealed `ActionRequest` with eight shapes told apart by `"type"`, `ActionResponse`, `BattleDto`, `EndTurnResponse`,
+`ProfileDto`, `LeaderboardEntryDto`, `ContentDto`) plus `DtoMapper` and its test. Two things came out of that hour.
+First, a real experiment: a five-line scratch test feeding `{}` to a record with `Integer slot` and one with `int slot`.
+Bryan predicted "a default, or null"; the `Integer` came back `null` and the `int` crashed with Jackson 3's
+`FAIL_ON_NULL_FOR_PRIMITIVES`, which also corrected what Claude had said earlier ("silently becomes 0" was Jackson 2).
+His sentence afterwards: `Integer` can hold null and `int` cannot, so any JSON field a client might leave out must be an
+`Integer`, or Jackson crashes before validation can report it. Second, Bryan said plainly that he can never answer the
+check-your-understanding questions with confidence and that the learning style needs to change. The diagnosis we
+agreed to try: dictate → type → quiz is copying, so from now on each concept goes predict → run a tiny experiment →
+say it in one sentence, and that sentence is the sign-off. Then he asked Claude to finish Steps 26 and 27 so he can get
+to the DynamoDB work; logged in the PLAN changelog like the Steps 10–24 delegation.
+
+Claude built the other three commits. Routes: four `@RestController`s (`RunController` under `/api/runs`,
+`ProfileController`, `LeaderboardController`, `ContentController`) calling `@Service` stubs that throw
+`UnsupportedOperationException`; end-turn takes `{expectedVersion}` and `POST /runs` answers 201. Two Spring Boot 4
+bumps worth keeping: Spring 7 no longer guesses `@PathVariable` names from reflection, so the root pom now compiles
+every module with `-parameters` (the Initializr pom has it, the hand-typed Step 25 pom did not; a clean build was
+needed for the flag to bite); and a `@Configuration` class holding Jackson beans is invisible to a `@WebMvcTest` slice,
+while a `@Component` that *is* a `JacksonModule` is included, hence `ApiJsonModule` wrapping the engine's final
+`EngineJsonModule`. Errors: `GlobalExceptionHandler extends ResponseEntityExceptionHandler`, one table from the engine's
+`RuleViolation` (422, `code` = the engine's code, title derived from it) through 400 `VALIDATION_FAILED` with an
+`errors` list and 400 `MALFORMED_JSON` (unknown field, unknown `type`), 404, 409 with `currentVersion`, 501 for the
+stubs, to a 500 that logs and never leaks the exception; Spring's own ProblemDetails get a `code` too. Unknown fields
+were only rejected once `spring.jackson.deserialization.fail-on-unknown-properties: true` was set explicitly. Contract:
+springdoc 3.1.1 with `paths-to-match: /api/**` and `default-produces-media-type: application/json`,
+`SpringDocUtils.replaceWithSchema` so unit ids and positions are strings and ranks numbers, `application-prod.yaml`
+turning the docs off (tested with `@ActiveProfiles("prod")`). The planned Maven export plugin was dropped: it would
+start the app on a port during `verify` and, from Step 28, need a DynamoDB beside it, so `OpenApiContractTest`
+(`@SpringBootTest` + `MockMvcTester`) fetches `/v3/api-docs`, writes `backend/target/openapi.json` and compares it
+with the committed snapshot; `-Dopenapi.snapshot.update=true` refreshes it on purpose. The exported contract shows
+actions and events as `oneOf` with a `type` discriminator and the validation annotations as `minimum: 0` and `required`.
+375 tests across three modules (engine 342, sim 9, backend 24). Lesson: 400 means "I could not read or validate your
+request", 422 means "I read it fine and the rules say no"; a DTO is the wire shape and the engine record is the truth,
+and keeping them apart is what lets the engine change without breaking a client that was generated from the contract.

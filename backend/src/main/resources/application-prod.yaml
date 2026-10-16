@@ -1,0 +1,7 @@
+# Settings that apply only when the "prod" profile is active (the Lambda, from Step 33).
+springdoc:
+  # the contract is exported at build time; the live API does not describe itself to strangers
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

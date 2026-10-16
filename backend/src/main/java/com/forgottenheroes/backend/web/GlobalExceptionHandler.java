@@ -106,13 +106,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
                                                              HttpStatusCode statusCode, WebRequest request) {
-        if (body instanceof ProblemDetail problem && (problem.getProperties() == null || !problem.getProperties().containsKey("code"))) {
+        // the parent builds the ProblemDetail itself when body is null (unknown route, wrong method …), so look afterwards
+        ResponseEntity<Object> response = super.handleExceptionInternal(ex, body, headers, statusCode, request);
+        if (response != null && response.getBody() instanceof ProblemDetail problem
+            && (problem.getProperties() == null || !problem.getProperties().containsKey("code"))) {
             HttpStatus status = HttpStatus.resolve(statusCode.value());
             String code = status == null ? "HTTP_" + statusCode.value() : status.name();
             problem.setType(URI.create(TYPE_BASE + code.toLowerCase(Locale.ROOT).replace('_', '-')));
             problem.setProperty("code", code);
         }
-        return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+        return response;
     }
 
     private static ProblemDetail problem(HttpStatus status, String typeSlug, String code, String title, String detail) {
