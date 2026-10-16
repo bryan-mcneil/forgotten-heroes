@@ -113,7 +113,9 @@ dnd-kit's keyboard sensor announces "Picked up Aoi. Press arrow keys to move, En
   (`#5fb26a`), temporary stat blue (`#7fc4e8`), frozen ice (`#a9dcf3`), danger red (`#c6423b`).
   All defined once as CSS variables (`--fh-gold`) and Tailwind theme tokens.
 * **Typography**: `Pixelify Sans` for headings/numbers (reads well at small sizes), `Inter` for
-  body text in info bars and menus (pixel fonts hurt for paragraphs). Minimum 14 px body.
+  body text in info bars and menus (pixel fonts hurt for paragraphs). Minimum 14 px body. A pixel
+  **kanji** font (Misaki or PixelMplus, chosen in Step 38a) is loaded through `unicode-range` so relic
+  glyphs and numerals share the sprites' pixel grid (GDD §12).
 * **Pixel discipline**: 3× scale; all sprite positions snap to whole pixels; no fractional scaling;
   `image-rendering: pixelated`; UI 9-slice frames also pixel-art.
 * **Hierarchy**: the band is the hero of the tavern screen (largest), the tavern row second, HUD
@@ -175,7 +177,7 @@ Rule: nothing blocks input in the tavern; in battle the timeline is the clock.
 * First run: three callouts (Buy → Arrange → End Turn), dismissible, never shown again (localStorage).
 * "How to play" page = GDD §4 in plain words with pictures; glossary tooltips on key words.
 * Tone: warm, short, tavern-flavoured ("The tavern keeper restocks for 1 gold.") — confirmed lighthearted (Q8).
-* Names: cameo heroes read "Aoi — the Novice Scribe" with the kanji 葵 as a small subtitle (system font fallback; pixel fonts lack kanji). Others read "Farmhand".
+* Names: cameo heroes read "Aoi — the Novice Scribe" with the kanji 葵 as a small subtitle (pixel kanji font from Step 38a, system font fallback). Others read "Farmhand". Relics and the rank/level numerals are kanji too (GDD §12).
 * Errors: human sentences from the server's `detail` field plus what to do ("Reloading your run…").
 * Blocked page (`blocked.html`, served by CloudFront to visitors outside the US — Q27): one static card, no
   JS, same palette. *"The tavern only opens its doors from the United States for now. Travelling, or on a

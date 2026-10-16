@@ -89,6 +89,16 @@
     access keys) and sign the CLI in with `aws login` (browser sign-in → temporary credentials, 12 h); enable
     Identity Center at the Paid-plan upgrade (Step 77) and delete the IAM user then.* → **Answered 2026-10-14: Bryan
     went ahead with the default (IAM user `bryan` + `aws login`); Identity Center waits for the upgrade.**
+33. **A kanji layer.** (Raised by you on 15 Oct 2026, brainstorming before Step 25.) *The Forgotten Kanji*
+    teaches Japanese — should Forgotten Heroes teach a little too? On the table: relics drawn as kanji whose
+    meaning is the effect (食 Ration, 薬 Elixir, 学 Tome of Experience); Japanese numerals for ranks and levels
+    (一〜六); merging grows the kanji (木 → 林 → 森, and compounds such as 田 + 力 = 男); a "kanji you met"
+    card on the run-over screen; later, job kanji for the other 30 heroes, battle-verb captions, and seeding a
+    run from the kanji you keep forgetting in the other app. *Default: adopt the first four as v1 candidates,
+    as presentation + content data only (no resolver reads a kanji, no localisation, $0); everything else is a
+    door; the detail is designed in a new Step 38a and drawn in Steps 46, 47 and 52.* → **Answered 2026-10-15:
+    yes — relics as kanji, numerals, the run-over card, and merging grows the kanji including compounds
+    (田 + 力 = 男). Recorded as an idea now (GDD §12) and fleshed out when Step 38a arrives.**
 
 ## Answers log
 | # | Your answer | Date | Files updated |
@@ -120,3 +130,4 @@
 | 30 | **Done** — folder renamed to `forgotten_heroes` | 2026-10-07 | README "Before Step 01", PLAN rule 6 removed, Claude Code project memory |
 | 31 | Set AWS services up **by hand in the web console**, with detailed step-by-step instructions when each step arrives | 2026-10-07 | PLAN rule 6 + changelog, project_management §7, phase_0 Step 06, phase_2 Step 34, phase_5 intro, tech_stack §8, CLAUDE.md, Claude Code memory |
 | 32 | Default — IAM user `bryan` + `aws login` now, Identity Center at the Paid-plan upgrade | 2026-10-14 | PLAN Step 06 row + changelog, phase_0 Step 06, phase_6 Step 77 checklist, docs/aws-account-setup.md, docs/setup.md, scripts/check-env.sh (AWS CLI ≥ 2.32), environment_audit §3, glossary |
+| 33 | **Yes** — kanji layer (relics as kanji, numerals, run-over card, merging grows the kanji incl. compounds); detail at Step 38a | 2026-10-15 | GDD §12 + §10 pointer, PLAN Step 38a row/map/changelog, phase_3 intro + Step 38a + hooks in Steps 40/46/47/52, ux doc §5/§11, CLAUDE.md Phase 3 row, scripts/create-issues.sh (letter suffix), Claude Code memory |
