@@ -1,6 +1,18 @@
 spring:
   application:
     name: forgotten-heroes-backend
+  jackson:
+    # absent values are left out of the JSON instead of written as null (same as the engine's EventJson)
+    default-property-inclusion: non_null
+    deserialization:
+      # a body naming a field we do not know is a bug or a cheat attempt, not something to ignore: answer 400
+      fail-on-unknown-properties: true
 
 server:
   port: 8080
+
+springdoc:
+  # describe the game API only, not Actuator; /v3/api-docs and /swagger-ui.html are the defaults
+  paths-to-match: /api/**
+  # every response is JSON; without this the contract says "*/*"
+  default-produces-media-type: application/json

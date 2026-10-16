@@ -195,6 +195,43 @@
   sets `<skip>false</skip>`; `spring-boot-maven-plugin` (backend) and `exec-maven-plugin` (sim) both use it so `-am` builds
   do not try to run the root pom or the engine.
 * **Testcontainers** — starts a real database in Docker just for a test, then throws it away.
+* **Sealed interface** — `sealed interface ActionRequest permits …`: exactly these records implement it, no others. A
+  `switch` over it needs no `default` and fails to compile when a case is missing. The engine's `Action` and `GameEvent`
+  are sealed too.
+* **`@JsonTypeInfo` / `@JsonSubTypes`** — tell Jackson to read a `"type"` field (`"Buy"`) and pick the matching record,
+  and to write it back on the way out. How one request shape can be eight.
+* **Validation annotations** — `@NotNull`, `@PositiveOrZero`, `@Size` on record components, checked by Spring before the
+  controller method runs when the parameter is marked `@Valid`. Package `jakarta.validation`, from
+  `spring-boot-starter-validation`.
+* **`Integer` vs `int`** — `int` is a primitive and cannot be null; `Integer` is the boxed object and can. A missing
+  JSON field becomes `null`, which Jackson 3 refuses to put into an `int` (crash) but happily puts into an `Integer`
+  (then `@NotNull` reports it). Use the wrapper for anything a client might leave out.
+* **`Optional<T>`** — a box that is either empty or holds a value, instead of a null that bites later;
+  `unit.perk().orElse(null)` unboxes it at the edge where JSON wants a plain value.
+* **`@RequestMapping` / `@GetMapping` / `@PostMapping`** — which URL and method a controller method answers.
+  **`@PathVariable`** reads `{runId}` from the path, **`@RequestParam`** reads `?season=…`, **`@RequestBody`** parses
+  the JSON body into a record. **`@ResponseStatus`** sets a status other than 200 (201 for a created run).
+* **`-parameters` compiler flag** — keeps method parameter names in the class file. Spring 7 reads `@PathVariable`
+  names from them instead of guessing, so the root pom turns it on for every module.
+* **`@Service`** — a bean in the service layer: the logic between a controller and the engine or the database.
+  **`@Component`** is the generic marker; `@RestController`, `@Service` and `@Repository` are the same thing with a
+  role name.
+* **`@RestControllerAdvice` / `@ExceptionHandler`** — one class whose methods catch exceptions from every controller and
+  turn each into a response. Ours extends `ResponseEntityExceptionHandler` so Spring's own web errors come through it
+  too.
+* **`ProblemDetail` `code`** — our one extra field on the RFC 9457 body: stable text (`NOT_ENOUGH_GOLD`,
+  `VERSION_CONFLICT`) the frontend switches on; `title` and `detail` are for humans and may change.
+* **422 vs 400** — 400 means "I could not read or validate your request" (bad JSON, missing field); 422 means "I read
+  it fine, but the rules say no" (not enough gold). The client reacts differently: fix the request, or show the rule.
+* **`@SpringBootTest` + `@AutoConfigureMockMvc`** — the whole app, with `MockMvcTester` to call it without a network;
+  the contract test uses it because springdoc needs every controller to be present.
+* **`@ActiveProfiles("prod")`** — run a test with that profile on, so `application-prod.yaml` applies.
+* **Swagger UI** — the web page springdoc serves at `/swagger-ui.html`: every route, its shapes, and a "Try it out"
+  button. `/v3/api-docs` is the same information as JSON (the OpenAPI document).
+* **Snapshot test** — a test that compares a generated file with a committed copy and fails on any difference, so a
+  change to the contract is a deliberate, reviewed diff rather than an accident.
+* **`JacksonModule` bean** — a Jackson module declared as a Spring bean is added to Spring's JSON mapper automatically;
+  `ApiJsonModule` hands the engine's module to Spring that way.
 
 ## AWS
 * **Region** — a geographic datacenter group; we use **us-east-1** (N. Virginia).

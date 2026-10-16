@@ -78,7 +78,7 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 
 ## Phase 2 — Backend (Spring Boot 4.1, Java 25, Lambda)
 - [x] **25** `backend` module from Spring Initializr; `/api/health`; runs locally; MockMvc test — est 2h
-- [ ] **26** API design: DTO records, validation, ProblemDetail errors, springdoc OpenAPI, exported `openapi.json` — est 3h
+- [x] **26** API design: DTO records, validation, ProblemDetail errors, springdoc OpenAPI, exported `openapi.json` — est 3h
 - [ ] **27** Service layer + in-memory repositories; `RunService` drives the engine; service tests — est 3h
 - [ ] **28** DynamoDB: table definition, Enhanced Client repositories, Testcontainers tests, `docker-compose.yml` + `local` profile — est 4h
 - [ ] **29** Optimistic locking (`version`) + conditional writes + 409 handling; concurrency test — est 2h
@@ -146,6 +146,8 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 | Date | Change | Why |
 |---|---|---|
 | 2026-10-07 | Plan created (77 steps) | — |
+| 2026-10-16 | **Steps 26–27 are built by Claude** at Bryan's request, same ritual as Steps 10–24 (branch, PR, CI, squash commit, journal); Bryan resumes typing at Step 28 (DynamoDB) | Bryan wants to reach the DynamoDB and AWS work; the typing of DTO records was not where the learning was |
+| 2026-10-16 | Step 26: the OpenAPI export is written by `OpenApiContractTest` (`@SpringBootTest` + MockMvc, `/v3/api-docs` → `backend/target/openapi.json`) instead of `springdoc-openapi-maven-plugin`; `-Dopenapi.snapshot.update=true` refreshes the snapshot; end-turn takes a body `{expectedVersion}`; `POST /runs` answers 201; the root pom compiles with `-parameters`; `fail-on-unknown-properties: true` set explicitly | the plugin needs the app started on a port during `verify` and, from Step 28, a DynamoDB beside it; the test already boots the app and runs the same in CI |
 | 2026-10-07 | Renamed to **Forgotten Heroes**: repo `forgotten-heroes`, package `com.forgottenheroes`, folder `forgotten_heroes` | Q5 — matches *The Forgotten Kanji*; same studio |
 | 2026-10-07 | Step 01: tools installed during planning (Corretto 25.0.4, AWS CLI 2.37, SAM 1.167, ffmpeg 9.0, 9 VS Code extensions); Maven dropped — Step 07 uses the script-only wrapper zip | `Apache.Maven` is not in winget; the wrapper needs no global Maven |
 | 2026-10-07 | Git Bash is the default shell; all scripts are `.sh` | Q18 |

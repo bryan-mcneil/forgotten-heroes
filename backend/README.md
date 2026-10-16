@@ -24,4 +24,19 @@ Spring Boot plugin is skipped on every other module), then `curl http://localhos
 `{"status":"UP","version":"<short git sha>"}`. The sha is written into `target/classes/git.properties` at build time by
 `git-commit-id-maven-plugin` and read by Spring's `GitProperties` bean. From Step 28 add `-Dspring-boot.run.profiles=local`.
 Tests: `./mvnw -pl backend -am verify` (a `@WebMvcTest` slice for the controller and a `@SpringBootTest` that boots the app).
+
+## The contract (Step 26)
+
+- Routes live in `web/` (`RunController`, `ProfileController`, `LeaderboardController`, `ContentController`,
+  `HealthController`); wire shapes in `web/dto/`; `DtoMapper` copies engine state out and turns an `ActionRequest`
+  into an engine `Action`. The services in `service/` are stubs answering 501 until Step 27.
+- Every error is an RFC 9457 `ProblemDetail` with a `code` (`GlobalExceptionHandler`): 422 rule violation (the
+  engine's code), 400 `VALIDATION_FAILED` / `MALFORMED_JSON`, 404 `NOT_FOUND`, 409 `VERSION_CONFLICT`, 501
+  `NOT_IMPLEMENTED`, 500 `INTERNAL_ERROR`. Never 403 (CloudFront owns it).
+- With the app running: `http://localhost:8080/swagger-ui.html` (try it out) and `/v3/api-docs` (the JSON). Both are
+  off under the `prod` profile.
+- `backend/target/openapi.json` is written by `OpenApiContractTest` on every build and must equal
+  `src/test/resources/openapi.snapshot.json`. When the API changes on purpose:
+  `./mvnw -pl backend -am -Dtest=OpenApiContractTest -Dopenapi.snapshot.update=true test`, then review and commit
+  the snapshot diff. Step 42 generates the frontend's TypeScript types from this file.
 TODO Step 28: `docker compose up -d && ./mvnw -pl backend -am verify` for the DynamoDB-backed tests.

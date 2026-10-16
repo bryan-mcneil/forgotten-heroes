@@ -60,6 +60,7 @@ step's **Verify** block is the source of truth for the exact invocation.
 | Step 07 | `./mvnw -pl engine -Dtest=BandTest test` | one test class (standard Maven Surefire) |
 | Step 22 | `./mvnw -pl sim exec:java -Dexec.args="run --games 1000"` · `scripts/sim.sh` | balance simulator (`run`, `fuzz`, `replay`, `check`) |
 | Step 25 | `./mvnw -pl backend -am test-compile spring-boot:run` (from Step 28 add `-Dspring-boot.run.profiles=local`) | API on :8080; `test-compile` builds `engine` in the same reactor; `local` profile accepts `X-Dev-User` instead of a Cognito JWT |
+| Step 26 | `http://localhost:8080/swagger-ui.html` (app running) · `./mvnw -pl backend -am -Dtest=OpenApiContractTest -Dopenapi.snapshot.update=true test` | Swagger UI; refresh `backend/src/test/resources/openapi.snapshot.json` after a deliberate API change (the test also writes `backend/target/openapi.json`) |
 | Step 28 | `docker compose up -d && ./mvnw -pl backend -am verify` | DynamoDB Local + Testcontainers-backed backend tests |
 | Step 33–34 | `sam validate --lint` · `sam local invoke ApiFunction -e infra/events/health.json` · `scripts/deploy-backend.sh dev` | template lint, local Lambda, manual dev deploy |
 | Step 37 | `cd frontend && npm run dev` · `npm test` · `npx vitest run src/<path>.test.ts` | Vite on :5173 (proxies `/api` → :8080), Vitest all / one file |

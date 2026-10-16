@@ -25,6 +25,7 @@
     <archunit.version>1.5.1</archunit.version>
     <pitest.version>1.30.1</pitest.version>
     <pitest-junit5.version>1.2.3</pitest-junit5.version>
+    <springdoc.version>3.1.1</springdoc.version>
   </properties>
 
   <dependencyManagement>
@@ -55,6 +56,12 @@
         <version>${jqwik.version}</version>
       </dependency>
       <dependency>
+        <!-- OpenAPI description + Swagger UI generated from the controllers (Step 26); v3 is the Spring Boot 4 line -->
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>${springdoc.version}</version>
+      </dependency>
+      <dependency>
         <!-- tests about package structure (Step 23) -->
         <groupId>com.tngtech.archunit</groupId>
         <artifactId>archunit-junit5</artifactId>
@@ -70,6 +77,10 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.16.0</version>
+          <configuration>
+            <!-- keep method parameter names in the class files: Spring reads @PathVariable names from them (Step 26) -->
+            <parameters>true</parameters>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

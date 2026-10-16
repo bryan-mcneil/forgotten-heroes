@@ -93,6 +93,30 @@ the API changes — the test message says how).
 
 **Check your understanding:** Why 422 for a rule violation instead of 400? Why keep DTOs separate from engine records?
 
+**As built (2026-10-16):** four commits on one branch (shapes, routes, errors, contract). `ActionRequest` is a sealed
+interface with eight records told apart by `"type"` (`@JsonTypeInfo` SIMPLE_NAME, like the engine's `Action`); its
+numbers are `Integer`, not `int`, because Jackson 3 refuses to map a missing field into a primitive
+(`FAIL_ON_NULL_FOR_PRIMITIVES` is on by default), so only a wrapper lets `@NotNull` report "slot must not be null" as a
+tidy 400. `RunStateDto` carries no `runSeed` (it would reveal future rolls). End-turn takes a body `{expectedVersion}`
+and `POST /runs` answers 201. `DtoMapper` copies engine state to DTOs and turns requests into engine actions with a
+switch over the sealed type. Services are stubs throwing `UnsupportedOperationException`, which the handler maps to
+**501** until Step 27. The handler extends `ResponseEntityExceptionHandler`, so Spring's own ProblemDetails (unknown
+route, bad path variable …) also get a `code`; `spring.mvc.problemdetails.enabled` is therefore not needed. Unknown JSON
+fields are rejected only because `application.yaml` sets `spring.jackson.deserialization.fail-on-unknown-properties:
+true` (the MVC mapper accepts them otherwise); `default-property-inclusion: non_null` leaves absent values out. The
+engine's `EngineJsonModule` reaches Spring's mapper through `ApiJsonModule`, a `@Component` module (a `JacksonModule`
+bean is picked up by `@WebMvcTest` slices; a `@Configuration` class is not). Spring 7 no longer guesses `@PathVariable`
+names from reflection, so the root pom compiles with `-parameters` (the Initializr pom has it; our hand-typed one did
+not). springdoc **3.1.1** (the Spring Boot 4 line), `springdoc.paths-to-match: /api/**`,
+`default-produces-media-type: application/json`, and `SpringDocUtils.replaceWithSchema` so `UnitId`/`Position` are
+strings and `Rank` a number in the contract; `application-prod.yaml` turns api-docs and Swagger UI off (tested with
+`@ActiveProfiles("prod")`). **Deviation:** no `springdoc-openapi-maven-plugin`. It needs the app started on a port
+during `verify` (and, from Step 28, a DynamoDB), so `OpenApiContractTest` (`@SpringBootTest` + MockMvc) fetches
+`/v3/api-docs` itself, writes `backend/target/openapi.json` and compares it with
+`backend/src/test/resources/openapi.snapshot.json`; refresh on purpose with
+`./mvnw -pl backend -am -Dtest=OpenApiContractTest -Dopenapi.snapshot.update=true test`. Events and actions appear as
+`oneOf` with a `type` discriminator, validation becomes `minimum: 0` and `required`. 24 backend tests.
+
 ---
 
 ## Step 27 — Service layer with in-memory repositories
