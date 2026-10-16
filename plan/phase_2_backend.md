@@ -35,7 +35,7 @@ Costs: `knowledge/cost_estimator.md`. Everything here must keep working on `./mv
 
 **Verify:**
 ```bash
-./mvnw -pl backend -am spring-boot:run      # then in another terminal:
+./mvnw -pl backend -am test-compile spring-boot:run   # then in another terminal:
 curl http://localhost:8080/api/health          # {"status":"UP",...}
 ./mvnw -B -ntp verify
 ```
@@ -43,6 +43,18 @@ curl http://localhost:8080/api/health          # {"status":"UP",...}
 **Commit:** `step-25: backend module with health endpoint`
 
 **Check your understanding:** What does "auto-configuration" mean, and where would you look to see what Spring configured for you? (hint: `--debug` flag / Actuator `conditions`)
+
+**As built (2026-10-15):** Spring Boot 4.1.1 names the web starter `spring-boot-starter-webmvc` (not `-web`) and its test
+starter `spring-boot-starter-webmvc-test`; `@WebMvcTest` moved to `org.springframework.boot.webmvc.test.autoconfigure` and
+`@MockBean` is gone, replaced by Spring Framework's `@MockitoBean`. The Initializr zip was downloaded and read, not merged:
+the backend pom was typed by hand with our root pom as parent, so the Spring Boot BOM already there supplies every version.
+`spring-boot-maven-plugin` is `skip=true` in the root `pluginManagement` and `skip=false` in `backend` (the Step 22 exec-plugin
+trick), otherwise `-am` runs `spring-boot:run` on the root pom and fails with "unable to find a suitable main class"; the run
+command therefore adds `test-compile` so `engine` is compiled in the same reactor. The sha comes from `GitProperties`
+(auto-configured from `git.properties`), not `BuildProperties`; the plugin's full-id key is `git.commit.id`, so the include
+pattern is `^git.commit.id(.abbrev)?$`. The controller lives in the `web` layer package. Two tests: the `@WebMvcTest` slice
+with a `@MockitoBean GitProperties` and `MockMvcTester`, and the Initializr `@SpringBootTest contextLoads` that boots the
+whole app in CI with the real `git.properties`. JaCoCo reports (75 % lines) but the backend gate waits for Step 36.
 
 ---
 

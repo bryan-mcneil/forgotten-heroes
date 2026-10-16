@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: forgotten-heroes-backend
+
+server:
+  port: 8080

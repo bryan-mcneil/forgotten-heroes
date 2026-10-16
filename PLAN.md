@@ -77,7 +77,7 @@ your 6–7 h/week (Q17). Every decision from your 7 Oct 2026 answers is logged i
 - [x] **24** Engine README (rules as implemented, event list, DSL reference) + **Phase 1 review** — est 2h
 
 ## Phase 2 — Backend (Spring Boot 4.1, Java 25, Lambda)
-- [ ] **25** `backend` module from Spring Initializr; `/api/health`; runs locally; MockMvc test — est 2h
+- [x] **25** `backend` module from Spring Initializr; `/api/health`; runs locally; MockMvc test — est 2h
 - [ ] **26** API design: DTO records, validation, ProblemDetail errors, springdoc OpenAPI, exported `openapi.json` — est 3h
 - [ ] **27** Service layer + in-memory repositories; `RunService` drives the engine; service tests — est 3h
 - [ ] **28** DynamoDB: table definition, Enhanced Client repositories, Testcontainers tests, `docker-compose.yml` + `local` profile — est 4h
