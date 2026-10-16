@@ -66,7 +66,8 @@ listed under *Decisions made while building* and in the `PLAN.md` changelog.
   run (`RunEnded WON`), 0 hearts lose it. At the start of turn 3 a missing heart comes back (`HeartsChanged MERCY`).
 - **Turn** (§4.2): `StartTurn` is engine-internal (`RunStarted` on turn 1, `TurnStarted`, gold to 10, the mercy
   heart, this turn's slot counts, bonus slot closed, per-turn ability counters reset, the automatic `TavernRolled`,
-  then `START_OF_TURN` abilities). The player then acts freely; `EndTurn` goes through `GameSession.endTurn`.
+  then `START_OF_TURN` abilities). The player then acts freely; `EndTurn` goes through `GameSession.endTurn`, and giving
+  up through `GameSession.abandon` (one `RunEnded`, status `ABANDONED`).
 - **Tavern** (§4.3): hero price 3, relic price per relic (Poison Vial 1), `Roll` free once per turn then 1 gold, sell
   for the hero's level, 3/4/5 hero slots on turns 1–4/5–8/9+, 1/2 relic slots on turns 1–2/3+, rank I at turn 1
   then II/III/IV/V/VI at turns 3/5/7/9/11, every slot drawn uniformly from the heroes (relics) of rank ≤ the

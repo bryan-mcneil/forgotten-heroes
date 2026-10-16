@@ -1,5 +1,6 @@
 package com.forgottenheroes.backend.web;
 
+import com.forgottenheroes.backend.service.ActiveRunException;
 import com.forgottenheroes.backend.service.NotFoundException;
 import com.forgottenheroes.backend.service.VersionConflictException;
 import com.forgottenheroes.engine.resolver.RuleViolation;
@@ -30,6 +31,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  *   validation / unreadable JSON    → 400  VALIDATION_FAILED / MALFORMED_JSON
  *   NotFoundException               → 404  NOT_FOUND
  *   VersionConflictException        → 409  VERSION_CONFLICT (+ currentVersion)
+ *   ActiveRunException              → 409  RUN_ALREADY_ACTIVE (+ activeRunId)
  *   UnsupportedOperationException   → 501  NOT_IMPLEMENTED (Step 26 stubs)
  *   anything else                   → 500  INTERNAL_ERROR, logged, no stack trace to the client
  * </pre>
@@ -61,6 +63,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ProblemDetail versionConflict(VersionConflictException ex) {
         ProblemDetail problem = problem(HttpStatus.CONFLICT, "version-conflict", "VERSION_CONFLICT", "Stale version", ex.getMessage());
         problem.setProperty("currentVersion", ex.actual());
+        return problem;
+    }
+
+    @ExceptionHandler(ActiveRunException.class)
+    ProblemDetail activeRun(ActiveRunException ex) {
+        ProblemDetail problem = problem(HttpStatus.CONFLICT, "run-already-active", "RUN_ALREADY_ACTIVE", "A run is in progress", ex.getMessage());
+        problem.setProperty("activeRunId", ex.activeRunId());
         return problem;
     }
 

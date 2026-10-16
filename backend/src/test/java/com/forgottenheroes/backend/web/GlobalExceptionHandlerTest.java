@@ -5,11 +5,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
+import com.forgottenheroes.backend.security.CurrentUser;
+import com.forgottenheroes.backend.service.ActiveRunException;
 import com.forgottenheroes.backend.service.NotFoundException;
 import com.forgottenheroes.backend.service.RunService;
 import com.forgottenheroes.backend.service.VersionConflictException;
 import com.forgottenheroes.engine.resolver.RuleViolation;
 import com.forgottenheroes.engine.resolver.RuleViolation.Code;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -30,9 +33,17 @@ class GlobalExceptionHandlerTest {
     @MockitoBean
     private RunService runs;
 
+    @MockitoBean
+    private CurrentUser user;
+
+    @BeforeEach
+    void theCallerIsDev() {
+        given(user.id()).willReturn("dev");
+    }
+
     @Test
     void ruleViolationIs422WithTheEngineCode() {
-        given(runs.apply(eq("run-1"), any())).willThrow(new RuleViolation(Code.NOT_ENOUGH_GOLD, "You have 2 gold; a hero costs 3."));
+        given(runs.apply(eq("dev"), eq("run-1"), any())).willThrow(new RuleViolation(Code.NOT_ENOUGH_GOLD, "You have 2 gold; a hero costs 3."));
 
         assertThat(post("/api/runs/run-1/actions", BUY))
             .hasStatus(422)
@@ -79,7 +90,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void notFoundIs404() {
-        given(runs.get("nope")).willThrow(new NotFoundException("Run", "nope"));
+        given(runs.get("dev", "nope")).willThrow(new NotFoundException("Run", "nope"));
 
         assertThat(mvc.get().uri("/api/runs/nope"))
             .hasStatus(404)
@@ -89,7 +100,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void staleVersionIs409WithTheCurrentVersion() {
-        given(runs.apply(eq("run-1"), any())).willThrow(new VersionConflictException("run-1", 1, 4));
+        given(runs.apply(eq("dev"), eq("run-1"), any())).willThrow(new VersionConflictException("run-1", 1, 4));
 
         assertThat(post("/api/runs/run-1/actions", BUY))
             .hasStatus(409)
@@ -98,8 +109,18 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void stubsAnswer501() {
-        given(runs.start()).willThrow(new UnsupportedOperationException("arrives in Step 27"));
+    void aSecondRunIs409WithTheRunToResume() {
+        given(runs.start("dev")).willThrow(new ActiveRunException("run-1"));
+
+        assertThat(mvc.post().uri("/api/runs"))
+            .hasStatus(409)
+            .bodyJson()
+            .isLenientlyEqualTo("{\"status\":409,\"code\":\"RUN_ALREADY_ACTIVE\",\"activeRunId\":\"run-1\"}");
+    }
+
+    @Test
+    void notImplementedIs501() {
+        given(runs.start("dev")).willThrow(new UnsupportedOperationException("later"));
 
         assertThat(mvc.post().uri("/api/runs"))
             .hasStatus(501)
@@ -125,7 +146,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void unexpectedErrorsAre500WithoutAStackTrace() {
-        given(runs.get("run-1")).willThrow(new IllegalStateException("secret internals"));
+        given(runs.get("dev", "run-1")).willThrow(new IllegalStateException("secret internals"));
 
         MvcTestResult result = mvc.get().uri("/api/runs/run-1").exchange();
 

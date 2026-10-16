@@ -45,6 +45,25 @@ class GameSessionTest {
     }
 
     @Test
+    void abandonEndsTheRunWithOneEventAndNoBattle() {
+        RunState state = SESSION.start("run-1", 42).state();
+        long version = state.version();
+        int lastSeq = state.lastEventSeq();
+
+        ActionResult result = SESSION.abandon(state);
+
+        assertThat(state.status()).isEqualTo(RunStatus.ABANDONED);
+        assertThat(state.version()).isEqualTo(version + 1);
+        assertThat(result.events()).hasSize(1);
+        assertThat(result.events().getFirst()).isInstanceOf(RunEnded.class);
+        assertThat(result.events().getFirst().seq()).isEqualTo(lastSeq + 1);
+        assertThat(state.lastEventSeq()).isEqualTo(lastSeq + 1);
+        assertThatThrownBy(() -> SESSION.abandon(state)).isInstanceOf(RuleViolation.class);
+        assertThatThrownBy(() -> SESSION.apply(state, new Action.Roll())).isInstanceOf(RuleViolation.class);
+        state.assertInvariants();
+    }
+
+    @Test
     void startBeginsTurnOne() {
         ActionResult started = SESSION.start("run-1", 42);
         RunState state = started.state();
