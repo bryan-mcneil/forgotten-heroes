@@ -19,7 +19,25 @@
 | A tutorial that stops to lecture fails; doing and explaining are separate kinds of text (Diátaxis) | The chunk does one thing; background goes to the journal or the glossary, linked, not inlined |
 | Tired brains do not learn; novices who can trace code can write it (Brown & Wilson; Lister) | Sessions of about 45 minutes; the output of every run is read together, line by line, before moving on |
 
-## 2. The loop for one concept
+## 2. Words and a map come before the loop
+
+Added the same day, after chunk 1 of Step 28-a: Bryan said he knows nothing of how the codebase works, did not know
+the difference between the engine and the backend, did not know what a run or a profile is, and that an analogy word
+("drawer") with nothing behind it is just one more unknown word.
+
+* **The game words first.** Before a step, every player word it touches (run, turn, band, tavern, ghost, profile,
+  crowns, hearts) is given in one plain sentence, from the GDD §2 glossary. Never assume a game word is known.
+* **A map page for the whole thing.** A visual explainer artifact (the "Forgotten Heroes Map": the game, the four
+  parts, one click end to end, the backend's rooms, the word list) is the first thing a session opens when Bryan says
+  he is lost, and it is updated when a part changes. Every diagram is a mechanism (who talks to whom, labelled
+  arrows), not boxes with names.
+* **An analogy is said together with what it stands for**, in the same sentence ("the partition key, the drawer the
+  folder sits in"). An analogy word alone is jargon.
+* **Only words from the map page** appear in a chunk. A word not on it is defined in the sentence that uses it and
+  added to the word list.
+* **"Profile" means two things** (the player's record; a Spring settings set). Say which one every time.
+
+## 3. The loop for one concept
 
 ```text
 0. MAP      where we are, in four lines, with a picture when the thing has parts
@@ -37,7 +55,7 @@
             that sentence is the "What I learned" of the commit
 ```
 
-## 3. The shape of a session
+## 4. The shape of a session
 
 1. **Recall** (2 minutes): three closed-book questions on the previous session, short definite answers;
    Claude gives the answers after Bryan has tried.
@@ -47,7 +65,7 @@
 4. **Journal**: Claude writes the session paragraph in Bryan's words, including every wrong prediction and what
    replaced it.
 
-## 4. Message rules (the medium is text only)
+## 5. Message rules (the medium is text only)
 
 * Lead with the one thing to do.
 * One new term per paragraph, defined in the same sentence.
@@ -58,7 +76,7 @@
 * When an idea does not land after one explanation and one experiment, draw it (a visual explainer artifact)
   rather than write a second paragraph; anchor it in the layer below (Step 25's auto-configuration page worked).
 
-## 5. What changes in the plan files
+## 6. What changes in the plan files
 
 * "Check your understanding" stays as the *goal* of a step, but it is answered by doing (predict, run, break),
   not by recall after reading. The sentence in the PR is still the exit ticket.
@@ -66,7 +84,7 @@
 * At the end of each step Bryan answers one question: *which part of the loop helped, which did not?* The
   answer goes in the journal and the loop is adjusted.
 
-## 6. Sources
+## 7. Sources
 
 * Brown & Wilson, *Ten quick tips for teaching programming*, PLOS Comput Biol 2018 —
   <https://pmc.ncbi.nlm.nih.gov/articles/PMC5886386/>
