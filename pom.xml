@@ -12,6 +12,7 @@
   <modules>
     <module>engine</module>
     <module>sim</module>
+    <module>backend</module>
   </modules>
 
   <properties>
@@ -107,6 +108,21 @@
             <skip>true</skip>
             <mainClass>com.forgottenheroes.sim.SimMain</mainClass>
           </configuration>
+        </plugin>
+        <plugin>
+          <!-- spring-boot:run locally; packages the runnable jar (Step 25) -->
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot.version}</version>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+        <plugin>
+          <!-- writes git.properties (commit sha) into the jar so /api/health can report it (Step 25) -->
+          <groupId>io.github.git-commit-id</groupId>
+          <artifactId>git-commit-id-maven-plugin</artifactId>
+          <version>9.0.2</version>
         </plugin>
       </plugins>
     </pluginManagement>

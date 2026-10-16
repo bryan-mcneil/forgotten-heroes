@@ -59,7 +59,7 @@ step's **Verify** block is the source of truth for the exact invocation.
 | Step 07 | `./mvnw -B -ntp verify` · `./mvnw -pl engine -B -ntp verify` | all Java modules / engine only, with JaCoCo gate (≥ 90 % by Step 23) |
 | Step 07 | `./mvnw -pl engine -Dtest=BandTest test` | one test class (standard Maven Surefire) |
 | Step 22 | `./mvnw -pl sim exec:java -Dexec.args="run --games 1000"` · `scripts/sim.sh` | balance simulator (`run`, `fuzz`, `replay`, `check`) |
-| Step 25 | `./mvnw -pl backend spring-boot:run -Dspring-boot.run.profiles=local` | API on :8080; `local` profile accepts `X-Dev-User` instead of a Cognito JWT |
+| Step 25 | `./mvnw -pl backend -am test-compile spring-boot:run` (from Step 28 add `-Dspring-boot.run.profiles=local`) | API on :8080; `test-compile` builds `engine` in the same reactor; `local` profile accepts `X-Dev-User` instead of a Cognito JWT |
 | Step 28 | `docker compose up -d && ./mvnw -pl backend -am verify` | DynamoDB Local + Testcontainers-backed backend tests |
 | Step 33–34 | `sam validate --lint` · `sam local invoke ApiFunction -e infra/events/health.json` · `scripts/deploy-backend.sh dev` | template lint, local Lambda, manual dev deploy |
 | Step 37 | `cd frontend && npm run dev` · `npm test` · `npx vitest run src/<path>.test.ts` | Vite on :5173 (proxies `/api` → :8080), Vitest all / one file |

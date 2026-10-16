@@ -306,3 +306,23 @@ events, byte for byte, on the server, in a replay and in a test, so every bug is
 "event-sourced" means the engine's output is the ordered list of facts (a hero was bought, a unit fell), which the
 backend stores and the browser animates without ever recomputing a rule. It mattered here because it made the
 server authoritative at zero cost, the frontend a player of recordings, and every test a story you can read.
+
+## 2026-10-15 — Step 25, the backend module and `/api/health`
+
+Phase 2 opens with the smallest possible Spring Boot app. Bryan typed every file again: the two root pom edits (the
+`backend` module line, plus `spring-boot-maven-plugin` and `git-commit-id-maven-plugin` in `pluginManagement`), the
+backend pom with our root pom as parent and no versions on the starters because the BOM already has them,
+`BackendApplication` with its single `@SpringBootApplication`, `application.yaml` (port 8080, app name), and
+`HealthController`, a `@RestController` whose constructor asks for a `GitProperties` bean and whose one `@GetMapping`
+returns a record that Jackson writes as `{"status":"UP","version":"fafb6c2"}`. The Initializr zip was downloaded and read
+side by side rather than merged, which surfaced the Spring Boot 4 renames: `spring-boot-starter-webmvc`, the
+`webmvc-test` twin, `@WebMvcTest` in a new package and `@MockitoBean` in place of `@MockBean`. Two real bumps taught the
+most: `-pl backend -am spring-boot:run` ran the plugin on the root pom and died with "unable to find a suitable main
+class", solved with the same `skip=true` in root / `skip=false` in the module trick Step 22 used for the simulator, plus
+`test-compile` in the command so the engine compiles in the same reactor; and `git.properties` came out without the full
+sha because the plugin's key is `git.commit.id`, not `git.commit.id.full`. Two tests, both green in 7 s: the
+`@WebMvcTest` slice with a scripted `GitProperties` mock and `MockMvcTester`, and the Initializr `contextLoads` that boots
+the whole app in CI. 353 tests across three modules; backend coverage 75 % reported, gate deferred to Step 36. Lesson:
+auto-configuration is Spring Boot looking at the classpath and creating the beans you would have written anyway; the
+conditions report (`--debug`) is where you look to see what it decided, and dependency injection is simply asking for a
+bean in a constructor instead of writing `new`.

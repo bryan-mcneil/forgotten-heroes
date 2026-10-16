@@ -165,6 +165,35 @@
 * **springdoc / OpenAPI** — generates a machine-readable description of the API; the frontend
   generates TypeScript types from it.
 * **MockMvc / `@WebMvcTest`** — test a controller without starting a real server.
+* **Spring Initializr** — start.spring.io, a generator for a known-good Spring Boot project. Step 25 downloaded its zip to
+  read, then typed the `backend` pom by hand with our root pom as parent.
+* **Auto-configuration** — Spring Boot looks at what is on the classpath (a web starter, Jackson, Actuator) and creates the
+  beans a sensible app would need, unless you define your own. Start the app with `--debug` to print the "conditions
+  report": every auto-configuration and why it matched or did not.
+* **Starter** — one dependency that pulls in a whole feature with versions that fit: `spring-boot-starter-webmvc` (Spring MVC
+  plus embedded Tomcat plus Jackson). In Spring Boot 4 the old `spring-boot-starter-web` name is gone, and every starter has
+  a `-test` twin (`spring-boot-starter-webmvc-test`) with the matching test tools.
+* **`@SpringBootApplication`** — the one annotation on the entry class: configuration + auto-configuration + component scan of
+  its package and below. `SpringApplication.run(...)` in `main` starts the app.
+* **Component scan** — Spring walks the entry class's package and sub-packages and makes a bean of every class marked
+  `@RestController`, `@Service`, `@Repository` or `@Component`.
+* **Constructor injection** — a class asks for what it needs as constructor parameters (`HealthController(GitProperties git)`)
+  and Spring passes the matching beans in; we never write `new` for a collaborator.
+* **`application.yaml`** — the settings file Spring reads at startup (`server.port`, `spring.application.name`); the YAML twin of
+  `application.properties`. Profile-specific files are `application-<profile>.yaml`.
+* **Slice test** — a test that starts only one layer: `@WebMvcTest(HealthController.class)` builds the web layer with that
+  controller and nothing else, so it runs in a second. `@SpringBootTest` is the opposite: the whole app, as `spring-boot:run`
+  would start it; an empty `contextLoads()` test proves every bean can be created.
+* **Mock / `@MockitoBean`** — a fake object scripted for one test (`given(git.getShortCommitId()).willReturn("abc1234")`); it
+  stands in for a bean the slice does not build. Replaces Spring Boot 3's `@MockBean`.
+* **`MockMvcTester`** — sends a request through Spring MVC without a network or a server and lets AssertJ check the reply:
+  `assertThat(mvc.get().uri("/api/health")).hasStatusOk().bodyJson().isLenientlyEqualTo("{...}")`.
+* **`GitProperties` / `git-commit-id-maven-plugin`** — the plugin writes `git.properties` (branch, sha, time) into the build
+  at compile time; Spring Boot sees that file and auto-configures a `GitProperties` bean, which `/api/health` reads for its
+  `version`. `failOnNoGitDirectory=false` keeps a build from a source zip working.
+* **Plugin `skip` switch** — a plugin listed in the root `pluginManagement` with `<skip>true</skip>` runs nowhere until a module
+  sets `<skip>false</skip>`; `spring-boot-maven-plugin` (backend) and `exec-maven-plugin` (sim) both use it so `-am` builds
+  do not try to run the root pom or the engine.
 * **Testcontainers** — starts a real database in Docker just for a test, then throws it away.
 
 ## AWS

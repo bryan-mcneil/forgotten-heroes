@@ -19,6 +19,9 @@
 
 ## How do I run it
 
-TODO Step 25: `./mvnw -pl backend spring-boot:run -Dspring-boot.run.profiles=local`, then open
-`http://localhost:8080/api/health`.
+`./mvnw -pl backend -am test-compile spring-boot:run` from the repo root (`-am test-compile` compiles `engine` first; the
+Spring Boot plugin is skipped on every other module), then `curl http://localhost:8080/api/health` answers
+`{"status":"UP","version":"<short git sha>"}`. The sha is written into `target/classes/git.properties` at build time by
+`git-commit-id-maven-plugin` and read by Spring's `GitProperties` bean. From Step 28 add `-Dspring-boot.run.profiles=local`.
+Tests: `./mvnw -pl backend -am verify` (a `@WebMvcTest` slice for the controller and a `@SpringBootTest` that boots the app).
 TODO Step 28: `docker compose up -d && ./mvnw -pl backend -am verify` for the DynamoDB-backed tests.
