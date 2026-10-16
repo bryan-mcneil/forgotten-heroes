@@ -4,6 +4,9 @@ spring:
   jackson:
     # absent values are left out of the JSON instead of written as null (same as the engine's EventJson)
     default-property-inclusion: non_null
+    deserialization:
+      # a body naming a field we do not know is a bug or a cheat attempt, not something to ignore: answer 400
+      fail-on-unknown-properties: true
 
 server:
   port: 8080
