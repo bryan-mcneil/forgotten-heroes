@@ -446,3 +446,31 @@ because PutItem leaves null fields out. I then asked Claude to finish Steps 28-b
 page per step about the DynamoDB ideas, since that is where I want my learning to go; the Java around it is noise to
 me right now. Lesson: the two labels are the whole design, and their spelling has to match in three places (the table
 definition, the Java item, and `Keys`), or the ledger refuses the folder.
+
+## 2026-10-17 — Step 28-b, run, ghost and battle-log repositories
+
+Built by Claude at Bryan's request, the same night, with the "Three More Drawers" explainer page as the teaching
+material. The whole run now lives in the ledger. Three more items, each a `@DynamoDbBean` next to `ProfileItem`:
+`RunItem` in the owner's drawer (`USER#<id>` / `RUN#<runId>`) holds the entire run as one JSON text written by the
+engine's own `RunStateJson`, with `status`, `turn`, `gold`, `hearts`, `crowns`, `version` and `updatedAt` copied out
+beside it so the admin page shows a run without opening the JSON; `GhostItem` in the drawer of its turn (`GHOST#T<turn>`)
+with the sort key `<crowns>#<time>#<runId>`; `BattleLogItem` in the run's own drawer (`RUN#<runId>` / `BATTLE#<turn>`)
+with the opponent's band and every event as the engine's JSON. The ghost's sort key is the lesson of the step: because
+DynamoDB sorts it as text, crowns go first and are zero-padded (`07` before `10`), the time is written at a fixed
+length (a bare `Instant.toString()` drops trailing zeros and `…26Z` would sort after `…26.728Z`), and the run id comes
+last so two ghosts saved in the same millisecond still get two folders, which is why the `Ghost` record gained a
+`runId`. Reading a drawer is the first Query of the project: `findByTurn` asks for `PK = GHOST#T<turn>` with
+`scanIndexForward(false)`, so the highest crowns come first and the newest first among equal crowns; Step 30 narrows
+it to a crowns window with `sortBetween`. TTL: `Ttl` holds the three durations (90 days after a run ends, 30 days for a
+ghost, 7 for a battle log) and `expiresAt` is seconds since 1970, the only form the sweeper reads; a run in progress
+has no `expiresAt` at all and is kept for ever. DynamoDB Local accepts `UpdateTimeToLive` and refuses a second call
+("TimeToLive is already enabled"), so the create script asks `describe-time-to-live` first and `TableDefinition`
+switches it on right after `createTable`. The size guard: DynamoDB stops at 400 KB per item, the battle-log
+repository refuses at 300 KB with a clear message, and the test proves both the refusal (20 000 copies of one event)
+and that a real battle stays far under it. The three in-memory repositories got the `app.storage=memory` condition,
+so the `local` profile now runs entirely on the box: a run played through the API left `USER#dev`/`RUN#…`,
+`GHOST#T1`/`00#…` and `RUN#…`/`BATTLE#001` behind, all visible on :8001. Tests: `DynamoLocal` is the shared helper
+(the container recipe, the connection built with the app's `DynamoConfig`, a raw `GetItem` for attribute-level checks
+such as the TTL number and the exact sort key) and each repository has its own test class and box. Lesson: in
+DynamoDB the order you will read in has to be designed into the sort key before the first item is written, as text,
+with fixed widths; there is no `ORDER BY` to fix it later.

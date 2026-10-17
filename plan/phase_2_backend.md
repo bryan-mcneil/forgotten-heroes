@@ -261,6 +261,23 @@ log save/load.
 
 **Say it (answered by doing):** why the ghost's sort key is `crowns#time#runId` rather than just `time`.
 
+**As built (2026-10-17, by Claude at Bryan's request):** `RunItem` (PK `USER#<userId>`, SK `RUN#<runId>`; `state` is the
+`RunStateJson` text, `status`/`turn`/`gold`/`hearts`/`crowns`/`version`/`updatedAt` copied out for the admin page,
+`expiresAt` only once the run is over, 90 days), `GhostItem` (PK `GHOST#T<turn>`, SK `<crowns, 2 digits>#<time, fixed
+millisecond ISO>#<runId>`, `band` as the engine's JSON through `EventJson.mapper()`, `bot`, `expiresAt` 30 days after
+`savedAt`), `BattleLogItem` (PK `RUN#<runId>`, SK `BATTLE#<turn, 3 digits>`, `events` through the typed
+`EventJson.toJson(list)` so every element keeps its `type`, `expiresAt` 7 days). `Keys` spells all of it, including the
+fixed-width time format (a bare `Instant.toString()` drops trailing zeros, and `"…26Z"` would sort after `"…26.728Z"` as
+text). **Deviations:** `Ghost` gained `runId`; `findByTurn` reads the drawer with `scanIndexForward(false)` (highest
+crowns first, newest first within equal crowns); `DynamoBattleLogRepository` refuses an item over 300 KB with an
+`IllegalStateException` (DynamoDB's hard limit is 400 KB; Step 36 adds gzip) and the test proves both the refusal and
+that a real battle stays far under it; the three remaining in-memory repositories got the `app.storage=memory`
+condition, so `local` now runs entirely on the box; TTL is switched on by the create script (idempotent, it asks
+`describe-time-to-live` first) and by `TableDefinition`. Tests: `DynamoLocal` (test helper: the container recipe, the
+connection through `DynamoConfig`, a raw `GetItem` for attribute-level checks) and one class per repository, each with its
+own box. Verified: `verify` green; under the `local` profile a run played through the API left `USER#dev`/`RUN#…`,
+`GHOST#T1`/`00#…`, and `RUN#…`/`BATTLE#001` in the compose box.
+
 ---
 
 ## Step 29 — Optimistic locking and idempotency

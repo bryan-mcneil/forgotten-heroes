@@ -293,6 +293,24 @@
   key getters, `TableSchema.fromBean(ProfileItem.class)` reads that once, and `DynamoDbTable<ProfileItem>` offers
   `getItem` / `putItem` / `query` in Java terms. It sits on top of the plain `DynamoDbClient` (the phone line). Dates
   (`Instant`) are stored as ISO strings, numbers as `N`, booleans as `BOOL`.
+* **Composite sort key** — several values in one sort key, most important first, separated by `#`:
+  `07#2026-10-16T12:00:00.000Z#r1` is crowns, then time, then run. Because DynamoDB sorts the key as text, one drawer
+  then answers "crowns between 6 and 8, newest first" as a range of the sort key. Numbers are zero-padded to a fixed
+  width (`07`, `BATTLE#001`) and times written at a fixed length, or `"10"` sorts before `"9"` and `"…26Z"` after
+  `"…26.728Z"`.
+* **Query / `scanIndexForward`** — read every item of one partition key in sort-key order; `scanIndexForward(false)`
+  reads the order backwards (for ghosts: highest crowns first, newest first among equal crowns). The result comes in
+  pages; the Enhanced Client's `items()` walks them for you.
+* **TTL (`expiresAt`)** — a per-table setting (`update-time-to-live`) naming one attribute; an item whose number in that
+  attribute (seconds since 1970, type `N`) is in the past is deleted by DynamoDB itself, for free, usually within a day
+  or two. Items without the attribute are kept for ever: a run gets `expiresAt` only once it is over (90 days), ghosts
+  30 days after they were saved, battle logs 7 days.
+* **JSON attribute** — the run state and the battle events are stored as one text attribute holding the engine's own
+  JSON (`RunStateJson`, `EventJson`). The ledger never looks inside; one GetItem returns the whole thing and the engine's
+  mapper reads it back exactly. The price: you cannot query by anything inside it, which is why a few numbers are copied
+  out next to it.
+* **Item size limit** — 400 KB per item, hard. The battle-log repository refuses at 300 KB so the limit is hit in a test,
+  not in production (Step 36 compresses the events).
 * **DynamoDB Local** — the real DynamoDB engine as a Docker image (`amazon/dynamodb-local`) listening on :8000. Any
   access key works (it checks nothing), `-inMemory` keeps the data in RAM, and `aaronshaf/dynamodb-admin` on :8001 is a
   web page to look inside. **Endpoint override** — telling the SDK to send its requests to that address

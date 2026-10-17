@@ -55,10 +55,17 @@ Tests: `./mvnw -pl backend -am verify` (a `@WebMvcTest` slice for the controller
   and `GET /api/me` in Swagger writes the item `USER#dev` / `PROFILE` you can see on :8001.
 - `DynamoConfig` builds the `DynamoDbClient` (region, the `url-connection-client` HTTP engine, and with
   `app.dynamodb.endpoint` set the local address plus made-up keys) and the `DynamoDbEnhancedClient` that maps a
-  `@DynamoDbBean` such as `ProfileItem` to an item and back. `Keys` is the only place the key prefixes are spelled.
-- Tests against the real thing: `DynamoProfileRepositoryTest` starts its own `amazon/dynamodb-local` box with
-  Testcontainers (Docker must be running), creates the table from `infra/table.json` through `TableDefinition`, and
-  round-trips a profile. `./mvnw -pl backend -am verify` runs it with everything else; it needs no compose box.
+  `@DynamoDbBean` such as `ProfileItem` to an item and back. `Keys` is the only place the key prefixes are spelled;
+  `Ttl` holds the expiry durations.
+- One table, four kinds of item (architecture §5): `USER#<id>` / `PROFILE` (`ProfileItem`), `USER#<id>` / `RUN#<runId>`
+  (`RunItem`: the whole run as `RunStateJson` text plus a few copied numbers; expires 90 days after the run ends),
+  `GHOST#T<turn>` / `<crowns>#<time>#<runId>` (`GhostItem`, band as JSON, expires after 30 days; `findByTurn` is a Query
+  read highest crowns first), `RUN#<runId>` / `BATTLE#<turn>` (`BattleLogItem`, events as JSON, expires after 7 days,
+  refused over 300 KB). A run played through Swagger under the `local` profile leaves all four on :8001.
+- Tests against the real thing: one `Dynamo*RepositoryTest` per repository starts its own `amazon/dynamodb-local` box
+  with Testcontainers (Docker must be running), creates the table from `infra/table.json` through `TableDefinition`
+  (TTL switched on too), and round-trips real engine state; `DynamoLocal` is the shared test helper. `./mvnw -pl backend
+  -am verify` runs them with everything else; they need no compose box.
 
 If a route answers 500 with "Name for argument … not specified … '-parameters'" on your laptop, the VS Code Java extension
 rebuilt `target/classes` without that flag; `./mvnw -pl backend -am clean test` restores Maven's compile.
