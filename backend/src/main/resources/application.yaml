@@ -16,3 +16,7 @@ springdoc:
   paths-to-match: /api/**
   # every response is JSON; without this the contract says "*/*"
   default-produces-media-type: application/json
+
+app:
+  # which repositories exist: "memory" (maps, gone at restart; the default) or "dynamo" (DynamoDB, see application-local.yaml)
+  storage: memory

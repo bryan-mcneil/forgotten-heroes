@@ -1,0 +1,8 @@
+# Settings for the "local" profile: the DynamoDB box from docker-compose.yml instead of the in-memory maps.
+# Run with: ./mvnw -pl backend -am test-compile spring-boot:run -Dspring-boot.run.profiles=local
+app:
+  storage: dynamo
+  dynamodb:
+    # an address means the box on your PC, with made-up keys; leave it out to talk to real AWS
+    endpoint: http://localhost:8000
+    table: forgotten-heroes-local

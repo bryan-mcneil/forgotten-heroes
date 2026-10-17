@@ -2,6 +2,7 @@ package com.forgottenheroes.backend.repo.dynamo;
 
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -13,9 +14,11 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 /**
  * The two SDK objects every DynamoDB repository shares. With {@code app.dynamodb.endpoint} set,
- * the client talks to the box on your PC with made-up keys; without it, to real AWS.
+ * the client talks to the box on your PC with made-up keys; without it, to real AWS. Built only when
+ * the switch {@code app.storage} says {@code dynamo}; with the default {@code memory} nothing here exists.
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnProperty(name = "app.storage", havingValue = "dynamo")
 public class DynamoConfig {
     @Bean
     DynamoDbClient dynamoDbClient(
