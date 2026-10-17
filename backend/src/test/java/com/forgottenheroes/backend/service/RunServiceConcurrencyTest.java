@@ -48,11 +48,11 @@ class RunServiceConcurrencyTest {
     static void buildTheServiceOnDynamo() throws Exception {
         DynamoLocal dynamo = DynamoLocal.connect(DYNAMO);
         DynamoProfileRepository profiles = new DynamoProfileRepository(dynamo.enhanced(), dynamo.tableName());
+        DynamoGhostRepository ghosts = new DynamoGhostRepository(dynamo.enhanced(), dynamo.tableName());
         service = new RunService(SESSION,
-            new DynamoRunRepository(dynamo.enhanced(), dynamo.tableName()),
-            new DynamoGhostRepository(dynamo.enhanced(), dynamo.tableName()),
+            new DynamoRunRepository(dynamo.enhanced(), dynamo.tableName()), ghosts,
             new DynamoBattleLogRepository(dynamo.enhanced(), dynamo.tableName()),
-            profiles, new ProfileService(profiles), new InMemoryGhostPool(), () -> 42L);
+            profiles, new ProfileService(profiles), new GhostMatchmaking(ghosts), () -> 42L);
         pool = Executors.newFixedThreadPool(2);
     }
 

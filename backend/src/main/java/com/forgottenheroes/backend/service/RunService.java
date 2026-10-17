@@ -93,7 +93,7 @@ public class RunService {
         int turn = state.turn();
         int crowns = state.crowns();
         int hearts = state.hearts();
-        Opponent opponent = matchmaking.pick(userId, turn, crowns, state.toSnapshot());
+        Opponent opponent = matchmaking.pick(userId, state);
 
         TurnResult result = session.endTurn(state, opponent.band());
 

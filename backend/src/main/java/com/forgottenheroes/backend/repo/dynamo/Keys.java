@@ -51,6 +51,16 @@ final class Keys {
         return String.format("%02d#%s#%s", crowns, SORTABLE_TIME.format(savedAt), runId);
     }
 
+    /** The lowest key a crowns window can hold: {@code "06#"} for 6 crowns (Step 30's Query reads from here). */
+    static String ghostLowerBound(int crownsMin) {
+        return String.format("%02d#", crownsMin);
+    }
+
+    /** The first key above the window: {@code "09#"} for 8 crowns; no real key equals it, so "between" stays exact. */
+    static String ghostUpperBound(int crownsMax) {
+        return String.format("%02d#", crownsMax + 1);
+    }
+
     /** A battle's place in its run's drawer: three digits, so turn 2 stays before turn 10. */
     static String battle(int turn) {
         return String.format("BATTLE#%03d", turn);
