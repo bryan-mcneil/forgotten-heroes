@@ -67,6 +67,11 @@ Tests: `./mvnw -pl backend -am verify` (a `@WebMvcTest` slice for the controller
   with the PutItem; `InMemoryRunRepository` checks inside `compute`. A refused write is `VersionConflictException` → 409
   `VERSION_CONFLICT` with `currentVersion`; the client reloads. `RunServiceConcurrencyTest` races two threads twenty
   times against a box and expects exactly one winner each time.
+- Matchmaking (Step 30): on end turn the service saves the player's ghost, then `GhostMatchmaking` asks
+  `GhostRepository.findCandidates(turn, crowns−1, crowns+1, 25)` (a `sortBetween` Query on `GHOST#T<turn>`, one page),
+  drops the player's own ghosts, and picks a real player's band, else a bot's, else the mirror, rolling the run's own
+  dice (`battleSeed` forked as `"matchmaking"`) so replays agree. Fallbacks log `MatchmakingFallback`;
+  `tools/seed-ghosts/seed-ghosts.sh` is the Step 72 placeholder.
 - Tests against the real thing: one `Dynamo*RepositoryTest` per repository starts its own `amazon/dynamodb-local` box
   with Testcontainers (Docker must be running), creates the table from `infra/table.json` through `TableDefinition`
   (TTL switched on too), and round-trips real engine state; `DynamoLocal` is the shared test helper. `./mvnw -pl backend

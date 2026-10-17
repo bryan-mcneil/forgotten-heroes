@@ -309,6 +309,17 @@
 * **Query / `scanIndexForward`** — read every item of one partition key in sort-key order; `scanIndexForward(false)`
   reads the order backwards (for ghosts: highest crowns first, newest first among equal crowns). The result comes in
   pages; the Enhanced Client's `items()` walks them for you.
+* **Window query (`sortBetween`)** — a Query limited to sort keys between two text bounds: ghosts with 6 to 8 crowns are
+  the keys between `"06#"` and `"09#"` (the upper bound is max + 1, which no real key equals). Works only because the
+  key starts with zero-padded crowns. `limit` caps what the ledger *reads* (not just returns): 25 items cost the same in
+  a drawer of ten thousand. The Enhanced Client returns pages; take the first `Page` only, or `items()` will fetch the
+  rest.
+* **Fallback ladder (matchmaking)** — the order `GhostMatchmaking` tries: the window's real players (never your own
+  ghosts), then bot ghosts (`bot = true`, seeded in Step 72), then the mirror of your own band. Each drop is logged as
+  `MatchmakingFallback kind=bot|mirror`; Step 35 turns that into a metric.
+* **Copy, not pointer** — the NoSQL habit of writing what a reader needs into the item the reader fetches: the opponent's
+  band is stored on the battle log instead of the ghost's key, because ghosts expire and DynamoDB has no joins. Copies
+  may drift; a battle that already happened never does.
 * **TTL (`expiresAt`)** — a per-table setting (`update-time-to-live`) naming one attribute; an item whose number in that
   attribute (seconds since 1970, type `N`) is in the past is deleted by DynamoDB itself, for free, usually within a day
   or two. Items without the attribute are kept for ever: a run gets `expiresAt` only once it is over (90 days), ghosts
