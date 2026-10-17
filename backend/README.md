@@ -62,6 +62,11 @@ Tests: `./mvnw -pl backend -am verify` (a `@WebMvcTest` slice for the controller
   `GHOST#T<turn>` / `<crowns>#<time>#<runId>` (`GhostItem`, band as JSON, expires after 30 days; `findByTurn` is a Query
   read highest crowns first), `RUN#<runId>` / `BATTLE#<turn>` (`BattleLogItem`, events as JSON, expires after 7 days,
   refused over 300 KB). A run played through Swagger under the `local` profile leaves all four on :8001.
+- Optimistic locking (Step 29): every `RunRepository.save(userId, state, expectedVersion)` is conditional on the version
+  the caller loaded (`NEW_RUN` for a new run). `DynamoRunRepository` sends `attribute_not_exists(PK) OR #v = :expected`
+  with the PutItem; `InMemoryRunRepository` checks inside `compute`. A refused write is `VersionConflictException` → 409
+  `VERSION_CONFLICT` with `currentVersion`; the client reloads. `RunServiceConcurrencyTest` races two threads twenty
+  times against a box and expects exactly one winner each time.
 - Tests against the real thing: one `Dynamo*RepositoryTest` per repository starts its own `amazon/dynamodb-local` box
   with Testcontainers (Docker must be running), creates the table from `infra/table.json` through `TableDefinition`
   (TTL switched on too), and round-trips real engine state; `DynamoLocal` is the shared test helper. `./mvnw -pl backend

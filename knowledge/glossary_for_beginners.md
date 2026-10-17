@@ -288,6 +288,14 @@
   nothing). PutItem: write the whole item, replacing whatever was there (no "insert or update" question, and null fields
   are simply left out). UpdateItem: change some attributes of an item in place (we use it only with a condition, Step 29).
   Query: every item of one partition key, in sort-key order, optionally within a sort-key range.
+* **Condition expression (conditional write, as built in Step 29)** — a small sentence a PutItem carries, which
+  DynamoDB checks against the item currently under that key, inside the write, before replacing it:
+  `attribute_not_exists(PK) OR #v = :expected`. False means nothing is written and the SDK throws
+  `ConditionalCheckFailedException`; the repository turns that into `VersionConflictException` → 409. `#v` and
+  `:expected` are **expression attribute names and values**, placeholders passed separately from the sentence
+  (`putExpressionName("#v", "version")`, `putExpressionValue(":expected", N 7)`) so a name can never collide with a
+  reserved word and a value never be mistaken for code. `attribute_not_exists(PK)` is true only when no item exists
+  under the key, which is how a new run's first save passes.
 * **Enhanced Client** — the AWS SDK's translator between a Java class and an item: `@DynamoDbBean` on a public class
   with a no-arg constructor and a getter/setter per attribute, `@DynamoDbPartitionKey` / `@DynamoDbSortKey` on the two
   key getters, `TableSchema.fromBean(ProfileItem.class)` reads that once, and `DynamoDbTable<ProfileItem>` offers
@@ -408,4 +416,11 @@
   **Rollback** — go back to the previous version. **Smoke test** — a quick "is it alive?" check after deploy.
 * **Runbook** — what to do when an alarm fires. **Observability** — logs + metrics + traces so you can see inside.
 * **Idempotent** — doing it twice has the same effect as once (safe retries).
-* **Optimistic locking** — assume no conflict; detect it with a version number; retry if wrong.
+* **Optimistic locking** — assume no conflict; detect it with a version number; retry if wrong. As built (Step 29): the
+  run's `version` is the stamp, the client sends it back as `expectedVersion`, the service checks it quickly, and the
+  repository checks it again inside the write (`RunRepository.save(userId, state, expectedVersion)`); the loser gets 409
+  with `currentVersion` and reloads. Never retries blindly: nothing was written for the loser, and a repeated request
+  carries the old stamp, so an action can never land twice.
+* **Lost update** — the bug optimistic locking prevents: two requests load the same run, each applies an action, and the
+  second save silently erases the first. On Lambda there is no shared memory or held connection to lock with, so the
+  database must referee the write.
