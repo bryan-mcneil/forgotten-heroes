@@ -9,9 +9,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 /**
- * Runs in a map, gone when the app stops. It stores the run as JSON text, exactly as DynamoDB will
- * (Step 28), so a caller always gets a fresh object back, never the one it saved: a bug that mutates
- * state after saving shows up here, not in production.
+ * Runs in a map, gone when the app stops. It stores the run as JSON text, exactly as DynamoDB does,
+ * so a caller always gets a fresh object back, never the one it saved: a bug that mutates state
+ * after saving shows up here, not in production. The version check happens inside the map's own
+ * atomic {@code compute}, the way DynamoDB checks a condition inside the write.
  */
 @Repository
 @ConditionalOnProperty(name = "app.storage", havingValue = "memory", matchIfMissing = true)
@@ -25,8 +26,16 @@ public class InMemoryRunRepository implements RunRepository {
     }
 
     @Override
-    public void save(String userId, RunState state) {
-        runsJson.put(key(userId, state.runId()), RunStateJson.toJson(state));
+    public void save(String userId, RunState state, long expectedVersion) {
+        runsJson.compute(key(userId, state.runId()), (key, current) -> {
+            if (current != null) {                                           // 1. absent: the write may create
+                long held = RunStateJson.fromJson(current).version();
+                if (held != expectedVersion) {                               // 2. present: it must be unchanged
+                    throw new VersionConflictException(state.runId(), expectedVersion, held);
+                }
+            }
+            return RunStateJson.toJson(state);                               // 3. check and write, as one step
+        });
     }
 
     private static String key(String userId, String runId) {

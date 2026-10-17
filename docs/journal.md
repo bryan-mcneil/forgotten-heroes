@@ -474,3 +474,31 @@ so the `local` profile now runs entirely on the box: a run played through the AP
 such as the TTL number and the exact sort key) and each repository has its own test class and box. Lesson: in
 DynamoDB the order you will read in has to be designed into the sort key before the first item is written, as text,
 with fixed widths; there is no `ORDER BY` to fix it later.
+
+## 2026-10-17 — Step 29, optimistic locking with conditional writes
+
+Built by Claude at Bryan's request, with the "Version Stamp" explainer page as the teaching material. The problem is
+the lost update: two requests for the same run (two tabs, a double-click, a resend) both load the run, each applies a
+different action, and the second save erases the first; on Lambda the two requests may run on two machines that share
+nothing, so no Java lock can help. The fix is one number in three hands. The engine already bumps `version` on every
+accepted change; the client sends it back as `expectedVersion`; the service compares it with the run it loaded and
+answers 409 at once if it differs (the quick, friendly check, kept from Step 27); and the repository compares it again
+*inside the write*, which is the only check two Lambdas cannot both pass. `RunRepository.save` gained a third argument,
+the version the caller loaded (`NEW_RUN`, 0, for a run that does not exist yet), and `DynamoRunRepository` sends the
+PutItem with the condition `attribute_not_exists(PK) OR #v = :expected`: either there is no folder under this key yet,
+or its `version` still equals the number I read. `#v` and `:expected` are placeholders handed over separately from the
+sentence, one for the attribute name and one for the value, so names cannot collide with DynamoDB's reserved words and
+values cannot be mistaken for code. When the sentence is false, nothing is written and the SDK throws
+`ConditionalCheckFailedException`; the repository reads the current version once more and throws
+`VersionConflictException` (moved to `repo`, since the repository throws it now), which the handler already turns into
+409 `VERSION_CONFLICT` with `currentVersion`. The in-memory repository does the same check inside
+`ConcurrentHashMap.compute`, so the service tests keep running without Docker. Idempotency falls out for free: a resent
+request carries the old stamp, so an action can never land twice, and the client's only job on 409 is to reload and
+show the real state, never to retry blindly. The race test, `RunServiceConcurrencyTest`, builds the real service on
+the four DynamoDB repositories against one Testcontainers box, starts a run, releases two threads behind a
+`CountDownLatch` with the same version (one buys, one rolls), and twenty times in a row finds exactly one
+`VersionConflictException`, one `ActionResponse`, and the stored run one version ahead and equal to the winner's state.
+Sometimes the loser is stopped by the service's quick check, sometimes by the ledger's condition; the outcome is the
+same. No API change was needed, so the OpenAPI snapshot stayed put. Lesson: a check in Java can only see one request;
+the ledger sees every write to an item in order, so "write only if the stamp is still what I read" has to be a
+condition on the write itself, and that one line is what makes two tabs or a double-click harmless.

@@ -2,7 +2,7 @@ package com.forgottenheroes.backend.web;
 
 import com.forgottenheroes.backend.service.ActiveRunException;
 import com.forgottenheroes.backend.service.NotFoundException;
-import com.forgottenheroes.backend.service.VersionConflictException;
+import com.forgottenheroes.backend.repo.VersionConflictException;
 import com.forgottenheroes.engine.resolver.RuleViolation;
 import java.net.URI;
 import java.util.List;

@@ -304,6 +304,20 @@ different actions with the same version → exactly one 409.
 
 **Check your understanding:** What does the client do when it receives 409, and why is that safe for the player?
 
+**As built (2026-10-17, by Claude at Bryan's request):** `RunRepository.save(userId, state, expectedVersion)` is the
+whole interface change; `expectedVersion` is the version the caller *loaded* (`RunRepository.NEW_RUN`, 0, for a run that
+does not exist yet), never the one the engine produced since. `DynamoRunRepository` sends a `PutItemEnhancedRequest`
+with the condition `attribute_not_exists(PK) OR #v = :expected` (`#v` → `version`, `:expected` → the number) and turns
+`ConditionalCheckFailedException` into `VersionConflictException` after one extra `GetItem` for `currentVersion`;
+`InMemoryRunRepository` does the same check inside `ConcurrentHashMap.compute`. `RunService` passes the client's
+`expectedVersion` on `apply` and `endTurn`, the loaded version on `abandon`, `NEW_RUN` on `start`, and keeps
+`requireVersion` as the quick, friendly 409 before the engine runs. **Deviations:** `VersionConflictException` lives in
+`repo` now; the race test is `RunServiceConcurrencyTest` (`@RepeatedTest(20)`, two threads behind a `CountDownLatch`,
+the real service on the four DynamoDB repositories, one box) rather than a script looping Maven twenty times; nothing in
+the API changed (`expectedVersion` has been `@NotNull` since Step 26, the 409 body with `currentVersion` since Step 27),
+so the OpenAPI snapshot is untouched. Verified: `verify` green including the twenty repetitions, each leaving exactly
+one `VersionConflictException`, one `ActionResponse`, and the stored version one step ahead.
+
 ---
 
 ## Step 30 — Matchmaking with ghosts

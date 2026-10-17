@@ -7,6 +7,7 @@ import com.forgottenheroes.backend.repo.InMemoryBattleLogRepository;
 import com.forgottenheroes.backend.repo.InMemoryGhostRepository;
 import com.forgottenheroes.backend.repo.InMemoryProfileRepository;
 import com.forgottenheroes.backend.repo.InMemoryRunRepository;
+import com.forgottenheroes.backend.repo.VersionConflictException;
 import com.forgottenheroes.backend.web.dto.ActionRequest;
 import com.forgottenheroes.backend.web.dto.ActionResponse;
 import com.forgottenheroes.backend.web.dto.EndTurnResponse;

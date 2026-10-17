@@ -1,8 +1,10 @@
-package com.forgottenheroes.backend.service;
+package com.forgottenheroes.backend.repo;
 
 /**
- * The client acted on a run state older than the one the server holds (architecture §4.3): answered
- * with 409 so the client reloads. Double submits of the same action land here and do no harm.
+ * The run changed under the caller's feet (architecture §4.3): the version the client sent, or the
+ * one the service loaded, is no longer the one in storage. Thrown by the service's quick check and
+ * by the repository's conditional write; answered with 409 so the client reloads. Double submits of
+ * the same action land here and do no harm.
  */
 public class VersionConflictException extends RuntimeException {
 
