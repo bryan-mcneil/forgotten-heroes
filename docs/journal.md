@@ -394,3 +394,55 @@ rebuilding `target/classes` with its own compiler while files were being written
 up to date. 386 tests across three modules (engine 343, sim 9, backend 34). Lesson: inject the interface, not the
 class, because the service must not change when the storage does, and because a test can then build the whole service
 by hand with maps and a fixed seed.
+
+## 2026-10-16 — Step 28-a, DynamoDB Local by hand, the table, and the first repository
+
+First step taught with the new loop (map, model, worked example, predict then run, fade, break, say it), after the
+"Forgotten Heroes Map" and "DynamoDB Cabinet" pages gave me the words: the frontend is the table and menu, the backend
+the waiter, the engine the referee, the database the ledger; an item is a folder with two labels, the partition key says
+which drawer and the sort key where in it. I typed every file, in seven chunks over one long evening.
+
+Chunk 1 and 2: `docker-compose.yml` starts the real DynamoDB engine in a box on my PC (:8000) plus a web page to look
+inside (:8001), and `infra/table.json` is the only description of the table, sent with `aws dynamodb create-table
+--cli-input-json`. Two predictions were wrong: I expected `docker compose up -d` to print the containers' logs (it only
+prints the names and "Started") and the admin page to be empty before the table existed (it showed a list, with nothing
+in it). We ran create-table twice on purpose and got `ResourceInUseException`, which is why
+`scripts/create-local-table.sh` asks `describe-table` first and is safe to run twice; when the script printed "already
+exists" on its first run, that was because the table was still there from the hand run, not a bug. Git lesson on the
+side: a branch left over from an earlier try is `git branch -D` then `git switch -c … main`.
+
+Chunk 3: the AWS SDK BOM in the root pom is a version catalogue (it fixes versions, downloads nothing), and
+`dynamodb-enhanced` plus `url-connection-client` in the backend pom are the parts; the HTTP engine must be named because
+the SDK ships two others. `DynamoConfig` builds two beans once at startup: the `DynamoDbClient` is the phone line to the
+ledger, the `DynamoDbEnhancedClient` the translator between a Java object and an item. My sentence: if the setting
+`app.dynamodb.endpoint` holds an address, the backend talks to the box at that address with made-up keys; if it is
+empty, it talks to real AWS. Three compile predictions, three right ("downloads, then compiles, nothing printed").
+
+Chunk 4: `Keys` is the one place the labels `USER#<id>` and `PROFILE` are spelled, because a typo would silently open
+a second drawer. `ProfileItem` is the folder as the translator sees it, a getter and a setter per attribute; I was
+given the `pk`/`sk` pairs and wrote the other five myself (the first two "done"s had only part of them on disk, so
+Claude now checks the file after every "done" and lists the remaining fields with their types). `DynamoProfileRepository`
+is one GetItem to find (null when absent, hence `Optional`) and one PutItem to save. Clicking into `putItem` landed me on
+`throw new UnsupportedOperationException()`: that is the `DynamoDbTable` interface, the promise, and the worker
+`client.table(…)` hands back overrides it, the same pattern as `ProfileRepository` and its two workers. And PutItem
+replaces the whole folder; it never merges (that would be UpdateItem).
+
+Chunk 5: Testcontainers. I predicted "green, the box starts, the table is created, two tests pass" and got red: the box
+started and the table was created, then both tests got "One of the required keys was not given a value" from the ledger.
+I looked at `infra/table.json` and `ProfileItem` and said they looked fine; the catch was case: the table spells the keys
+`PK` and `SK`, the translator names an attribute after its getter with the first letter lowered, so it wrote `pk` and
+`sk`, and to DynamoDB those are different names. The fix is `@DynamoDbAttribute("PK")` on `getPk` (the Java field stays
+`pk`); the second run was green in six seconds and `docker ps` showed the test's box already gone. A compile could never
+have found that; only the real ledger could, which is the whole reason for the test. I also saved `TableDefinition`
+under `src/main` instead of `src/test` the first time (it compiled either way; `src/main` ships to Lambda, where there
+is no `../infra/table.json`), and I ran one compile before writing the prediction. My sentence: Testcontainers starts a
+fresh box for the test and removes it after; our code builds the table and checks the folder.
+
+Chunks 6 and 7 were built by Claude at my request, late that night: the `app.storage` switch (`@ConditionalOnProperty`,
+`memory` by default, `dynamo` in `application-local.yaml` with the endpoint and table name), `DynamoProfileRepository` as
+a `@Repository`, and the proof: the app started with `-Dspring-boot.run.profiles=local`, `GET /api/me` answered, and
+`aws dynamodb get-item` read `USER#dev` / `PROFILE` back out of the compose box, with `activeRunId` simply absent
+because PutItem leaves null fields out. I then asked Claude to finish Steps 28-b, 29 and 30 and to make me one explainer
+page per step about the DynamoDB ideas, since that is where I want my learning to go; the Java around it is noise to
+me right now. Lesson: the two labels are the whole design, and their spelling has to match in three places (the table
+definition, the Java item, and `Keys`), or the ledger refuses the folder.
