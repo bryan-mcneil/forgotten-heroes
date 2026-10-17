@@ -502,3 +502,32 @@ Sometimes the loser is stopped by the service's quick check, sometimes by the le
 same. No API change was needed, so the OpenAPI snapshot stayed put. Lesson: a check in Java can only see one request;
 the ledger sees every write to an item in order, so "write only if the stamp is still what I read" has to be a
 condition on the write itself, and that one line is what makes two tabs or a double-click harmless.
+
+## 2026-10-17 — Step 30, matchmaking with ghosts
+
+Built by Claude at Bryan's request, with the "Finding a Ghost" explainer page as the teaching material. This is the
+step the ghost sort key was designed for. On end turn the service already saved the player's ghost and asked
+`MatchmakingService` for an opponent; `InMemoryGhostPool`, which only ever answered with the mirror, is gone, and
+`GhostMatchmaking` does architecture §4.4 for real. First the slice: `GhostRepository.findCandidates(turn, crownsMin,
+crownsMax, limit)` is a Query on `GHOST#T<turn>` with `sortBetween` from `"06#"` to `"09#"` for crowns 6 to 8 (the
+upper bound is max + 1, which no real key can equal because a key always continues with the time), read backwards so
+the highest crowns come first and the newest first within equal crowns, with `limit` as the cap on what the ledger
+reads: twenty-five items cost the same in a drawer of ten thousand. One subtlety: the Enhanced Client hands back pages,
+and walking `items()` would quietly fetch page after page, so the repository takes only the first `Page`. Then the
+ladder, in plain Java on that slice: drop the player's own ghosts (the owner is on every folder), prefer real players,
+else bots (`bot = true`, which Step 72 will seed so a fresh deployment has opponents on day one), else a mirror of the
+player's own band, each drop logged as `MatchmakingFallback kind=bot|mirror` for Step 35's metric. The pick is not
+`Math.random()`: it rolls the engine's `GameRandom` seeded from `battleSeed(runSeed, turn)` and forked with the label
+`"matchmaking"`, so a replay with the same candidates chooses the same ghost and the battle's own rolls never shift;
+because the candidates can change later (ghosts expire after thirty days), the chosen band is copied onto the battle
+log, the NoSQL habit of writing what a reader needs into the item the reader will fetch, since there are no joins and
+no foreign keys to stop a delete. `MatchmakingService.pick` now takes the whole `RunState` for exactly that reason (seed,
+turn, crowns and band in one argument). The opponent is named "Ghost of <userId>" until Step 32 copies display names
+onto ghosts. Tests: the ladder in memory (`GhostMatchmakingTest`: ten ghosts at turn 3 with crowns 0–4 give a pick
+within one crown and never self for every crown count, the same run picks the same ghost twice, an empty pool and
+only-own-ghosts give the mirror, bots are used only when no player is in the window, other turns are other drawers),
+the window against the box (`DynamoGhostRepositoryTest`: between "06#" and "09#" returns w8, w99, w7, w6 in that order,
+a limit of 2 stops at two, and ten crowns sort after nine, not before two), and the service tests unchanged in
+outcome because one user's own ghosts are excluded. Lesson: a good sort key turns the hard question into a cheap range
+read with a cap, and everything that is actually a game rule (never yourself, players before bots, a fair pick) stays
+in Java where it can be unit-tested without a database.

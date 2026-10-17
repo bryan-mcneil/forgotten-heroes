@@ -35,7 +35,7 @@ class RunServiceTest {
     private final InMemoryProfileRepository profiles = new InMemoryProfileRepository();
     private final ProfileService profileService = new ProfileService(profiles);
     private final RunService service = new RunService(SESSION, runs, ghosts, battleLogs, profiles, profileService,
-        new InMemoryGhostPool(), () -> 42L);
+        new GhostMatchmaking(ghosts), () -> 42L);
 
     @Test
     void startBeginsTurnOneAndRecordsTheActiveRunOnTheProfile() {
@@ -77,7 +77,7 @@ class RunServiceTest {
         for (int turn = 1; turn <= 3; turn++) {
             EndTurnResponse ended = service.endTurn("bryan", runId, version);
 
-            assertThat(ended.battle().opponentName()).isEqualTo(InMemoryGhostPool.MIRROR);
+            assertThat(ended.battle().opponentName()).isEqualTo(GhostMatchmaking.MIRROR);
             assertThat(ended.battle().events().getFirst()).isInstanceOf(GameEvent.BattleStarted.class);
             assertThat(ended.battle().events().getLast()).isInstanceOf(GameEvent.BattleEnded.class);
             assertThat(ended.events()).containsAll(ended.battle().events());

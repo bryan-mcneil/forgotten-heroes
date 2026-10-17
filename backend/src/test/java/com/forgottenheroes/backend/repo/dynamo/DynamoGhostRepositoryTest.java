@@ -59,6 +59,23 @@ class DynamoGhostRepositoryTest {
     }
 
     @Test
+    void theWindowReadsOnlyTheSliceAndStopsAtTheLimit() {
+        for (int crowns = 0; crowns <= 10; crowns++) {
+            repository.save(new Ghost("p" + crowns, "w" + crowns, 8, crowns, 5, BAND, false, NOON.plusSeconds(crowns)));
+        }
+        repository.save(new Ghost("late", "w99", 8, 7, 5, BAND, false, NOON.plusSeconds(600)));   // a newer 7
+
+        assertThat(repository.findCandidates(8, 6, 8, 25)).extracting(Ghost::runId)
+            .as("between \"06#\" and \"09#\", highest first, newest first within 7")
+            .containsExactly("w8", "w99", "w7", "w6");
+        assertThat(repository.findCandidates(8, 6, 8, 2)).extracting(Ghost::runId)
+            .as("the limit caps the read").containsExactly("w8", "w99");
+        assertThat(repository.findCandidates(8, 10, 10, 25)).extracting(Ghost::crowns)
+            .as("\"10#\" sorts after \"09#\", not before \"2#\"").containsExactly(10);
+        assertThat(repository.findCandidates(9, 0, 10, 25)).as("another drawer").isEmpty();
+    }
+
+    @Test
     void aGhostCarriesItsExpiryThirtyDaysAfterItWasSaved() {
         repository.save(new Ghost("eve", "r5", 6, 4, 2, BAND, false, NOON));
 

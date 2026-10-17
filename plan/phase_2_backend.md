@@ -343,6 +343,22 @@ placeholder script (real seeding in Step 72); tests with a seeded table.
 
 **Check your understanding:** Why store the opponent band inside the battle log instead of a reference to the ghost item?
 
+**As built (2026-10-17, by Claude at Bryan's request):** `GhostRepository.findCandidates(turn, crownsMin, crownsMax,
+limit)`: `QueryConditional.sortBetween` on `GHOST#T<turn>` from `Keys.ghostLowerBound(min)` (`"06#"`) to
+`Keys.ghostUpperBound(max)` (`"09#"`, max + 1, which no real key equals), `scanIndexForward(false)`, `limit` as the read
+cap, and only the first `Page` is taken (a `PageIterable` would fetch further pages). `GhostMatchmaking` (`@Service`,
+the one `MatchmakingService`; `InMemoryGhostPool` deleted) clamps the window to 0..10, drops the player's own ghosts,
+prefers `bot=false`, then `bot=true`, then the mirror; the pick uses `new GameRandom(SeedDerivation.battleSeed(runSeed,
+turn)).fork("matchmaking")`, so a replay with the same candidates chooses the same ghost and the battle's rolls never
+shift. **Deviations:** `MatchmakingService.pick(userId, run)` takes the whole `RunState` (seed, turn, crowns, band) instead
+of four arguments; the opponent name is `Ghost of <ownerUserId>` until Step 32 copies display names onto ghosts;
+fallbacks are logged as `MatchmakingFallback kind=bot|mirror` and the metric name is a constant, EMF comes in Step 35;
+`tools/seed-ghosts/seed-ghosts.sh` only prints what Step 72 will do; the ladder is tested in memory
+(`GhostMatchmakingTest`: window, never self, same run same pick, bots only when no player, mirror when empty, other turns
+are other drawers) and the window Query against the box (`DynamoGhostRepositoryTest`); `RunServiceTest` and the
+happy-path test still meet the mirror because a single user's own ghosts are excluded. The in-memory ghost repository
+sorts like the sort key now, so both storages answer in the same order.
+
 ---
 
 ## Step 31 — Authentication (Cognito JWT) and the local dev user
