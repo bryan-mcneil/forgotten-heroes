@@ -7,6 +7,7 @@ import com.forgottenheroes.backend.repo.GhostRepository;
 import com.forgottenheroes.backend.repo.Profile;
 import com.forgottenheroes.backend.repo.ProfileRepository;
 import com.forgottenheroes.backend.repo.RunRepository;
+import com.forgottenheroes.backend.repo.VersionConflictException;
 import com.forgottenheroes.backend.web.dto.ActionRequest;
 import com.forgottenheroes.backend.web.dto.ActionResponse;
 import com.forgottenheroes.backend.web.dto.BattleDto;
@@ -63,7 +64,7 @@ public class RunService {
         }
         String runId = UUID.randomUUID().toString();
         RunState state = session.start(runId, seeds.next()).state();
-        runs.save(userId, state);
+        runs.save(userId, state, RunRepository.NEW_RUN);
         profiles.save(profile.withActiveRun(runId));
         return DtoMapper.toDto(state);
     }
@@ -72,12 +73,16 @@ public class RunService {
         return DtoMapper.toDto(load(userId, runId));
     }
 
-    /** One tavern action; a {@code RuleViolation} from the engine leaves the saved run untouched (422). */
+    /**
+     * One tavern action; a {@code RuleViolation} from the engine leaves the saved run untouched (422).
+     * The save is conditional on the version the client sent (ADR-5): if another request wrote the run
+     * in between, the repository refuses and the client gets 409, the same as from the quick check.
+     */
     public ActionResponse apply(String userId, String runId, ActionRequest request) {
         RunState state = load(userId, runId);
         requireVersion(state, request.expectedVersion());
         ActionResult result = session.apply(state, DtoMapper.toAction(request));
-        runs.save(userId, state);
+        runs.save(userId, state, request.expectedVersion());
         return new ActionResponse(DtoMapper.toDto(state), result.events());
     }
 
@@ -95,7 +100,7 @@ public class RunService {
         ghosts.save(new Ghost(userId, runId, turn, crowns, hearts, result.ghost(), false, Instant.now()));
         BattleLog log = new BattleLog(runId, turn, opponent.name(), opponent.band(), battleEventsOf(result.events()), result.outcome());
         battleLogs.save(log);
-        runs.save(userId, state);
+        runs.save(userId, state, expectedVersion);
         if (state.status().isOver()) {
             finish(userId, state);
         }
@@ -110,8 +115,9 @@ public class RunService {
 
     public RunStateDto abandon(String userId, String runId) {
         RunState state = load(userId, runId);
+        long loaded = state.version();                       // no expectedVersion in the request: the loaded one guards
         session.abandon(state);
-        runs.save(userId, state);
+        runs.save(userId, state, loaded);
         finish(userId, state);
         return DtoMapper.toDto(state);
     }
@@ -120,7 +126,11 @@ public class RunService {
         return runs.find(userId, runId).orElseThrow(() -> new NotFoundException("Run", runId));
     }
 
-    /** ADR-5: the client says which state it acted on; a stale one is refused before the engine runs. */
+    /**
+     * ADR-5, the quick check: the client says which state it acted on; a stale one is refused before
+     * the engine runs. Not enough on its own (two requests can both pass it), so the repository checks
+     * again inside the write.
+     */
     private static void requireVersion(RunState state, long expectedVersion) {
         if (state.version() != expectedVersion) {
             throw new VersionConflictException(state.runId(), expectedVersion, state.version());

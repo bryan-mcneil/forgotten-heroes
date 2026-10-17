@@ -9,7 +9,7 @@ import com.forgottenheroes.backend.security.CurrentUser;
 import com.forgottenheroes.backend.service.ActiveRunException;
 import com.forgottenheroes.backend.service.NotFoundException;
 import com.forgottenheroes.backend.service.RunService;
-import com.forgottenheroes.backend.service.VersionConflictException;
+import com.forgottenheroes.backend.repo.VersionConflictException;
 import com.forgottenheroes.engine.resolver.RuleViolation;
 import com.forgottenheroes.engine.resolver.RuleViolation.Code;
 import org.junit.jupiter.api.BeforeEach;
