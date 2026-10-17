@@ -92,7 +92,7 @@ public class RunService {
 
         TurnResult result = session.endTurn(state, opponent.band());
 
-        ghosts.save(new Ghost(userId, turn, crowns, hearts, result.ghost(), false, Instant.now()));
+        ghosts.save(new Ghost(userId, runId, turn, crowns, hearts, result.ghost(), false, Instant.now()));
         BattleLog log = new BattleLog(runId, turn, opponent.name(), opponent.band(), battleEventsOf(result.events()), result.outcome());
         battleLogs.save(log);
         runs.save(userId, state);

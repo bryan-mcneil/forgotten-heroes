@@ -5,6 +5,7 @@ import com.forgottenheroes.engine.model.RunState;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
  * state after saving shows up here, not in production.
  */
 @Repository
+@ConditionalOnProperty(name = "app.storage", havingValue = "memory", matchIfMissing = true)
 public class InMemoryRunRepository implements RunRepository {
 
     private final Map<String, String> runsJson = new ConcurrentHashMap<>();
