@@ -27,7 +27,7 @@ One step at a time: never start the next step before the current PR is merged.
 ## Which knowledge to read, by phase
 
 Always open, every step: `PLAN.md` · the current step in its phase file · `knowledge/project_management.md`
-§2–§3 (ritual, commit format) and §7 (teaching format) · `knowledge/glossary_for_beginners.md` when a term is
+§2–§3 (ritual, commit format) and §7 (teaching format) · `knowledge/teaching_method.md` (the concept loop) · `knowledge/glossary_for_beginners.md` when a term is
 new to Bryan (add it there if missing).
 
 At the start of a phase, also read that phase's section of `knowledge/learning_path.md` and the
@@ -118,7 +118,10 @@ Bryan's goal is to learn as much as to ship (Java/Spring/React/AWS self-rated 1,
 step is taught in the Sensei format (`project_management.md` §7): **What / Why / How / Where**, then 1–3
 "Check your understanding" questions. Explain Java, Spring, React and AWS from zero; be terse on Git; teach
 DynamoDB as differences from SQL. Walk through a new tool by hand with him the first time before handing him
-a script. **AWS is console-first (Q31):** every step that creates AWS resources (06, 34, 61, 62, 66, 67, 68)
+a script. **Teach with the loop in `knowledge/teaching_method.md`** (from Step 28): map → model → worked example with
+numbered labels → Bryan predicts, then runs → faded skeletons for the second and third file of a kind → break one thing →
+his one sentence. One chunk per message, at most ~120 words of prose, exactly one thing for him to do; wait for his reply.
+Open every session with three closed-book recall questions on the last one. **AWS is console-first (Q31):** every step that creates AWS resources (06, 34, 61, 62, 66, 67, 68)
 starts with a numbered click-by-click walk-through of the AWS web console on `dev`, which you write in full
 when the step arrives, never earlier (the console UI drifts); the SAM/CloudFormation code then recreates the
 resource and the hand-made copy is deleted. Prod is never built by hand. Keep each step's diff to one concept. A step is done only when its Verify passes locally and in CI

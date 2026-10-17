@@ -175,38 +175,77 @@ scope), controller tests with a mocked `CurrentUser`. **Gotcha:** with VS Code o
 ---
 
 ## Step 28 — DynamoDB repositories, Testcontainers, local profile
-**Branch:** `step-28-dynamodb` · **est 4h**
+**Split on 2026-10-16** into 28-a and 28-b (teaching method v2, `knowledge/teaching_method.md`): one new idea per
+step. Both PRs point at issue #30; 28-b closes it. `LeaderboardItem` moved to Step 32 (no interface exists before it);
+gzip of battle logs over 100 KB moved to Step 36 (a size-guard test stands in).
 
-**Goal:** real persistence, tested against a real (local) DynamoDB.
+### Step 28-a — DynamoDB Local by hand, the table, and the first repository
+**Branch:** `step-28a-dynamodb-local` · **est 3h**
 
-**You will have:** `infra/table.json` (the table definition shared by tests and SAM: `PK`, `SK`,
-TTL `expiresAt`, on-demand); `DynamoConfig` (`DynamoDbEnhancedClient`, endpoint override when
-`app.dynamodb.endpoint` is set); `Dynamo*Repository` implementations with item classes
-(`RunItem`, `GhostItem`, `BattleLogItem`, `ProfileItem`, `LeaderboardItem`) using the key schema
-from architecture §5 (state stored as compact JSON string); `docker-compose.yml`
-(`amazon/dynamodb-local` on 8000 + `aaronshaf/dynamodb-admin` on 8001); `scripts/create-local-table.sh`;
-profile `local` pointing at `http://localhost:8000`; Testcontainers integration tests
-(`@Testcontainers`, `GenericContainer("amazon/dynamodb-local")`) for every repository.
+**Goal:** a real DynamoDB running on your machine, one entity (the profile) saved in it by the API, and a test
+that proves it against a throwaway container.
+
+**You will have:** `docker-compose.yml` (`amazon/dynamodb-local` on 8000, `aaronshaf/dynamodb-admin` on 8001);
+`infra/table.json` (the `create-table` input: `PK`, `SK`, on-demand) and `scripts/create-local-table.sh` (creates
+the table, then switches TTL on for `expiresAt`); the AWS SDK BOM in the root pom and `dynamodb-enhanced` +
+`url-connection-client` in the backend pom; an `app.storage` switch (`memory` is the default, `dynamo` turns the
+DynamoDB beans on) read by `@ConditionalOnProperty` on both repository sets; `DynamoConfig` (`DynamoDbClient` and
+`DynamoDbEnhancedClient`; endpoint override and dummy credentials when `app.dynamodb.endpoint` is set); `Keys`;
+`ProfileItem` (`@DynamoDbBean`) and `DynamoProfileRepository`; `application-local.yaml` (`app.storage: dynamo`,
+endpoint `http://localhost:8000`); `TableDefinition` (reads `infra/table.json` and creates the table, used by the
+tests); `DynamoProfileRepositoryIT` with Testcontainers (`@Testcontainers`, `GenericContainer`,
+`@DynamicPropertySource`).
 
 **Sensei notes**
-- *What:* **single-table design** — different entities share one table, told apart by key prefixes.
-  The **Enhanced Client** maps Java classes to items. **Testcontainers** runs DynamoDB Local in Docker just for the test.
-- *Why:* one table = one line in the SAM template, free tier 25 GB, no VPC. Tests against the real
-  engine catch mapping mistakes that mocks hide.
-- *How:* `@DynamoDbBean` classes with `@DynamoDbPartitionKey`/`@DynamoDbSortKey`; keys built by
-  `Keys.user(sub)`, `Keys.run(runId)`, `Keys.ghostPk(turn)`; TTL as epoch seconds.
-- *Where:* `backend/.../repo/dynamo/`, `docker-compose.yml`, `infra/table.json`.
+- *What:* DynamoDB is a giant map, not a table with columns: the **partition key** picks a drawer, the **sort key**
+  orders the folders inside it; you read one folder (`GetItem`) or one drawer in order (`Query`). **Single-table
+  design** puts every entity in that one map, told apart by key prefixes. The **Enhanced Client** maps a Java class
+  to an item. **Testcontainers** starts DynamoDB Local in Docker for the test and throws it away.
+- *Why:* one table is one line in the SAM template, inside the always-free 25 GB, with no VPC. A test against the
+  real thing catches key and mapping mistakes a mock hides.
+- *How:* taught in chunks (the loop): 1 Docker and the compose file; 2 the table by hand with the CLI; 3 the SDK
+  and the config bean; 4 the item and the repository (full worked example); 5 the Testcontainers test; 6 the
+  switch and the `local` profile; 7 `GET /api/me` through Swagger, then the item in the admin UI.
+- *Where:* `docker-compose.yml`, `infra/table.json`, `scripts/create-local-table.sh`, `backend/.../repo/dynamo/`,
+  `backend/src/main/resources/application-local.yaml`.
 
-**Do this:** implement; `docker compose up -d`; create the table; run the app with
-`-Dspring-boot.run.profiles=local`; integration tests: save/load a run (JSON round trip equals),
-ghosts query by turn returns newest first, battle log save/load, profile upsert; `DynamoRepositoriesIT`
-tagged so `-DskipITs` skips when Docker is absent (but CI always runs them).
+**Verify:** `docker compose up -d && ./mvnw -pl backend -am verify` green; app started with
+`-Dspring-boot.run.profiles=local`, `GET /api/me` in Swagger, and the item `USER#dev` / `PROFILE` visible at
+`http://localhost:8001`.
 
-**Verify:** `docker compose up -d && ./mvnw -pl backend -am verify` green; `http://localhost:8001` shows items after a run via Swagger.
+**Commit:** `step-28a: DynamoDB Local, table definition, first repository with Testcontainers`
 
-**Commit:** `step-28: DynamoDB single-table repositories with Testcontainers`
+**Say it (answered by doing):** what a partition key and a sort key are, compared with a SQL primary key; why a
+made-up access key works against DynamoDB Local; what Testcontainers replaces in the test.
 
-**Check your understanding:** Why is the ghost's sort key `crowns#time#runId` rather than just `time`?
+### Step 28-b — Run, ghost and battle-log repositories
+**Branch:** `step-28b-dynamodb-repositories` · **est 3h**
+
+**Goal:** the whole run lives in DynamoDB; a game played through Swagger leaves RUN, GHOST and BATTLE items behind.
+
+**You will have:** `RunItem` and `DynamoRunRepository` (state as compact JSON through `RunStateJson`, plus `status`,
+`turn`, `gold`, `hearts`, `crowns`, `version`, `updatedAt` for the admin view; `expiresAt` 90 days after the run
+ends); `GhostItem` and `DynamoGhostRepository` (PK `GHOST#T<turn>`, SK `<crowns, two digits>#<ISO time>#<runId>`,
+band as JSON, TTL 30 days; query newest first); `BattleLogItem` and `DynamoBattleLogRepository` (PK `RUN#<runId>`,
+SK `BATTLE#<turn, three digits>`, events as JSON, TTL 7 days; a test that fails if an item passes 300 KB);
+Testcontainers tests for all three: save/load a run (JSON round trip equal), ghosts by turn newest first, battle
+log save/load.
+
+**Sensei notes**
+- *What:* a **composite sort key** (`a#b#c`) is how one drawer answers several questions in order; **TTL** is an
+  epoch-seconds attribute DynamoDB deletes items by, for free.
+- *Why:* the ghost drawer is read by turn and filtered by crowns (Step 30), so crowns must come first in the key;
+  ghosts and battle logs expire on their own, so storage stays near zero.
+- *How:* the loop again, faded: `RunItem` is a worked example, `GhostItem` is a skeleton with blanks, `BattleLogItem`
+  is labels only.
+- *Where:* `backend/.../repo/dynamo/`.
+
+**Verify:** `docker compose up -d && ./mvnw -pl backend -am verify` green; a full run through Swagger with the
+`local` profile shows RUN, GHOST and BATTLE items at `http://localhost:8001`.
+
+**Commit:** `step-28b: run, ghost and battle-log DynamoDB repositories`
+
+**Say it (answered by doing):** why the ghost's sort key is `crowns#time#runId` rather than just `time`.
 
 ---
 
