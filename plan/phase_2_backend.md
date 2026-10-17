@@ -218,6 +218,20 @@ tests); `DynamoProfileRepositoryIT` with Testcontainers (`@Testcontainers`, `Gen
 **Say it (answered by doing):** what a partition key and a sort key are, compared with a SQL primary key; why a
 made-up access key works against DynamoDB Local; what Testcontainers replaces in the test.
 
+**As built (2026-10-16):** chunks 1–5 typed by Bryan with the loop (two commits per evening session), chunks 6–7 built
+by Claude at his request the same night. **Deviations:** the repository test is `DynamoProfileRepositoryTest`, not
+`…IT`, because the build has Surefire only (no Failsafe) and `verify` must run it; it is plain JUnit + Testcontainers
+with no Spring context and therefore no `@DynamicPropertySource` (it calls the two `DynamoConfig` bean methods by hand
+and builds `DynamoProfileRepository` with `new`); `TableDefinition` lives in the test tree and reads
+`../infra/table.json` (Maven runs the backend's tests from `backend/`); `scripts/create-local-table.sh` creates the
+table only, TTL is switched on in 28-b together with the first `expiresAt`; `ProfileItem` maps the Java fields `pk`/`sk`
+to the ledger's `PK`/`SK` with `@DynamoDbAttribute`, a mismatch the first test run found ("One of the required keys was
+not given a value"); the `app.storage` condition sits on `InMemoryProfileRepository` only until 28-b gives the other
+three repositories a DynamoDB twin, and `application.yaml` spells the default `app.storage: memory` out;
+`DynamoProfileRepository` is a `@Repository` reading `app.dynamodb.table`. Verified: `verify` green with the
+Testcontainers box, and `GET /api/me` under the `local` profile wrote `USER#dev` / `PROFILE` into the compose box
+(`activeRunId` is simply absent, the Enhanced Client's `PutItem` leaves null fields out).
+
 ### Step 28-b — Run, ghost and battle-log repositories
 **Branch:** `step-28b-dynamodb-repositories` · **est 3h**
 

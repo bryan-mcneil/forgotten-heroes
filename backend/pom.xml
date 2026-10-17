@@ -41,6 +41,16 @@
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     <dependency>
+      <!-- DynamoDB: maps a Java class to an item and back (Step 28-a) -->
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>dynamodb-enhanced</artifactId>
+    </dependency>
+    <dependency>
+      <!-- the HTTP engine the SDK sends requests with; plain java.net, quick to start on Lambda -->
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>url-connection-client</artifactId>
+    </dependency>
+    <dependency>
       <!-- @WebMvcTest, MockMvcTester, @MockitoBean -->
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webmvc-test</artifactId>
@@ -50,6 +60,18 @@
       <!-- RestTemplateBuilder, which TestRestTemplate needs for the real-HTTP happy-path test (Step 27) -->
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-restclient</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- Testcontainers: starts DynamoDB Local in Docker for a test, removes it after (Step 28-a) -->
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- @Testcontainers and @Container for JUnit -->
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

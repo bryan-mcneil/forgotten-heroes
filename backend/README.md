@@ -43,7 +43,22 @@ Tests: `./mvnw -pl backend -am verify` (a `@WebMvcTest` slice for the controller
   `src/test/resources/openapi.snapshot.json`. When the API changes on purpose:
   `./mvnw -pl backend -am -Dtest=OpenApiContractTest -Dopenapi.snapshot.update=true test`, then review and commit
   the snapshot diff. Step 42 generates the frontend's TypeScript types from this file.
-TODO Step 28: `docker compose up -d && ./mvnw -pl backend -am verify` for the DynamoDB-backed tests.
+
+## Storage (Step 28)
+
+- `app.storage` picks the repositories: `memory` (the default in `application.yaml`: maps, gone at restart) or `dynamo`
+  (`application-local.yaml`: the `repo/dynamo/` classes against the table named by `app.dynamodb.table`). Both sets are
+  `@Repository` beans guarded by `@ConditionalOnProperty`, so exactly one set exists at a time.
+- A DynamoDB on your PC: `docker compose up -d` starts `amazon/dynamodb-local` on :8000 and a browser view of it on
+  `http://localhost:8001`; `scripts/create-local-table.sh` creates `forgotten-heroes-local` from `infra/table.json`
+  (safe to run twice). Then `./mvnw -pl backend -am test-compile spring-boot:run -Dspring-boot.run.profiles=local`
+  and `GET /api/me` in Swagger writes the item `USER#dev` / `PROFILE` you can see on :8001.
+- `DynamoConfig` builds the `DynamoDbClient` (region, the `url-connection-client` HTTP engine, and with
+  `app.dynamodb.endpoint` set the local address plus made-up keys) and the `DynamoDbEnhancedClient` that maps a
+  `@DynamoDbBean` such as `ProfileItem` to an item and back. `Keys` is the only place the key prefixes are spelled.
+- Tests against the real thing: `DynamoProfileRepositoryTest` starts its own `amazon/dynamodb-local` box with
+  Testcontainers (Docker must be running), creates the table from `infra/table.json` through `TableDefinition`, and
+  round-trips a profile. `./mvnw -pl backend -am verify` runs it with everything else; it needs no compose box.
 
 If a route answers 500 with "Name for argument … not specified … '-parameters'" on your laptop, the VS Code Java extension
 rebuilt `target/classes` without that flag; `./mvnw -pl backend -am clean test` restores Maven's compile.

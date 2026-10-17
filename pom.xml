@@ -26,6 +26,7 @@
     <pitest.version>1.30.1</pitest.version>
     <pitest-junit5.version>1.2.3</pitest-junit5.version>
     <springdoc.version>3.1.1</springdoc.version>
+    <aws-sdk.version>2.56.0</aws-sdk.version>
   </properties>
 
   <dependencyManagement>
@@ -38,31 +39,33 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <!-- JSON Schema check of the content files at load time (Step 10); not in the Spring Boot BOM -->
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws-sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>com.networknt</groupId>
         <artifactId>json-schema-validator</artifactId>
         <version>${json-schema-validator.version}</version>
       </dependency>
       <dependency>
-        <!-- command-line parsing for the simulator (Step 22) -->
         <groupId>info.picocli</groupId>
         <artifactId>picocli</artifactId>
         <version>${picocli.version}</version>
       </dependency>
       <dependency>
-        <!-- property-based tests (Step 23) -->
         <groupId>net.jqwik</groupId>
         <artifactId>jqwik</artifactId>
         <version>${jqwik.version}</version>
       </dependency>
       <dependency>
-        <!-- OpenAPI description + Swagger UI generated from the controllers (Step 26); v3 is the Spring Boot 4 line -->
         <groupId>org.springdoc</groupId>
         <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
         <version>${springdoc.version}</version>
       </dependency>
       <dependency>
-        <!-- tests about package structure (Step 23) -->
         <groupId>com.tngtech.archunit</groupId>
         <artifactId>archunit-junit5</artifactId>
         <version>${archunit.version}</version>
@@ -78,7 +81,6 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.16.0</version>
           <configuration>
-            <!-- keep method parameter names in the class files: Spring reads @PathVariable names from them (Step 26) -->
             <parameters>true</parameters>
           </configuration>
         </plugin>
@@ -98,7 +100,6 @@
           <version>3.6.3</version>
         </plugin>
         <plugin>
-          <!-- mutation testing, profile "pit" only (Step 23, optional) -->
           <groupId>org.pitest</groupId>
           <artifactId>pitest-maven</artifactId>
           <version>${pitest.version}</version>
@@ -111,7 +112,6 @@
           </dependencies>
         </plugin>
         <plugin>
-          <!-- runs a main class from the build: only the sim module switches skip off (Step 22) -->
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
           <version>3.6.4</version>
@@ -121,7 +121,6 @@
           </configuration>
         </plugin>
         <plugin>
-          <!-- spring-boot:run locally; packages the runnable jar (Step 25) -->
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
           <version>${spring-boot.version}</version>
@@ -130,7 +129,6 @@
           </configuration>
         </plugin>
         <plugin>
-          <!-- writes git.properties (commit sha) into the jar so /api/health can report it (Step 25) -->
           <groupId>io.github.git-commit-id</groupId>
           <artifactId>git-commit-id-maven-plugin</artifactId>
           <version>9.0.2</version>

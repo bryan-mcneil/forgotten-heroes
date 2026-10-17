@@ -44,7 +44,7 @@
 * **`pom.xml` / parent pom** — Maven's description of a project. The root pom is the *parent*: it lists the modules and pins every version once; each module's pom names it in `<parent>` and inherits the rest.
 * **Module** — a sub-project (`engine`, `backend`, `sim`) with its own `pom.xml`.
 * **Dependency** — a library you use by naming it in the pom; Maven downloads it into `~/.m2/repository`.
-* **BOM (Bill of Materials)** — a pom that only lists library versions known to work together. We import Spring Boot's (`spring-boot-dependencies`) so JUnit, AssertJ and Jackson get tested versions without typing a number; importing it adds no Spring code.
+* **BOM (Bill of Materials)** — a pom that only lists library versions known to work together (a version catalogue: it fixes versions, downloads nothing). We import Spring Boot's (`spring-boot-dependencies`) and, from Step 28, the AWS SDK's (`software.amazon.awssdk:bom` with `<type>pom</type><scope>import</scope>`) so JUnit, AssertJ and Jackson get tested versions without typing a number; importing it adds no Spring code.
 * **`dependencyManagement` vs `dependencies`** — the first says "if a module asks for library X, use version Y" and downloads nothing; the second actually adds the library to a module. Same split for plugins: `pluginManagement` pins versions, `plugins` runs them.
 * **Plugin / goal / execution** — a plugin is a piece of Maven that does one job (compiler, surefire, JaCoCo, enforcer); a goal is one task of it (`jacoco:check`); an execution binds a goal to a point in the build.
 * **Phase (build lifecycle)** — Maven runs phases in a fixed order: `validate → compile → test → package → verify`. Asking for `verify` runs everything before it; a failing phase stops the rest, so nothing downstream happens on red.
@@ -194,7 +194,19 @@
 * **Plugin `skip` switch** — a plugin listed in the root `pluginManagement` with `<skip>true</skip>` runs nowhere until a module
   sets `<skip>false</skip>`; `spring-boot-maven-plugin` (backend) and `exec-maven-plugin` (sim) both use it so `-am` builds
   do not try to run the root pom or the engine.
-* **Testcontainers** — starts a real database in Docker just for a test, then throws it away.
+* **Testcontainers** — starts a real database in Docker just for a test, then throws it away. `@Testcontainers` on the
+  test class and `@Container` on a `static GenericContainer` field give one box per test class, started before the first
+  test and removed after the last; `getMappedPort(8000)` tells you which free port Docker chose on your PC, so the test
+  never collides with the `docker compose` box. The jars come from the Spring Boot BOM (`org.testcontainers:testcontainers`
+  and `testcontainers-junit-jupiter`, test scope).
+* **`@Configuration` / `@Bean`** — a class whose methods build beans by hand (`DynamoConfig`): each `@Bean` method runs
+  once at startup and its return value is handed to whoever asks for that type. `proxyBeanMethods = false` tells Spring
+  the methods never call each other, which skips a proxy and starts faster.
+* **`@Value("${app.dynamodb.endpoint:}")`** — inject one setting from `application.yaml` into a method or constructor
+  parameter; the part after the colon is the default when the setting is missing (here the empty string).
+* **`@ConditionalOnProperty`** — "create this bean only when a setting has this value": `name = "app.storage",
+  havingValue = "dynamo"` on the DynamoDB beans, `havingValue = "memory", matchIfMissing = true` on the in-memory ones,
+  so exactly one storage set exists and the default needs no setting at all. The game's `app.storage` switch.
 * **Sealed interface** — `sealed interface ActionRequest permits …`: exactly these records implement it, no others. A
   `switch` over it needs no `default` and fails to compile when a case is missing. The engine's `Action` and `GameEvent`
   are sealed too.
@@ -268,6 +280,23 @@
   prefixes. **On-demand** — pay per request. **TTL** — items auto-delete after a timestamp.
   **Conditional write** — "update only if version = 7" (our optimistic locking). **GSI** — a
   secondary index (costs extra writes; we avoid unless needed).
+* **Item / attribute** — DynamoDB's row and column, except that every item may have different attributes. Only the two
+  key attributes (`PK`, `SK`) are declared when the table is created (`infra/table.json`); everything else is whatever
+  the writer sends. Attribute names are case-sensitive: `PK` and `pk` are two different attributes, which is why
+  `ProfileItem` carries `@DynamoDbAttribute("PK")`.
+* **GetItem / PutItem / UpdateItem / Query** — the four calls the game uses. GetItem: both keys in, one item out (or
+  nothing). PutItem: write the whole item, replacing whatever was there (no "insert or update" question, and null fields
+  are simply left out). UpdateItem: change some attributes of an item in place (we use it only with a condition, Step 29).
+  Query: every item of one partition key, in sort-key order, optionally within a sort-key range.
+* **Enhanced Client** — the AWS SDK's translator between a Java class and an item: `@DynamoDbBean` on a public class
+  with a no-arg constructor and a getter/setter per attribute, `@DynamoDbPartitionKey` / `@DynamoDbSortKey` on the two
+  key getters, `TableSchema.fromBean(ProfileItem.class)` reads that once, and `DynamoDbTable<ProfileItem>` offers
+  `getItem` / `putItem` / `query` in Java terms. It sits on top of the plain `DynamoDbClient` (the phone line). Dates
+  (`Instant`) are stored as ISO strings, numbers as `N`, booleans as `BOOL`.
+* **DynamoDB Local** — the real DynamoDB engine as a Docker image (`amazon/dynamodb-local`) listening on :8000. Any
+  access key works (it checks nothing), `-inMemory` keeps the data in RAM, and `aaronshaf/dynamodb-admin` on :8001 is a
+  web page to look inside. **Endpoint override** — telling the SDK to send its requests to that address
+  (`app.dynamodb.endpoint`) instead of AWS; without it, the same code talks to the real table.
 * **S3** — file storage (buckets of objects). **CloudFront** — the CDN that serves S3 files fast
   worldwide and handles HTTPS. **OAC (Origin Access Control)** — lets only CloudFront read the bucket.
 * **Cognito User Pool** — managed sign-up/sign-in; **Managed Login** — its hosted pages;
