@@ -9,6 +9,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
 import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
+import software.amazon.awssdk.services.dynamodb.model.TimeToLiveSpecification;
+import software.amazon.awssdk.services.dynamodb.model.UpdateTimeToLiveRequest;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -47,6 +49,12 @@ final class TableDefinition {
                 .attributeDefinitions(attributes)
                 .keySchema(keys)
                 .billingMode(json.get("BillingMode").asString())
+                .build());
+
+        // 4. the same switch the create script flips: delete items once their expiresAt number has passed
+        client.updateTimeToLive(UpdateTimeToLiveRequest.builder()
+                .tableName(tableName)
+                .timeToLiveSpecification(TimeToLiveSpecification.builder().enabled(true).attributeName(Ttl.ATTRIBUTE).build())
                 .build());
         return tableName;
     }
