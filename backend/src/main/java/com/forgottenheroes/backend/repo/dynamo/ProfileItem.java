@@ -2,6 +2,8 @@ package com.forgottenheroes.backend.repo.dynamo;
 
 import com.forgottenheroes.backend.repo.Profile;
 import java.time.Instant;
+
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
@@ -18,11 +20,13 @@ public class ProfileItem {
     private int runsPlayed;
     private String activeRunId;
 
-    @DynamoDbPartitionKey                                   // 1. the drawer label
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute("PK")                                // 1. the drawer label
     public String getPk() { return pk; }
     public void setPk(String pk) { this.pk = pk; }
 
     @DynamoDbSortKey                                        // 2. the place in the drawer
+    @DynamoDbAttribute("SK")
     public String getSk() { return sk; }
     public void setSk(String sk) { this.sk = sk; }
 
