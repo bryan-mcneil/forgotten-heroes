@@ -40,9 +40,11 @@ public class RunService {
     private final ProfileService profileService;
     private final MatchmakingService matchmaking;
     private final SeedSource seeds;
+    private final LeaderboardService leaderboard;
 
     public RunService(GameSession session, RunRepository runs, GhostRepository ghosts, BattleLogRepository battleLogs,
-                      ProfileRepository profiles, ProfileService profileService, MatchmakingService matchmaking, SeedSource seeds) {
+                      ProfileRepository profiles, ProfileService profileService, MatchmakingService matchmaking, SeedSource seeds,
+                      LeaderboardService leaderboard) {
         this.session = session;
         this.runs = runs;
         this.ghosts = ghosts;
@@ -51,6 +53,7 @@ public class RunService {
         this.profileService = profileService;
         this.matchmaking = matchmaking;
         this.seeds = seeds;
+        this.leaderboard = leaderboard;
     }
 
     /** A new run with turn 1 begun; 409 while another run of this player is still in progress. */
@@ -94,15 +97,16 @@ public class RunService {
         int crowns = state.crowns();
         int hearts = state.hearts();
         Opponent opponent = matchmaking.pick(userId, state);
+        Profile profile = profileService.getOrCreate(userId);     // the display name travels with the ghost (Step 32)
 
         TurnResult result = session.endTurn(state, opponent.band());
 
-        ghosts.save(new Ghost(userId, runId, turn, crowns, hearts, result.ghost(), false, Instant.now()));
+        ghosts.save(new Ghost(userId, profile.displayName(), runId, turn, crowns, hearts, result.ghost(), false, Instant.now()));
         BattleLog log = new BattleLog(runId, turn, opponent.name(), opponent.band(), battleEventsOf(result.events()), result.outcome());
         battleLogs.save(log);
         runs.save(userId, state, expectedVersion);
         if (state.status().isOver()) {
-            finish(userId, state);
+            finish(profile, state, turn);
         }
         return new EndTurnResponse(toDto(log), result.events(), DtoMapper.toDto(state));
     }
@@ -118,7 +122,7 @@ public class RunService {
         long loaded = state.version();                       // no expectedVersion in the request: the loaded one guards
         session.abandon(state);
         runs.save(userId, state, loaded);
-        finish(userId, state);
+        finish(profileService.getOrCreate(userId), state, state.turn());
         return DtoMapper.toDto(state);
     }
 
@@ -137,8 +141,10 @@ public class RunService {
         }
     }
 
-    private void finish(String userId, RunState state) {
-        profiles.find(userId).ifPresent(profile -> profiles.save(profile.runFinished(state.crowns())));
+    /** A run is over: count it on the profile, keep the best, free the slot, and put a won or lost run on the board. */
+    private void finish(Profile profile, RunState state, int turnsPlayed) {
+        profiles.save(profile.runFinished(state.crowns()));
+        leaderboard.record(profile.userId(), profile.displayName(), state.status(), state.crowns(), turnsPlayed, Instant.now());
     }
 
     /** The battle's own events, from {@code BattleStarted} to {@code BattleEnded}, with their run-wide numbers. */

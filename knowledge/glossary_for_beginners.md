@@ -284,6 +284,18 @@
   key attributes (`PK`, `SK`) are declared when the table is created (`infra/table.json`); everything else is whatever
   the writer sends. Attribute names are case-sensitive: `PK` and `pk` are two different attributes, which is why
   `ProfileItem` carries `@DynamoDbAttribute("PK")`.
+* **Leaderboard drawer (Step 32)** — `LB#<season>` where a **season** is the UTC month a run finished in (`2026-10`).
+  The sort key is the ranking itself: `<99−crowns>#<turns>#<userId>` with zero padding (`89#011#cat` beats
+  `89#014#bob` beats `92#012#ann`), so "top 50" is one forward Query with `Limit 50` and no sorting in Java.
+  Only a run played to its end (WON or LOST) gets a row; one row per finished run, so a player can hold several
+  places; rows expire at the end of the following month (`Ttl.endOfNextSeason`). **Copy at write time
+  (denormalisation)** — the display name is written onto every ghost and leaderboard row when they are saved,
+  because DynamoDB has no join to fetch it with; the downside is that a rename shows on later rows and ghosts
+  only, acceptable because ghosts live 30 days and rows about two months, and both are read far more often than
+  a name changes. **Display name rules** — `DisplayNamePolicy.clean`: trimmed, inner spaces collapsed, 3–16
+  characters, letters/digits/spaces, not on `display-name-blocklist.txt` (whole words, and the name with spaces
+  removed, so "Cassandra" passes and "a d m i n" does not); a broken rule is 400 `INVALID_DISPLAY_NAME`
+  (`InvalidRequestException`, the same path as 400 `INVALID_SEASON`). The default name is `Hero <first 4 id chars>`.
 * **GetItem / PutItem / UpdateItem / Query** — the four calls the game uses. GetItem: both keys in, one item out (or
   nothing). PutItem: write the whole item, replacing whatever was there (no "insert or update" question, and null fields
   are simply left out). UpdateItem: change some attributes of an item in place (we use it only with a condition, Step 29).

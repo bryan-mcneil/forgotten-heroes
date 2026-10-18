@@ -11,6 +11,8 @@ import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -78,5 +80,16 @@ class ApiHappyPathTest {
         ResponseEntity<JsonNode> replay = rest.getForEntity("/api/runs/{id}/battles/1", JsonNode.class, runId);
         assertThat(replay.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(replay.getBody().get("events")).isEqualTo(battle.get("events"));
+
+        ResponseEntity<JsonNode> renamed = rest.exchange("/api/me", HttpMethod.PUT,
+            new HttpEntity<>(Map.of("displayName", "Bryan  the Bold")), JsonNode.class);   // the double space is collapsed
+        assertThat(renamed.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(renamed.getBody().get("displayName").asString()).isEqualTo("Bryan the Bold");
+        assertThat(rest.getForEntity("/api/me", JsonNode.class).getBody().get("displayName").asString()).isEqualTo("Bryan the Bold");
+
+        ResponseEntity<JsonNode> board = rest.getForEntity("/api/leaderboard", JsonNode.class);
+        assertThat(board.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(board.getBody().isArray()).as("no run has finished yet, so this month's board is empty").isTrue();
+        assertThat(board.getBody()).isEmpty();
     }
 }

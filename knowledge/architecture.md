@@ -140,14 +140,15 @@ lambda     StreamLambdaHandler (aws-serverless-java-container) + SnapStart primi
 |---|---|---|
 | `GET /health` | liveness | no auth |
 | `GET /content` | heroes, relics, tokens, rules constants | no auth, ETag |
-| `GET /me` | profile + current run id | creates profile on first call |
+| `GET /me` | profile + current run id | creates profile on first call (default name `Hero <id prefix>`) |
+| `PUT /me` | `{displayName}` (3–16 chars, letters/digits/spaces, blocklist) | 400 `VALIDATION_FAILED` / `INVALID_DISPLAY_NAME`; the name is copied onto later ghosts and leaderboard rows |
 | `POST /runs` | start a run | 409 if an active run exists |
 | `GET /runs/{runId}` | full state (band, tavern, gold, hearts, crowns, turn, version) | |
 | `POST /runs/{runId}/actions` | one tavern action `{type, …, expectedVersion}` | returns `{state, events}`; 409 on version mismatch |
 | `POST /runs/{runId}/end-turn` | end turn → battle | returns `{battle: {opponent, events, result}, state}` |
 | `GET /runs/{runId}/battles/{turn}` | replay a past battle | |
 | `POST /runs/{runId}/abandon` | give up | |
-| `GET /leaderboard?season=2026-10` | top 50 by crowns then fewest turns | |
+| `GET /leaderboard?season=2026-10` | top 50 by crowns then fewest turns | one row per finished run (WON/LOST); no season = this UTC month; 400 `INVALID_SEASON` otherwise |
 
 Error body example: `{ "type": "https://heroes.bryanmcneil.pro/errors/rule-violation", "title": "Not enough gold", "status": 422, "code": "NOT_ENOUGH_GOLD", "detail": "You have 2 gold; a hero costs 3." }`
 

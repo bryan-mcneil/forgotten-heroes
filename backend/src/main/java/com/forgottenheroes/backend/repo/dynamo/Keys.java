@@ -14,11 +14,15 @@ import java.time.format.DateTimeFormatter;
  *   USER#&lt;userId&gt;     RUN#&lt;runId&gt;                   one run, whole state as JSON
  *   GHOST#T&lt;turn&gt;     &lt;crowns&gt;#&lt;time&gt;#&lt;runId&gt;       a band saved at the end of that turn
  *   RUN#&lt;runId&gt;       BATTLE#&lt;turn&gt;                 one battle of that run, for replay
+ *   LB#&lt;season&gt;       &lt;99-crowns&gt;#&lt;turns&gt;#&lt;userId&gt;   one finished run on that month's board (Step 32)
  * </pre>
  */
 final class Keys {
 
     static final String PROFILE = "PROFILE";
+
+    /** The highest crowns a run can reach is 10, so {@code 99 - crowns} always has two digits. */
+    private static final int LEADERBOARD_CEILING = 99;
 
     /** Fixed width, so the text order of two times is their time order ("…26.700Z" before "…26.728Z"). */
     private static final DateTimeFormatter SORTABLE_TIME =
@@ -64,5 +68,20 @@ final class Keys {
     /** A battle's place in its run's drawer: three digits, so turn 2 stays before turn 10. */
     static String battle(int turn) {
         return String.format("BATTLE#%03d", turn);
+    }
+
+    /** The drawer of one month's results; the season is the month the run finished in, {@code yyyy-MM} in UTC. */
+    static String leaderboard(String season) {
+        return "LB#" + season;
+    }
+
+    /**
+     * A result's place on its board, built so that reading the drawer forwards is the ranking: more
+     * crowns give a smaller first part ({@code 99 - crowns}, two digits), fewer turns a smaller second
+     * part (three digits), and the player id last keeps two equal results apart. "Top 50" is then one
+     * Query with a limit of 50 and no sorting anywhere.
+     */
+    static String leaderboardSort(int crowns, int turns, String userId) {
+        return String.format("%02d#%03d#%s", LEADERBOARD_CEILING - crowns, turns, userId);
     }
 }

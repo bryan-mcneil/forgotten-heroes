@@ -1,6 +1,7 @@
 package com.forgottenheroes.backend.web;
 
 import com.forgottenheroes.backend.service.ActiveRunException;
+import com.forgottenheroes.backend.service.InvalidRequestException;
 import com.forgottenheroes.backend.service.NotFoundException;
 import com.forgottenheroes.backend.repo.VersionConflictException;
 import com.forgottenheroes.engine.resolver.RuleViolation;
@@ -29,6 +30,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * <pre>
  *   RuleViolation (engine)          → 422  code = the engine's Code      "you may not do that"
  *   validation / unreadable JSON    → 400  VALIDATION_FAILED / MALFORMED_JSON
+ *   InvalidRequestException         → 400  its own code: INVALID_SEASON, INVALID_DISPLAY_NAME (Step 32)
  *   NotFoundException               → 404  NOT_FOUND
  *   VersionConflictException        → 409  VERSION_CONFLICT (+ currentVersion)
  *   ActiveRunException              → 409  RUN_ALREADY_ACTIVE (+ activeRunId)
@@ -55,6 +57,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String message = ex.getMessage();
         String detail = message.startsWith(prefix) ? message.substring(prefix.length()) : message;
         return problem(HttpStatus.UNPROCESSABLE_CONTENT, "rule-violation", ex.code().name(), titleOf(ex.code().name()), detail);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    ProblemDetail invalidRequest(InvalidRequestException ex) {
+        String slug = ex.code().toLowerCase(Locale.ROOT).replace('_', '-');
+        return problem(HttpStatus.BAD_REQUEST, slug, ex.code(), titleOf(ex.code()), ex.getMessage());
     }
 
     @ExceptionHandler(NotFoundException.class)

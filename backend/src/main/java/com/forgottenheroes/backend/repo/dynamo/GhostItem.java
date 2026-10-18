@@ -20,6 +20,7 @@ public class GhostItem {
     private String pk;
     private String sk;
     private String ownerUserId;
+    private String ownerName;
     private String runId;
     private int turn;
     private int crowns;
@@ -41,6 +42,10 @@ public class GhostItem {
 
     public String getOwnerUserId() { return ownerUserId; }
     public void setOwnerUserId(String ownerUserId) { this.ownerUserId = ownerUserId; }
+
+    /** The owner's display name at save time (Step 32); folders from before carry none. */
+    public String getOwnerName() { return ownerName; }
+    public void setOwnerName(String ownerName) { this.ownerName = ownerName; }
 
     public String getRunId() { return runId; }
     public void setRunId(String runId) { this.runId = runId; }
@@ -72,6 +77,7 @@ public class GhostItem {
         item.setPk(Keys.ghostTurn(ghost.turn()));
         item.setSk(Keys.ghostSort(ghost.crowns(), ghost.savedAt(), ghost.runId()));
         item.setOwnerUserId(ghost.ownerUserId());
+        item.setOwnerName(ghost.ownerName());
         item.setRunId(ghost.runId());
         item.setTurn(ghost.turn());
         item.setCrowns(ghost.crowns());
@@ -85,6 +91,6 @@ public class GhostItem {
 
     Ghost toGhost() {
         BandSnapshot snapshot = EventJson.mapper().readValue(band, BandSnapshot.class);
-        return new Ghost(ownerUserId, runId, turn, crowns, hearts, snapshot, bot, savedAt);
+        return new Ghost(ownerUserId, ownerName == null ? ownerUserId : ownerName, runId, turn, crowns, hearts, snapshot, bot, savedAt);
     }
 }
