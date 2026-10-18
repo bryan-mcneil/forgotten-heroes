@@ -6,6 +6,7 @@ import com.forgottenheroes.backend.repo.VersionConflictException;
 import com.forgottenheroes.backend.repo.dynamo.DynamoBattleLogRepository;
 import com.forgottenheroes.backend.repo.dynamo.DynamoGhostRepository;
 import com.forgottenheroes.backend.repo.dynamo.DynamoLocal;
+import com.forgottenheroes.backend.repo.dynamo.DynamoLeaderboardRepository;
 import com.forgottenheroes.backend.repo.dynamo.DynamoProfileRepository;
 import com.forgottenheroes.backend.repo.dynamo.DynamoRunRepository;
 import com.forgottenheroes.backend.web.dto.ActionRequest;
@@ -52,7 +53,8 @@ class RunServiceConcurrencyTest {
         service = new RunService(SESSION,
             new DynamoRunRepository(dynamo.enhanced(), dynamo.tableName()), ghosts,
             new DynamoBattleLogRepository(dynamo.enhanced(), dynamo.tableName()),
-            profiles, new ProfileService(profiles), new GhostMatchmaking(ghosts), () -> 42L);
+            profiles, new ProfileService(profiles), new GhostMatchmaking(ghosts), () -> 42L,
+            new LeaderboardService(new DynamoLeaderboardRepository(dynamo.enhanced(), dynamo.tableName())));
         pool = Executors.newFixedThreadPool(2);
     }
 

@@ -2,6 +2,8 @@ package com.forgottenheroes.backend.repo.dynamo;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.YearMonth;
+import java.time.ZoneOffset;
 
 /**
  * Time to live (architecture §5): items that carry an {@code expiresAt} number are deleted by DynamoDB
@@ -22,5 +24,10 @@ final class Ttl {
 
     static long expiresAt(Instant from, Duration after) {
         return from.plus(after).getEpochSecond();
+    }
+
+    /** A season's rows live until the end of the following month: "last month's board" stays readable, older ones go. */
+    static long endOfNextSeason(YearMonth season) {
+        return season.plusMonths(2).atDay(1).atStartOfDay(ZoneOffset.UTC).toEpochSecond();
     }
 }

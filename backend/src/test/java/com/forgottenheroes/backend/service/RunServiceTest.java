@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.forgottenheroes.backend.repo.InMemoryBattleLogRepository;
 import com.forgottenheroes.backend.repo.InMemoryGhostRepository;
+import com.forgottenheroes.backend.repo.InMemoryLeaderboardRepository;
 import com.forgottenheroes.backend.repo.InMemoryProfileRepository;
 import com.forgottenheroes.backend.repo.InMemoryRunRepository;
 import com.forgottenheroes.backend.repo.VersionConflictException;
@@ -34,8 +35,9 @@ class RunServiceTest {
     private final InMemoryBattleLogRepository battleLogs = new InMemoryBattleLogRepository();
     private final InMemoryProfileRepository profiles = new InMemoryProfileRepository();
     private final ProfileService profileService = new ProfileService(profiles);
+    private final InMemoryLeaderboardRepository leaderboard = new InMemoryLeaderboardRepository();
     private final RunService service = new RunService(SESSION, runs, ghosts, battleLogs, profiles, profileService,
-        new GhostMatchmaking(ghosts), () -> 42L);
+        new GhostMatchmaking(ghosts), () -> 42L, new LeaderboardService(leaderboard));
 
     @Test
     void startBeginsTurnOneAndRecordsTheActiveRunOnTheProfile() {
@@ -93,6 +95,7 @@ class RunServiceTest {
             assertThat(ended.state().hearts()).isEqualTo(5 - losses);
             assertThat(ghosts.findByTurn(turn)).singleElement().satisfies(ghost -> {
                 assertThat(ghost.ownerUserId()).isEqualTo("bryan");
+                assertThat(ghost.ownerName()).as("the display name travels with the ghost").isEqualTo("Hero brya");
                 assertThat(ghost.band().size()).isEqualTo(ended.state().band().units().size());
             });
             assertThat(service.battle("bryan", runId, turn).events()).isEqualTo(ended.battle().events());
@@ -140,6 +143,7 @@ class RunServiceTest {
         ProfileDto me = profileService.me("bryan");
         assertThat(me.activeRunId()).isNull();
         assertThat(me.runsPlayed()).isEqualTo(1);
+        assertThat(leaderboard.top(LeaderboardService.currentSeason(), 50)).as("an abandoned run is not a result").isEmpty();
         assertThatThrownBy(() -> service.abandon("bryan", run.runId())).isInstanceOf(RuleViolation.class);
         assertThat(service.start("bryan").runId()).isNotEqualTo(run.runId());
     }

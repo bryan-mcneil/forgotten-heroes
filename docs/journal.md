@@ -574,3 +574,37 @@ started with it); 401 `INVALID_TOKEN` "The token_use claim is not valid" with th
 character changed, and `X-Dev-User` ignored without the local profile. Lesson: the backend never phones Cognito during
 a game; it holds a copy of the public key and reads each card itself, and the only thing a door ever learns is the
 player's number, the same `user.id()` it used when everyone was `dev`.
+
+## 2026-10-17 — Step 32, leaderboard and profile
+
+Built by Claude straight after Step 31, on Bryan's standing request from that evening (console work his, Java
+Claude's). The social layer, minimal. The leaderboard is a drawer per season, `LB#2026-10`, where a season is the UTC
+month a run finished in, and the sort key is the ranking itself: `<99−crowns>#<turns>#<userId>`, zero-padded, so
+`89#011#cat` (10 crowns in 11 turns) comes before `89#014#bob` and both before `92#012#ann` (7 crowns). "Top 50" is
+then one forward Query with a limit of 50 and the rank is the row's position in the answer; no sort in Java, in memory
+or in the ledger. Only a run played to its end counts: `LeaderboardService.record` takes the status, crowns and turns
+as plain values (so its test needs no engine state) and ignores `ABANDONED` and `IN_PROGRESS`; `RunService.finish`
+calls it with the turn the last battle was fought at. One row per finished run, so a player who finishes three runs
+in a month can hold three places; the same player with the same score is the same key, so a repeat replaces its row.
+Rows expire at the end of the following month (`Ttl.endOfNextSeason`: October's board is swept on 1 December), which
+keeps "last month's board" readable and bounds the drawer. `GET /api/leaderboard?season=` answers 400 `INVALID_SEASON`
+for anything that is not `yyyy-MM`, through a new `InvalidRequestException` that carries its own code; no season means
+this month. The profile side: `PUT /api/me {displayName}`, with `@Size(3..16)` on the request for the contract and the
+first 400 (`VALIDATION_FAILED`) and the whole rule set in one class, `DisplayNamePolicy.clean`: trim, collapse inner
+whitespace to one space, 3 to 16 characters, letters, digits and spaces only, and not on `display-name-blocklist.txt`,
+matched on whole words and on the name with its spaces removed, so "Cassandra" passes and "a d m i n" does not; a
+broken rule is 400 `INVALID_DISPLAY_NAME`. The default name became `Hero <first four id characters>` instead of the raw
+Cognito `sub` the live test of Step 31 showed. And the NoSQL habit the step is really about: the display name is copied
+onto every ghost (`Ghost.ownerName`, an extra attribute on the item; folders saved before fall back to the id, and an
+8-argument constructor keeps the old call sites) and onto every leaderboard row at write time, because there is no join
+to fetch it with. Matchmaking now names the opponent "Ghost of <display name>". Tests: ranking, seasons and what counts
+in memory (`LeaderboardServiceTest`), the drawer against the box (`DynamoLeaderboardRepositoryTest`: order, limit, the
+`expiresAt` number, same key replaces), the naming rules one at a time (`DisplayNamePolicyTest`), both doors in web
+slices behind the real doorman, and the happy path renames and reads an empty board. The build's first run found three
+wrong expectations, all mine: a tab is whitespace and collapses to a space, `"a b"` is a valid three-character name, and
+the padded `"  Bryan  the Bold "` is 18 characters at the door, where `@Size` judges the raw text before the policy
+collapses it; the contract stays strict and the test sends `"Bryan  the Bold"` instead. 103 backend tests. Lesson, the
+answer to the step's own question: copying a name into ghosts and rows means a rename does not reach what was written
+before, and that is acceptable here because ghosts live thirty days, rows about two months, and both are read a
+thousand times for every rename; the alternative, a lookup per row on every read, is exactly the join DynamoDB makes
+you pay for in round trips.

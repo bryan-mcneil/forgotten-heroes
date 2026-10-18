@@ -1,0 +1,28 @@
+# Display names a player may not take (Step 32, DisplayNamePolicy). Lower case, one per line.
+# A name is refused when any whole word of it, or the name with its spaces removed, is on this list,
+# so "Cassandra" is fine and "a d m i n" is not. Deliberately short; grow it by pull request.
+admin
+administrator
+moderator
+staff
+support
+system
+official
+forgottenheroes
+fuck
+shit
+bitch
+cunt
+dick
+cock
+pussy
+asshole
+nigger
+nigga
+faggot
+retard
+nazi
+hitler
+rape
+whore
+slut

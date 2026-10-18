@@ -17,6 +17,54 @@
     }
   ],
   "paths" : {
+    "/api/me" : {
+      "get" : {
+        "tags" : [
+          "profile-controller"
+        ],
+        "operationId" : "me",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [
+          "profile-controller"
+        ],
+        "operationId" : "rename",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/runs" : {
       "post" : {
         "tags" : [
@@ -241,26 +289,6 @@
         }
       }
     },
-    "/api/me" : {
-      "get" : {
-        "tags" : [
-          "profile-controller"
-        ],
-        "operationId" : "me",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ProfileDto"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/leaderboard" : {
       "get" : {
         "tags" : [
@@ -339,6 +367,38 @@
   },
   "components" : {
     "schemas" : {
+      "UpdateProfileRequest" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string",
+            "maxLength" : 16,
+            "minLength" : 3
+          }
+        },
+        "required" : [
+          "displayName"
+        ]
+      },
+      "ProfileDto" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string"
+          },
+          "bestCrowns" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "runsPlayed" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "activeRunId" : {
+            "type" : "string"
+          }
+        }
+      },
       "BandDto" : {
         "type" : "object",
         "properties" : {
@@ -2372,25 +2432,6 @@
                 }
               ]
             }
-          }
-        }
-      },
-      "ProfileDto" : {
-        "type" : "object",
-        "properties" : {
-          "displayName" : {
-            "type" : "string"
-          },
-          "bestCrowns" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "runsPlayed" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "activeRunId" : {
-            "type" : "string"
           }
         }
       },

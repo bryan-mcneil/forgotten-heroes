@@ -53,7 +53,7 @@ public class GhostMatchmaking implements MatchmakingService {
         List<Ghost> players = candidates.stream().filter(ghost -> !ghost.bot()).toList();
         if (!players.isEmpty()) {
             Ghost ghost = die.pick(players);                                               // 3. a real player's band
-            return new Opponent("Ghost of " + ghost.ownerUserId(), ghost.band());          //    (display name: Step 32)
+            return new Opponent("Ghost of " + ghost.ownerName(), ghost.band());            //    the name saved with the ghost
         }
         List<Ghost> bots = candidates.stream().filter(Ghost::bot).toList();
         if (!bots.isEmpty()) {
