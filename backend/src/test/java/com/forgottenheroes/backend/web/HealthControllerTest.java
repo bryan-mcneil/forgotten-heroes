@@ -6,11 +6,15 @@ import static org.mockito.BDDMockito.given;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
+import com.forgottenheroes.backend.security.SecurityConfig;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
+/** No token and no mock user on purpose: health is a public door, and this test proves it stays one. */
 @WebMvcTest(HealthController.class)
+@Import(SecurityConfig.class)
 class HealthControllerTest {
 
     @Autowired

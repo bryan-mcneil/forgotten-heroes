@@ -35,14 +35,17 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  *   UnsupportedOperationException   → 501  NOT_IMPLEMENTED (Step 26 stubs)
  *   anything else                   → 500  INTERNAL_ERROR, logged, no stack trace to the client
  * </pre>
- * 403 is never produced here: CloudFront owns it for the geo-block (architecture §1).
+ * One status is produced before any door opens, by {@code security.ProblemDetailAuthenticationEntryPoint}
+ * in the same shape: no token → 401 UNAUTHENTICATED, a rejected token → 401 INVALID_TOKEN.
+ * 403 is never produced anywhere: CloudFront owns it for the geo-block (architecture §1).
  * Extending {@link ResponseEntityExceptionHandler} gives us Spring's own mappings for the web-layer
  * exceptions (unknown route, wrong method, bad path variable …) and lets us add a {@code code} to them.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    static final String TYPE_BASE = "https://heroes.bryanmcneil.pro/errors/";
+    /** Every error's {@code type} is this base plus the code in kebab-case; the doorman's 401 uses it too. */
+    public static final String TYPE_BASE = "https://heroes.bryanmcneil.pro/errors/";
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 

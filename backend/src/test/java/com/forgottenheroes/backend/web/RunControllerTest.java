@@ -21,13 +21,21 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.forgottenheroes.backend.security.SecurityConfig;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-/** The web layer alone: routes, JSON in and out, the caller's id passed down. The service is a mock, so no rule runs here. */
+/**
+ * The web layer alone: routes, JSON in and out, the caller's id passed down. The service is a mock, so no
+ * rule runs here. The doorman is the real one, and {@code @WithMockUser} walks every request past it.
+ */
 @WebMvcTest(RunController.class)
+@Import(SecurityConfig.class)
+@WithMockUser
 class RunControllerTest {
 
     private static final RunStateDto STATE = new RunStateDto("run-1", 1, 10, 5, 0, RunStatus.IN_PROGRESS, true,

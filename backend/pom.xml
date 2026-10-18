@@ -41,6 +41,11 @@
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     <dependency>
+      <!-- the doorman: Spring Security checking the Cognito access token on every request (Step 31) -->
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+    <dependency>
       <!-- DynamoDB: maps a Java class to an item and back (Step 28-a) -->
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>dynamodb-enhanced</artifactId>
@@ -72,6 +77,18 @@
       <!-- @Testcontainers and @Container for JUnit -->
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- @WithMockUser and the MockMvc security hook, so web-slice tests run behind the doorman (Step 31) -->
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- rules about the shape of the code: the local dev shortcut can never be wired outside the local profile (Step 31) -->
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

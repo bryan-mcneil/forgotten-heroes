@@ -5,3 +5,11 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # no fallback in prod: the Lambda must be told its pool (Step 33 sets COGNITO_ISSUER) or it refuses to start
+          issuer-uri: ${COGNITO_ISSUER}

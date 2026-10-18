@@ -9,8 +9,11 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-/** With the prod profile the API does not describe itself: {@code application-prod.yaml} turns springdoc off. */
-@SpringBootTest
+/**
+ * With the prod profile the API does not describe itself: {@code application-prod.yaml} turns springdoc off.
+ * Prod has no fallback pool, so the test names one; nothing is fetched from it because no token is sent.
+ */
+@SpringBootTest(properties = "COGNITO_ISSUER=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_test")
 @AutoConfigureMockMvc
 @ActiveProfiles("prod")
 class OpenApiProdProfileTest {

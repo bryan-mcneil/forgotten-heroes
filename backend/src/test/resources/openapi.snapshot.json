@@ -11,6 +11,11 @@
       "description" : "Generated server url"
     }
   ],
+  "security" : [
+    {
+      "bearer" : [ ]
+    }
+  ],
   "paths" : {
     "/api/runs" : {
       "post" : {
@@ -306,7 +311,8 @@
               }
             }
           }
-        }
+        },
+        "security" : [ ]
       }
     },
     "/api/content" : {
@@ -326,7 +332,8 @@
               }
             }
           }
-        }
+        },
+        "security" : [ ]
       }
     }
   },
@@ -2964,6 +2971,14 @@
             "type" : "string"
           }
         }
+      }
+    },
+    "securitySchemes" : {
+      "bearer" : {
+        "type" : "http",
+        "description" : "The Cognito access token (not the id token), sent as `Authorization: Bearer <token>`.",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
       }
     }
   }

@@ -2,7 +2,9 @@ package com.forgottenheroes.backend;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.TestRestTemplate;
@@ -11,18 +13,33 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.test.context.ActiveProfiles;
 import tools.jackson.databind.JsonNode;
 
 /**
  * The whole stack over real HTTP: Tomcat on a random port, the real services, the in-memory
  * repositories and the engine. One run, one purchase, one battle, as the browser will do it in Step 44.
+ * Runs with the local doorman (profile {@code local}, which reads {@code X-Dev-User} instead of a Cognito
+ * token) but keeps the in-memory storage, so no Docker and no AWS are needed.
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "app.storage=memory")
 @AutoConfigureTestRestTemplate
+@ActiveProfiles("local")
 class ApiHappyPathTest {
 
     @Autowired
     private TestRestTemplate rest;
+
+    /** Every call is made as the same player; without the header the local doorman would say {@code dev}, which also works. */
+    @BeforeEach
+    void callAsBryan() {
+        ClientHttpRequestInterceptor asBryan = (request, body, execution) -> {
+            request.getHeaders().set("X-Dev-User", "bryan");
+            return execution.execute(request, body);
+        };
+        rest.getRestTemplate().setInterceptors(List.of(asBryan));
+    }
 
     @Test
     void startBuyAndEndATurn() {

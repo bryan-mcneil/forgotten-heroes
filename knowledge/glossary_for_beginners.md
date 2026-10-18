@@ -338,6 +338,24 @@
   worldwide and handles HTTPS. **OAC (Origin Access Control)** — lets only CloudFront read the bucket.
 * **Cognito User Pool** — managed sign-up/sign-in; **Managed Login** — its hosted pages;
   **JWT** — the signed token proving who you are; **PKCE** — the safe login flow for browser apps.
+  As built (Step 31, the "ID card"): the pool is the ID desk, the **app client** is one named entry for one
+  app (ours is public: no secret, a browser cannot keep one), and a signed-in player holds a **token**: three
+  base64 parts, `header.payload.signature`. Base64 is a squeeze, not a lock: anyone can read the **claims**
+  (`sub` = the player's stable id, `iss` = which pool made it, `exp` = expiry, `token_use` = `access` or `id`);
+  the **signature**, made with the pool's private key, is what stops anyone from changing them. The backend
+  fetches the pool's public keys once (**JWKS**, `<issuer>/.well-known/jwks.json`) and checks every token itself;
+  Cognito is not called during a game. **Access token** vs **ID token**: the access token is the one for APIs
+  (`token_use: access`, `client_id`, `scope`); the ID token carries the e-mail for the app's own screen, and the
+  doorman refuses it. **Bearer** — `Authorization: Bearer <token>`: whoever bears the card is let in, no second
+  question. **Resource server** — Spring's name for the doorman (`spring-boot-starter-oauth2-resource-server`):
+  `SecurityConfig` says which doors are public (`/api/health`, `/api/content`, the API docs) and builds the
+  `JwtDecoder` (keys, issuer, expiry, `token_use`); `SecurityContextCurrentUser` turns the token's `sub` into
+  `CurrentUser.id()`, so no controller changed. **401 vs 403** — 401 "who are you?" (no token: `UNAUTHENTICATED`;
+  a rejected one: `INVALID_TOKEN`, both as ProblemDetail), 403 "no" is CloudFront's and the API never sends it.
+  **`X-Dev-User`** — the note instead of the card on your PC: under the `local` Spring profile
+  `LocalDevSecurityConfig` lets everyone in and `DevUserHeaderFilter` names the player from that header (`dev` when
+  absent); the backend `ArchitectureTest` (ArchUnit) proves nothing outside `security.local` refers to it, and
+  `ProdSettingsTest` that `application-prod.yaml` never switches that profile on.
 * **ACM** — free TLS certificates. **Route 53** — AWS DNS (we use Hostinger DNS instead).
 * **CloudFormation** — AWS's infrastructure-as-code language (a stack = one deployed template).
   **SAM** — a friendlier dialect for serverless apps + a CLI (`sam build/deploy/local`).
