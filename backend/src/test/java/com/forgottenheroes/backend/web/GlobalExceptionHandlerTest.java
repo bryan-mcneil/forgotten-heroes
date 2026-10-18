@@ -15,14 +15,19 @@ import com.forgottenheroes.engine.resolver.RuleViolation.Code;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.forgottenheroes.backend.security.SecurityConfig;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
 /** Every error body is an RFC 9457 ProblemDetail with a {@code code}; this is the table in the handler's Javadoc. */
 @WebMvcTest(RunController.class)
+@Import(SecurityConfig.class)
+@WithMockUser
 class GlobalExceptionHandlerTest {
 
     private static final String BUY = "{\"type\":\"Buy\",\"slot\":0,\"bandIndex\":0,\"expectedVersion\":1}";

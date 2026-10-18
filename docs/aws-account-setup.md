@@ -201,7 +201,63 @@ Two weeks before the date in §1: **Billing → Free Tier → Upgrade** to the P
 then: enable **IAM Identity Center** (organization instance), move the CLI to `aws configure sso`, and
 delete the IAM user `bryan`. The Step 77 checklist repeats this.
 
-## 8. Checklist
+## 8. The dev ID desk: a Cognito user pool (Step 31, by hand)
+
+**Cognito** is Amazon's sign-in service. A **user pool** is one ID desk: it keeps the users (e-mail +
+password, hashed), has an **app client** (one named entry for one application; ours is public, with no
+secret, because a browser cannot keep one) and a hosted sign-in page (**Managed Login**). A signed-in player
+gets a **token** (a JWT: header, payload, signature) that the backend checks on every request. The backend
+never calls Cognito during a game; it fetches the pool's public keys once and checks each token itself.
+The plain-words version is the "The ID Card" explainer page; the code is `backend/.../security/`.
+
+Made on 17 Oct 2026 as `bryan` in **N. Virginia (us-east-1)**, following the console's own wizard:
+
+1. **Amazon Cognito** → **User pools** → **Create user pool**.
+2. **Application type**: **Single-page application (SPA)**. **Name your application**: `forgotten-heroes-web-dev`.
+3. **Options for sign-in identifiers**: **Email**. **Required attributes for sign-up**: `email`.
+4. **Add a return URL**: `http://localhost:5173/` (the Vite dev server of Phase 3; plain http is allowed for localhost only).
+5. **Create user directory** → **Go to overview**. The pool got an automatic name; it cannot be renamed and does not matter.
+6. **User management → Users → Create user**: **Don't send an invitation**, the account owner's e-mail, **Mark
+   email address as verified**, **Set a password**. First sign-in asks for a new password.
+7. For the manual token test only: **Applications → App clients → forgotten-heroes-web-dev → Login pages → Edit**,
+   **OAuth 2.0 grant types** add **Implicit grant** (keeps **Authorization code grant**), scopes **OpenID** + **Email**.
+   Implicit puts the token in the browser's address bar, which is fine for a hand test and nothing else; the
+   Step 33 template does not enable it.
+
+| Value (all public identifiers) | `dev` |
+|---|---|
+| User pool ID | `us-east-1_PJKIBYEsz` |
+| App client ID | `3q92og6gl9e7f0b97tbk67api1` |
+| Managed Login domain | `https://us-east-1pjkibyesz.auth.us-east-1.amazoncognito.com` |
+| Issuer (`COGNITO_ISSUER`, the `iss` claim) | `https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PJKIBYEsz` |
+| Public keys the backend fetches once | `https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PJKIBYEsz/.well-known/jwks.json` |
+
+**Get a token by hand** (valid one hour; bookmark the address):
+
+```text
+https://us-east-1pjkibyesz.auth.us-east-1.amazoncognito.com/login?client_id=3q92og6gl9e7f0b97tbk67api1&response_type=token&scope=openid+email&redirect_uri=http://localhost:5173/
+```
+
+Sign in; the browser lands on `http://localhost:5173/#id_token=…&access_token=…` and says it cannot connect (nothing
+runs on 5173 yet). Copy the text between `access_token=` and `&expires_in` from the address bar. APIs take the
+**access** token; the **id** token is for the app's own screen and the backend refuses it (`token_use`).
+
+**Run the backend against the real desk** (no profile: the `local` profile would skip Cognito and trust `X-Dev-User`):
+
+```bash
+export COGNITO_ISSUER=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PJKIBYEsz
+./mvnw -pl backend -am test-compile spring-boot:run
+curl -i localhost:8080/api/me                                   # 401, code UNAUTHENTICATED
+curl -s -H "Authorization: Bearer $TOKEN" localhost:8080/api/me  # {"displayName":"Nameless", …} for sub e49844c8-…
+```
+
+Or in the browser: `http://localhost:8080/swagger-ui.html` → **Authorize** → paste the access token → **GET /api/me** →
+**Try it out**. Without `COGNITO_ISSUER` the backend falls back to a pool that does not exist and refuses every token.
+
+This hand-made pool is temporary: Step 33's SAM template describes the `dev` pool as code, and the hand-made
+copy is deleted once the template's pool works (the IDs above change then; update this table).
+
+## 9. Checklist
 
 - [ ] Root user has MFA; its secret key is backed up.
 - [ ] **Activate IAM access** is on; alternate contacts are filled in.
@@ -210,3 +266,5 @@ delete the IAM user `bryan`. The Step 77 checklist repeats this.
 - [ ] `aws sts get-caller-identity` shows `user/bryan`; profile `fh` is `us-east-1`, output `json`.
 - [ ] Stack `forgotten-heroes-budgets` exists; `manual-5` and `manual-20` are deleted; the **Email verification** card says **Verified**.
 - [ ] §1 is filled in and the calendar reminder exists.
+- [ ] Step 31: the `dev` user pool exists with one app client (no secret) and one verified test user; §8's table matches
+      the console; the hand-made pool is deleted after Step 33's template pool works.

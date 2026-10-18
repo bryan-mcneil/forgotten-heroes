@@ -531,3 +531,46 @@ a limit of 2 stops at two, and ten crowns sort after nine, not before two), and 
 outcome because one user's own ghosts are excluded. Lesson: a good sort key turns the hard question into a cheap range
 read with a cap, and everything that is actually a game rule (never yourself, players before bots, a fair pick) stays
 in Java where it can be unit-tested without a database.
+
+## 2026-10-17 — Step 31, authentication: the ID card
+
+Bryan's session first, then Claude's build. Recall on the DynamoDB pages: the version stamp ("checks the item currently
+under the key", which became the lesson: the ledger compares one number, the stamp, and the loser gets 409 and reloads),
+zero padding (right: as text "6" sorts after "10") and the fallback ladder (right: bots, then a mirror). Then the ladder of
+pages agreed the day before. The Map page grew a fifth part (Cognito, the ID desk) and a fourth room (`security/`, the
+doorman) with a Step 31 section: three moments (sign in once, every click carries the card, the doorman checks it), the
+order of the step, what changes and what stays. Bryan read it and answered "moment 3" for the new code. The concept page
+"The ID Card" followed: a token unsqueezed (base64 is a squeeze, not a lock), a toy-signature tamper playground in front
+of the doorman's five checks (present, issuer, stamp, expiry, `token_use`), the route quiz, access token against id
+token, the local note, the user pool and the pool-id-to-issuer builder. At that point Bryan said the pages were working
+and that he wanted the AWS console and nothing else: no more questions, pages or code. So the console pass was his, one
+numbered block at a time: the user pool through the SPA wizard (`forgotten-heroes-web-dev`, e-mail sign-in, return URL
+`http://localhost:5173/`), the three values written down (pool id, client id, Managed Login domain), a test user with a
+password set in the console, implicit grant switched on for the hand test, the hosted sign-in page, and both tokens
+copied out of the address bar. The one hiccup was reading "site can't be reached" at `localhost:5173` as a failure when
+it was the success state: nothing listens there yet, and the card is in the URL. The pool is recorded in
+`docs/aws-account-setup.md` §8 and is deleted when Step 33's template owns it.
+
+The code, built by Claude after that: `spring-boot-starter-oauth2-resource-server`; `SecurityConfig` under `!local`
+(stateless, CSRF off, health, content and the API docs public, everything else authenticated) with its own `JwtDecoder`
+that fetches the pool's `jwks.json` once and validates issuer, expiry and `token_use = access` (Cognito's id token is
+refused on purpose); `ProblemDetailAuthenticationEntryPoint` so a missing token is 401 `UNAUTHENTICATED` and a rejected
+one 401 `INVALID_TOKEN`, in the same ProblemDetail shape as every other error and never 403; one `CurrentUser` for both
+worlds, `SecurityContextCurrentUser`, which reads the security context, so the plan's `@AuthenticationPrincipal Jwt`
+was not needed and no controller changed; under `local`, `LocalDevSecurityConfig` lets everyone in and
+`DevUserHeaderFilter` puts the `X-Dev-User` name where the real doorman puts the subject. The issuer comes from
+`COGNITO_ISSUER`; `application.yaml` falls back to a pool that does not exist, so a forgotten setting refuses every
+token, and `application-prod.yaml` has no fallback, so a Lambda without it refuses to start. The OpenAPI contract gained
+the `bearer` scheme (Swagger UI's **Authorize** button) with `security: []` on the two public doors. Tests: the doorman
+in a web slice with a mocked decoder (no token 401 with the `WWW-Authenticate: Bearer` header; a `BadJwtException` 401
+with the reason as `detail`; a good token opens `/api/me` as its subject; content stays public), the local rules
+(header names the player, no header means `dev`), backend ArchUnit rules (nothing outside `security.local` depends on
+it, nothing outside `security` touches Spring Security, services and repositories never see a request) and
+`ProdSettingsTest`; the existing web slices import `SecurityConfig` and run `@WithMockUser`, `HealthControllerTest` on
+purpose without one, and `ApiHappyPathTest` runs under `local` with `app.storage=memory` and an `X-Dev-User` interceptor.
+83 backend tests. Live, with Bryan's real tokens against the running backend and the real pool: health 200 without a
+token; `/api/me` 401 `UNAUTHENTICATED` without, 200 with the access token (profile for `sub e49844c8-…`, then a run
+started with it); 401 `INVALID_TOKEN` "The token_use claim is not valid" with the id token, "Invalid signature" with one
+character changed, and `X-Dev-User` ignored without the local profile. Lesson: the backend never phones Cognito during
+a game; it holds a copy of the public key and reads each card itself, and the only thing a door ever learns is the
+player's number, the same `user.id()` it used when everyone was `dev`.

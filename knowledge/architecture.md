@@ -130,7 +130,8 @@ frontend never carries its own copy of rules data.
 web        @RestController + DTO records + exception → RFC 9457 ProblemDetail
 service    RunService (uses engine.GameSession), MatchmakingService, LeaderboardService, ProfileService
 repo       RunRepository, GhostRepository, BattleLogRepository, LeaderboardRepository (DynamoDB Enhanced Client)
-security   JwtUserResolver (Cognito sub → userId); LocalDevAuth (profile "local" only)
+security   SecurityConfig (the JWT doorman, !local) + SecurityContextCurrentUser (Cognito sub → userId);
+           security.local: LocalDevSecurityConfig + DevUserHeaderFilter (profile "local" only)
 lambda     StreamLambdaHandler (aws-serverless-java-container) + SnapStart priming
 ```
 
@@ -209,9 +210,17 @@ Client                    API GW           Lambda/Spring                 Engine 
 * React uses `react-oidc-context`: redirect to Cognito → back with code → tokens in memory (not
   localStorage) with silent refresh. API calls send `Authorization: Bearer <access token>`.
 * API Gateway **JWT authorizer** (issuer = pool URL, audience = app client id) rejects bad tokens
-  before Lambda. Spring reads claims from the request context the adapter exposes.
-* Local profile: no Cognito; `X-Dev-User: bryan` header sets the user. The `local` profile class
-  is in package `…security.local` and ArchUnit asserts nothing in `prod` config references it.
+  before Lambda. Spring checks the token again itself (defence in depth, and the app stays safe outside
+  Lambda): `SecurityConfig` fetches the pool's `jwks.json` once and verifies signature, issuer, expiry and
+  `token_use = access` (the id token is refused). No token → 401 `UNAUTHENTICATED`; a rejected one → 401
+  `INVALID_TOKEN`; both RFC 9457 bodies, never 403. `COGNITO_ISSUER` names the pool; without it the default
+  profile falls back to a pool that does not exist (every token refused) and `prod` refuses to start.
+* `SecurityContextCurrentUser` is the single `CurrentUser` in both worlds: it reads the security context,
+  so controllers never see whether a token or a header proved the caller.
+* Local profile: no Cognito; `X-Dev-User: bryan` header sets the user (`dev` when absent).
+  `LocalDevSecurityConfig` + `DevUserHeaderFilter` live in `…security.local`; the backend `ArchitectureTest`
+  asserts nothing outside that package references it and `ProdSettingsTest` that `application-prod.yaml`
+  never switches the profile on.
 * Demo account for recruiters (created in the pool; credentials on the landing page).
 
 ---
